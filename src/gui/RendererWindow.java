@@ -22,6 +22,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
@@ -39,6 +41,7 @@ import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutConfig;
 import layout.LayoutManager;
+import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspMonitorType;
@@ -98,7 +101,20 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
      * Create the frame.
      */
     public RendererWindow(int winW, int winH) {
+        this.setTitle("Rain MIDI");
         this.setTransferHandler(new DropFileHandler());
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                setVisible(false);
+                if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+                    JMPCoreAccessor.getSoundManager().stop();
+                    
+                    AbstractRenderPlugin.PluginInstance.launch(false);
+                }
+            }
+        });
+        
         setLocation(10, 10);
         getContentPane().setPreferredSize(new Dimension(winW, winH));
         pack();
@@ -112,7 +128,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         contentPane.setLayout(new BorderLayout());
 
         contentPane.add(canvas, BorderLayout.CENTER);
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         canvas.addMouseListener(this);
         canvas.addMouseWheelListener(this);
@@ -350,20 +366,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
 
         isFirstRendering = true;
-
-        // long pastTime = System.currentTimeMillis();
-
-        if (SystemProperties.getInstance().isNotesWidthAuto() == true) {
-            double fbpm = midiUnit.getFirstTempoInBPM();
-            int newCellWidth = (int) (480.0 * (120.0 / fbpm) * SystemProperties.getInstance().getDimOffset());
-            if (newCellWidth < 160) {
-                newCellWidth = 160;
-            }
-            else if (newCellWidth > 2400) {
-                newCellWidth = 2400;
-            }
-            setMeasCellWidth(newCellWidth);
-        }
 
         setLeftMeas(0);
         resetPage();
@@ -946,9 +948,21 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     public void resetPage() {
+        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        if (SystemProperties.getInstance().isNotesWidthAuto() == true) {
+            double fbpm = midiUnit.getFirstTempoInBPM();
+            int newCellWidth = (int) (480.0 * (120.0 / fbpm) * SystemProperties.getInstance().getDimOffset());
+            if (newCellWidth < 160) {
+                newCellWidth = 160;
+            }
+            else if (newCellWidth > 2400) {
+                newCellWidth = 2400;
+            }
+            setMeasCellWidth(newCellWidth);
+        }
+        
         calcDispMeasCount();
 
-        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         int startMeas = (int) midiUnit.getTickPosition() / midiUnit.getResolution();
         setLeftMeas(-startMeas);
 

@@ -185,12 +185,14 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
      * Create the dialog.
      */
     public RendererConfigDialog(AbstractRenderPlugin plg) {
+        initialized.set(false);
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 setVisible(false);
                 if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                    JMPCoreAccessor.getSystemManager().exitApplication();
+                    AbstractRenderPlugin.PluginInstance.exitStdPlg();
                 }
             }
         });
@@ -198,7 +200,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
         setModal(true);
-        setBounds(100, 100, 600, 540);
+        setBounds(100, 100, 600, 530);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -229,6 +231,9 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 comboBoxSynth = new JComboBox<String>();
                 comboBoxSynth.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        if (!initialized.get())
+                            return; // 初期化中は無視
+
                         String synthKey = synthItemKeys.get(comboBoxSynth.getSelectedIndex());
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_SYNTH, (String) synthKey);
                     }
@@ -516,7 +521,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             btnLoadToPlayButton.addActionListener(this);
             buttonPane.add(btnLoadToPlayButton);
             {
-                JButton okButton = new JButton("Launch Renderer");
+                JButton okButton = new JButton("Launch");
                 okButton.setActionCommand("OK");
                 buttonPane.add(okButton);
                 getRootPane().setDefaultButton(okButton);
@@ -559,7 +564,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     public void updateItem() {
         updateSystemItems();
         updateDesignItems();
-        
+
         String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_LAYOUT).getDataString();
         if (layoutName != null && layoutName.isEmpty() == false) {
             lblSelectedLayoutLabel.setText(layoutName);
@@ -722,16 +727,18 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
     public void updateSynthItem() {
         comboBoxSynth.removeAllItems();
+        synthItemKeys.clear();
+        synthItemLabels.clear();
         String[] items = JMPCoreAccessor.getSoundManager().getMidiToolkit().getMidiRecieverItems();
         String selected = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_SYNTH).getDataString();
-        
+
         int selectedIndex = 0;
         int index = 0;
         for (String s : items) {
             if (selected.equals(s)) {
                 selectedIndex = index;
             }
-            
+
             synthItemKeys.add(s);
             if (s.equals(ISoundManager.AUTO_RECEIVER_NAME)) {
                 synthItemLabels.add("* Automatic selection");

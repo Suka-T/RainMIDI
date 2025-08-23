@@ -11,7 +11,6 @@ public class RainFallRendererWindow extends RendererWindow {
 
     public RainFallRendererWindow(int winW, int winH) {
         super(winW, winH);
-        this.setTitle("JRFR");
     }
 
     @Override

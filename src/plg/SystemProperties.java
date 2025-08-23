@@ -33,6 +33,7 @@ public class SystemProperties {
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
             put(SYSP_LAYOUT, "Preload settings file name");
+            put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [3 - 20]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");

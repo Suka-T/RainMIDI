@@ -2,7 +2,6 @@ package plg;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -23,11 +22,19 @@ import plg.SystemProperties.SyspViewMode;
 public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener, ISupportExtensionConstraints {
 
     public static String Extensions = "";
+    public static AbstractRenderPlugin PluginInstance = null;
     public static RendererWindow MainWindow = null;
+    public static RendererConfigDialog LaunchWindow = null;
     
     private static final String PROP_FILE_NAME = "renderer.properties";
+    
+    private boolean exitFlag = false;
+    public void exitStdPlg() {
+        exitFlag = true;
+    }
 
     public AbstractRenderPlugin() {
+        PluginInstance = this;
     }
 
     protected void createMainWindow() {
@@ -59,6 +66,49 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     public String getAppCompany() {
         return "";
     }
+    
+    public void launch(boolean firstCall) {
+        try {
+            Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+            Path fullPath = folder.resolve(PROP_FILE_NAME);
+            File propFile = new File(fullPath.toString());
+            
+            if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+                LaunchWindow = new RendererConfigDialog(this);
+                LaunchWindow.setVisible(true);
+                if (LaunchWindow.isCommitClose() == false) {
+                    return;
+                }
+            }
+            
+            SystemProperties.getInstance().iniialize();
+            
+            if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+                // SystemPropertiesの保存 
+                SystemProperties.getInstance().write(propFile);
+            }
+            
+            if (SwingUtilities.isEventDispatchThread()) {
+                createMainWindow();
+            }
+            else {
+                SwingUtilities.invokeAndWait(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        createMainWindow();
+                    }
+                });
+            }
+            
+            if (firstCall == false) {
+                AbstractRenderPlugin.PluginInstance.open();
+            }
+        }
+        catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
 
     @Override
     public void initialize() {
@@ -83,47 +133,12 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
                 fullPath = folder.resolve(layoutFilename);
                 LayoutManager.getInstance().read(new File(fullPath.toString()));
             }
-            
-            if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                RendererConfigDialog cfgDlg = new RendererConfigDialog(this);
-                cfgDlg.setVisible(true);
-                
-                if (cfgDlg.isCommitClose() == false) {
-                    return;
-                }
-            }
-            
-            SystemProperties.getInstance().iniialize();
         }
         catch (IOException e1) {
             e1.printStackTrace();
         }
         
-        try {
-            // SystemPropertiesの保存 
-            SystemProperties.getInstance().write(propFile);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (SwingUtilities.isEventDispatchThread()) {
-            createMainWindow();
-        }
-        else {
-            try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        createMainWindow();
-                    }
-                });
-            }
-            catch (InvocationTargetException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        launch(true);
     }
 
     private void createExtensions() {
@@ -154,7 +169,12 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public boolean isOpen() {
-        return MainWindow.isVisible();
+        if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+            return exitFlag == false;
+        }
+        else {
+            return MainWindow.isVisible();
+        }
     }
 
     @Override
