@@ -1,0 +1,17 @@
+notes.border.colorRGB=2.0
+notes.colorNum=8
+notes.color1=228B22
+notes.color2=808000
+notes.color3=C3B091
+notes.color4=008B8B
+notes.color5=00A86B
+notes.color6=00BF63
+notes.color7=50C878
+notes.color8=D0F0C0
+player.bgcolor=000000
+cursor.color=00ee00
+cursor.effect.color=ffffff
+cursor.effect.visible=true
+player.hborder.visible=false
+player.vborder.visible=false
+notes.design=frame

@@ -1,0 +1,4 @@
+player.bgcolor=eeeeee
+player.bdcolor=cccccc
+cursor.effect.visible=false
+notes.border.colorRGB=0.5
