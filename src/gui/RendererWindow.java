@@ -96,6 +96,17 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public int getOrgHeight() {
         return SystemProperties.getInstance().getDimHeight();
     }
+    
+    private void windowCloseFunc() {
+        setVisible(false);
+        AbstractRenderPlugin.PluginInstance.winArray.remove(this);
+        
+        if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+            JMPCoreAccessor.getSoundManager().stop();
+            
+            AbstractRenderPlugin.PluginInstance.launch();
+        }
+    }
 
     /**
      * Create the frame.
@@ -106,12 +117,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                setVisible(false);
-                if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                    JMPCoreAccessor.getSoundManager().stop();
-                    
-                    AbstractRenderPlugin.PluginInstance.launch(false);
-                }
+                windowCloseFunc();
             }
         });
         
@@ -288,17 +294,19 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
         }
         else {
-            running = false;
-            try {
-                if (renderThread != null) {
-                    renderThread.join();
+            if (running == true) {
+                running = false;
+                try {
+                    if (renderThread != null) {
+                        renderThread.join();
+                    }
                 }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+    
+                imageWorkerMgr.stop();
             }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            imageWorkerMgr.stop();
         }
     }
 
@@ -356,7 +364,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     public void init() {
-        imageWorkerMgr = new ImagerWorkerManager(getOrgWidth(), getOrgHeight());
+        imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight());
     }
 
     public void loadFile() {

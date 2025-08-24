@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -23,32 +26,35 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     public static String Extensions = "";
     public static AbstractRenderPlugin PluginInstance = null;
-    public static RendererWindow MainWindow = null;
-    public static RendererConfigDialog LaunchWindow = null;
     
     private static final String PROP_FILE_NAME = "renderer.properties";
     
     private boolean exitFlag = false;
+    public List<RendererWindow> winArray = null;
+    private RendererConfigDialog launchWindow = null;
+    
     public void exitStdPlg() {
         exitFlag = true;
     }
 
     public AbstractRenderPlugin() {
         PluginInstance = this;
+        winArray = Collections.synchronizedList(new ArrayList<>());
     }
 
-    protected void createMainWindow() {
+    protected RendererWindow createMainWindow() {
+        RendererWindow win = null;
         if (SyspViewMode.RAIN_FALL == SystemProperties.getInstance().getViewMode()) {
-            MainWindow = new RainFallRendererWindow(
+            win = new RainFallRendererWindow(
                     SystemProperties.getInstance().getWindowWidth(), 
                     SystemProperties.getInstance().getWindowHeight());
         }
         else if (SyspViewMode.SIDE_FLOW == SystemProperties.getInstance().getViewMode()) {
-            MainWindow = new SideFlowRendererWindow(
+            win = new SideFlowRendererWindow(
                     SystemProperties.getInstance().getWindowWidth(), 
                     SystemProperties.getInstance().getWindowHeight());
         }
-        MainWindow.init();
+        return win;
     }
     
     public String getAppName() {
@@ -67,16 +73,16 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         return "";
     }
     
-    public void launch(boolean firstCall) {
+    public void launch() {
         try {
             Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
             Path fullPath = folder.resolve(PROP_FILE_NAME);
             File propFile = new File(fullPath.toString());
             
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                LaunchWindow = new RendererConfigDialog(this);
-                LaunchWindow.setVisible(true);
-                if (LaunchWindow.isCommitClose() == false) {
+                launchWindow = new RendererConfigDialog(this);
+                launchWindow.setVisible(true);
+                if (launchWindow.isCommitClose() == false) {
                     return;
                 }
             }
@@ -89,20 +95,24 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             }
             
             if (SwingUtilities.isEventDispatchThread()) {
-                createMainWindow();
+                RendererWindow win = createMainWindow();
+                win.init();
+                win.setVisible(true);
+                win.adjustTickBar();
+                winArray.add(win);
             }
             else {
                 SwingUtilities.invokeAndWait(new Runnable() {
 
                     @Override
                     public void run() {
-                        createMainWindow();
+                        RendererWindow win = createMainWindow();
+                        win.init();
+                        win.setVisible(true);
+                        win.adjustTickBar();
+                        winArray.add(win);
                     }
                 });
-            }
-            
-            if (firstCall == false) {
-                AbstractRenderPlugin.PluginInstance.open();
             }
         }
         catch (Exception e1) {
@@ -138,7 +148,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             e1.printStackTrace();
         }
         
-        launch(true);
+        launch();
     }
 
     private void createExtensions() {
@@ -154,17 +164,26 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public void exit() {
+        for (RendererWindow win : winArray) {
+            win.setVisible(false);
+        }
+        winArray.clear();
+        exitFlag = true;
     }
 
     @Override
     public void open() {
-        MainWindow.setVisible(true);
-        MainWindow.adjustTickBar();
+        for (RendererWindow win : winArray) {
+            win.setVisible(true);
+            win.adjustTickBar();
+        }
     }
 
     @Override
     public void close() {
-        MainWindow.setVisible(false);
+        for (RendererWindow win : winArray) {
+            win.setVisible(false);
+        }
     }
 
     @Override
@@ -173,7 +192,15 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             return exitFlag == false;
         }
         else {
-            return MainWindow.isVisible();
+            boolean isOpen = false;
+            for (RendererWindow win : winArray) {
+                if (win.isVisible()) {
+                    isOpen = true;
+                    break;
+                }
+            }
+            
+            return isOpen;
         }
     }
 
@@ -201,12 +228,13 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     @Override
     public void loadFile(File file) {
         super.loadFile(file);
-        MainWindow.loadFile();
+        for (RendererWindow win : winArray) {
+            win.loadFile();
+        }
     }
 
     @Override
     public void startSequencer() {
-        // MainWindow.adjustTickBar();
     }
 
     @Override
@@ -216,7 +244,9 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     @Override
     public void updateTickPosition(long before, long after) {
         if (before != after) {
-            MainWindow.adjustTickBar();
+            for (RendererWindow win : winArray) {
+                win.adjustTickBar();
+            }
         }
     }
 
@@ -227,7 +257,9 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public void updateSequencer() {
-        MainWindow.adjustTickBar();
+        for (RendererWindow win : winArray) {
+            win.adjustTickBar();
+        }
     }
 
 }

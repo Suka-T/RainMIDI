@@ -40,6 +40,5 @@ public class RainMIDI extends AbstractRenderPlugin {
     @Override
     public void initialize() {
         super.initialize();
-        AbstractRenderPlugin.MainWindow.setTitle(APP_NAME);
     }
 }

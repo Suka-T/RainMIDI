@@ -17,7 +17,6 @@ import jlib.midi.MidiByte;
 import layout.LayoutConfig;
 import layout.LayoutManager;
 import layout.parts.NotesPainter;
-import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspLayerOrder;
 
@@ -44,13 +43,13 @@ public class NotesImageWorker extends ImageWorker {
 
     private BasicStroke normalStroke = new BasicStroke(1.0f);
     private BasicStroke bdStroke = new BasicStroke(2.0f);
-    private BasicStroke pbStroke = new BasicStroke(2.0f);
+//    private BasicStroke pbStroke = new BasicStroke(2.0f);
     private NoteOnCache[][] noteOnEvents = null;
     private List<Integer> pbBufferX = null;
     private List<Integer> pbBufferY = null;
 
-    public NotesImageWorker(int width, int height) {
-        super(width, height);
+    public NotesImageWorker(RendererWindow window, int width, int height) {
+        super(window, width, height);
 
         noteOnEvents = new NoteOnCache[16][];
         for (int i = 0; i < 16; i++) {
@@ -100,30 +99,28 @@ public class NotesImageWorker extends ImageWorker {
 
     protected void paintBorder(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        RendererWindow mainWindow = AbstractRenderPlugin.MainWindow;
         g.setColor(LayoutManager.getInstance().getBorderColor());
         g2d.setStroke(bdStroke);
-        int x = mainWindow.getZeroPosition();
-        int y = mainWindow.getMeasCellHeight() * 3;
+        int x = window.getZeroPosition();
+        int y = window.getMeasCellHeight() * 3;
         if (LayoutManager.getInstance().isVisibleHorizonBorder() == true) {
             y = getImageHeight();
             while (y >= 0) {
                 g.drawLine(x, y, x + getImageWidth(), y);
-                y -= mainWindow.getMeasCellHeight() * 12;
+                y -= window.getMeasCellHeight() * 12;
             }
         }
-        x = mainWindow.getZeroPosition();
+        x = window.getZeroPosition();
         y = 0;
         if (LayoutManager.getInstance().isVisibleVerticalBorder() == true) {
             while (x <= getImageWidth()) {
                 g.drawLine(x, y, x, y + getImageHeight());
-                x += (mainWindow.getMeasCellWidth() * 4);
+                x += (window.getMeasCellWidth() * 4);
             }
         }
         g2d.setStroke(normalStroke);
     }
 
-    private RendererWindow mainWindow = AbstractRenderPlugin.MainWindow;
     private int imgWidth = 0;
     private long vpStartTick = 0;
     private long vpEndTick = 0;
@@ -151,11 +148,11 @@ public class NotesImageWorker extends ImageWorker {
         imgWidth = getImageWidth();
 
         // 上部位置の調整
-        topOffset = (mainWindow.getMeasCellHeight() * (127 - mainWindow.getTopMidiNumber()));
+        topOffset = (window.getMeasCellHeight() * (127 - window.getTopMidiNumber()));
         offsetCoordX = LayoutManager.getInstance().getTickBarPosition();
-        int offsetCoordXtoMeas = offsetCoordX / mainWindow.getMeasCellWidth();
+        int offsetCoordXtoMeas = offsetCoordX / window.getMeasCellWidth();
         int offsetCoordXtoTick = offsetCoordXtoMeas * midiUnit.getResolution();
-        int totalMeasCount = (int) ((double) mainWindow.getDispMeasCount() * 1.0);
+        int totalMeasCount = (int) ((double) window.getDispMeasCount() * 1.0);
 
         long absLeftMeas = -(leftMeas);
         long vpLenTick = (totalMeasCount * midiUnit.getResolution());
@@ -270,18 +267,18 @@ public class NotesImageWorker extends ImageWorker {
 
         // if ((startEvent != -1) && ((endEvent <= startEvent) || (vpStartTick >
         // endEvent))) {
-        if ((startEvent == -1) || ((endEvent <= startEvent) || (vpStartTick > endEvent)) || (AbstractRenderPlugin.MainWindow.isVisible() == false)) {
+        if ((startEvent == -1) || ((endEvent <= startEvent) || (vpStartTick > endEvent)) || (window.isVisible() == false)) {
             // 無効データは何もしない
         }
         else {
             // 描画開始
             int startMeas = (int) ((double) startEvent / (double) midiUnit.getResolution()) + leftMeas;
             int startOffset = (int) ((double) startEvent % (double) midiUnit.getResolution());
-            nContext.x = (int) (mainWindow.getMeasCellWidth() * (startMeas + (double) startOffset / midiUnit.getResolution())) + offsetCoordX;
-            nContext.y = ((127 - data1) * mainWindow.getMeasCellHeight()) + topOffset;
+            nContext.x = (int) (window.getMeasCellWidth() * (startMeas + (double) startOffset / midiUnit.getResolution())) + offsetCoordX;
+            nContext.y = ((127 - data1) * window.getMeasCellHeight()) + topOffset;
 
-            nContext.w = (int) (mainWindow.getMeasCellWidth() * (double) (endEvent - startEvent) / midiUnit.getResolution());
-            nContext.h = mainWindow.getMeasCellHeight();
+            nContext.w = (int) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / midiUnit.getResolution());
+            nContext.h = window.getMeasCellHeight();
 
             if (nContext.w < 2) {
                 nContext.w = 2;

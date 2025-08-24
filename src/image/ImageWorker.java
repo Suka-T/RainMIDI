@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import gui.RendererWindow;
 import layout.LayoutManager;
-import plg.AbstractRenderPlugin;
 
 public class ImageWorker implements Runnable {
     private int leftMeasTh = 0;
@@ -18,10 +18,11 @@ public class ImageWorker implements Runnable {
     private int width = 0;
     private int height = 0;
     private ExecutorService service = null;
+    protected RendererWindow window = null;
 
-    public ImageWorker(int width, int height) {
+    public ImageWorker(RendererWindow window, int width, int height) {
         super();
-
+        this.window = window;
         this.width = width;
         this.height = height;
     }
@@ -77,7 +78,7 @@ public class ImageWorker implements Runnable {
 
     @Override
     public void run() {
-        if (AbstractRenderPlugin.MainWindow.isVisible() == false) {
+        if (window.isVisible() == false) {
             if (offScreenImage != null) {
                 // イメージオブジェクトのメモリを解放
                 disposeImage();

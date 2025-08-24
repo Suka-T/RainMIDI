@@ -2,6 +2,7 @@ package image;
 
 import java.awt.Image;
 
+import gui.RendererWindow;
 import plg.SystemProperties;
 
 public class ImagerWorkerManager {
@@ -9,10 +10,10 @@ public class ImagerWorkerManager {
     private volatile ImageWorker[] workers = null;
     private int currentWorkerIndex = 0;
 
-    public ImagerWorkerManager(int width, int height) {
+    public ImagerWorkerManager(RendererWindow window, int width, int height) {
         workers = new NotesImageWorker[SystemProperties.getInstance().getWorkerNum()];
         for (int i = 0; i < workers.length; i++) {
-            workers[i] = new NotesImageWorker(width, height);
+            workers[i] = new NotesImageWorker(window, width, height);
         }
     }
 
