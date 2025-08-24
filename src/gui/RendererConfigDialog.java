@@ -39,6 +39,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -119,6 +120,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JRadioButton rdbtnPerfLowButton;
     private JRadioButton rdbtnPerfMidButton;
     private JRadioButton rdbtnPerfHighButton;
+    private JEditorPane editorPane;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -478,38 +480,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             tabbedPane.addTab("About", null, aboutPanel, null);
             aboutPanel.setLayout(new BorderLayout(0, 0));
 
-            JEditorPane editorPane = new JEditorPane();
+            editorPane = new JEditorPane();
+            editorPane.setBackground(UIManager.getColor("TabbedPane.background"));
             editorPane.setContentType("text/html");
             editorPane.setEditable(false);
             aboutPanel.add(editorPane, BorderLayout.CENTER);
-
-            // HTMLコンテンツの作成
-            String appName = plg.getAppName();
-            String appVersion = plg.getAppVersion();
-            String currentYear = plg.getAppYear();
-            String company = plg.getAppCompany();
-
-            // MITライセンスの全文
-            String licenseText = "MIT License" + "<br><br>" + "Permission is hereby granted, free of charge, to any person obtaining a copy "
-                    + "of this software and associated documentation files (the \"Software\"), to deal "
-                    + "in the Software without restriction, including without limitation the rights "
-                    + "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
-                    + "copies of the Software, and to permit persons to whom the Software is "
-                    + "furnished to do so, subject to the following conditions:<br><br>"
-                    + "The above copyright notice and this permission notice shall be included in all "
-                    + "copies or substantial portions of the Software.<br><br>"
-                    + "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR "
-                    + "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, "
-                    + "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE "
-                    + "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
-                    + "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, "
-                    + "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " + "SOFTWARE.";
-
-            String htmlContent = "<html><body style='font-family: Arial, sans-serif; text-align: center; margin: 10px;'>" + "<h1>" + appName + "</h1>"
-                    + "<p>Version " + appVersion + "</p>" + "<hr style='width: 50%; margin: 5px auto;'>" + "<p>&copy; " + currentYear + " " + company
-                    + ". All Rights Reserved.</p>" + "<p style='font-size: 0.8em; color: gray; text-align: left;'>" + licenseText + "</p>" + "</body></html>";
-
-            editorPane.setText(htmlContent);
         }
         {
             JPanel buttonPane = new JPanel();
@@ -530,6 +505,42 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         }
 
         initialized.set(true);
+    }
+    
+    public void updateAbout() {
+        // HTMLコンテンツの作成
+        String appName = "AppName";
+        String appVersion = "XX.XX";
+        String currentYear = "2025";
+        String company = "Company";
+        if (this.targetPlg != null) {
+            appName = this.targetPlg.getAppName();
+            appVersion = this.targetPlg.getAppVersion();
+            currentYear = this.targetPlg.getAppYear();
+            company = this.targetPlg.getAppCompany();
+
+            // MITライセンスの全文
+            String licenseText = "MIT License" + "<br><br>" + "Permission is hereby granted, free of charge, to any person obtaining a copy "
+                    + "of this software and associated documentation files (the \"Software\"), to deal "
+                    + "in the Software without restriction, including without limitation the rights "
+                    + "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
+                    + "copies of the Software, and to permit persons to whom the Software is "
+                    + "furnished to do so, subject to the following conditions:<br><br>"
+                    + "The above copyright notice and this permission notice shall be included in all "
+                    + "copies or substantial portions of the Software.<br><br>"
+                    + "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR "
+                    + "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, "
+                    + "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE "
+                    + "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
+                    + "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, "
+                    + "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " + "SOFTWARE.";
+    
+            String htmlContent = "<html><body style='font-family: Arial, sans-serif; text-align: center; margin: 10px;'>" + "<h1>" + appName + "</h1>"
+                    + "<p>Version " + appVersion + "</p>" + "<hr style='width: 50%; margin: 5px auto;'>" + "<p>&copy; " + currentYear + " " + company
+                    + ". All Rights Reserved.</p>" + "<p style='font-size: 0.8em; color: gray; text-align: left;'>" + licenseText + "</p>" + "</body></html>";
+            
+            editorPane.setText(htmlContent);
+        }
     }
 
     private void updateNotesSpeed(boolean isAuto, int value) {
@@ -767,6 +778,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             isCommitClose = false;
             updateItem();
             updateSynthItem();
+            updateAbout();
         }
         super.setVisible(b);
     }
