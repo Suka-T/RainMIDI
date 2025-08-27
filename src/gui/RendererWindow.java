@@ -88,6 +88,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected KeyInfo[] aKokken = null;
 
     protected boolean isFirstRendering = false;
+    
+    protected UmbrellaUI umbrellaUI = null;
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -137,6 +139,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         canvas.addMouseListener(this);
+        canvas.addMouseMotionListener(this);
         canvas.addMouseWheelListener(this);
         this.addComponentListener(new ComponentListener() {
 
@@ -164,6 +167,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         delayNano = 1_000_000_000 / SystemProperties.getInstance().getFixedFps();
 
         makeKeyboardRsrc();
+        
+        umbrellaUI = new UmbrellaUI();
     }
 
     public void formatWithCommas(long number, StringBuilder out) {
@@ -355,6 +360,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
         try {
             paintDisplay(g);
+            
+            umbrellaUI.paint(g);
         }
         finally {
             // Graphics オブジェクトの解放
@@ -1022,39 +1029,27 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        umbrellaUI.mouseClicked(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        umbrellaUI.mousePressed(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            if (JMPCoreAccessor.getSoundManager().isPlay() == true) {
-                JMPCoreAccessor.getSoundManager().stop();
-            }
-            else {
-                if (JMPCoreAccessor.getSoundManager().getMidiUnit().isRenderingOnlyMode() == true) {
-                    JMPCoreAccessor.getSoundManager().initPosition();
-                }
-                JMPCoreAccessor.getSoundManager().play();
-            }
-        }
-        else if (e.getButton() == MouseEvent.BUTTON3) {
-            if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                // コントロール画面表示
-                JMPCoreAccessor.getWindowManager().getMainWindow().showWindow();
-            }
-        }
+        umbrellaUI.mouseReleased(e);
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        umbrellaUI.mouseEntered(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        umbrellaUI.mouseExited(e);
     }
 
     public int getTopMidiNumber() {
@@ -1067,31 +1062,16 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        umbrellaUI.mouseDragged(e);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        umbrellaUI.mouseMoved(e);
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        /*
-         * int amount; if (e.isAltDown()) { amount = 1; // スクロール方向 amount *=
-         * (e.getWheelRotation() < 0) ? 1 : -1;
-         * 
-         * int before = getLeftMeas(); setLeftMeas(before + amount); } else if
-         * (e.isControlDown()) { amount = 1; // スクロール方向 amount *=
-         * (e.getWheelRotation() < 0) ? 1 : -1;
-         * 
-         * int before = measCellWidth; before += amount; if (before >= 300) {
-         * before = 300; } else if (before < 0) { before = 0; } measCellWidth =
-         * before; } else { amount = 1; // スクロール方向 amount *=
-         * (e.getWheelRotation() < 0) ? -1 : 1;
-         * 
-         * int before = getTopMidiNumber(); setTopMidiNumber(before + amount); }
-         * 
-         * resetPage();
-         */
     }
 
     public int getLeftMeas() {
