@@ -50,10 +50,14 @@ public class PropertiesNode {
     }
 
     private static String toColorCode(String str, String def) {
+        String ret = "";
         if (str == null) {
-            return def;
+            ret = def;
         }
-        return "#" + str;
+        else {
+            ret = str;
+        }
+        return "#" + ret.replaceFirst("^#+", "");
     }
 
     public PropertiesNode(String key, PropertiesNodeType type, String defVal, String minVal, String maxVal, String[] itemName, Object[] itemObjs) {
