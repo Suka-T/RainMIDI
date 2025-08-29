@@ -91,7 +91,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     List<String> designItemKeys = new ArrayList<String>();
 
     // ユーザー非公開キー
-    private List<String> ignoreKeysSystem = Arrays.asList();
+    private List<String> ignoreKeysSystem = Arrays.asList(SystemProperties.SYSP_RENDERER_DIMENSION);
     private List<String> ignoreKeysDesign = Arrays.asList(LayoutConfig.LC_CURSOR_POS, LayoutConfig.LC_NOTES_COLOR_ASIGN, LayoutConfig.LC_PB_COLOR,
             LayoutConfig.LC_PB_VISIBLE);
 

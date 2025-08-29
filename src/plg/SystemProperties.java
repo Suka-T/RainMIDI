@@ -183,6 +183,10 @@ public class SystemProperties {
             notesWidth = 2400;
         }
 
+        // TODO Dimはバグるため720p固定とする
+        PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
+        dimNode.setObject("1280*768");
+        
         String sDimSize = (String) getData(SYSP_RENDERER_DIMENSION);
         if (sDimSize != null && sDimSize.isBlank() == false) {
             try {

@@ -137,7 +137,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "14", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "15", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "16", PropertiesNodeType.COLOR, "#ffffff"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "1.5", "0.1", "2.0"));
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "1.2", "0.1", "2.0"));
         nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Default, EKeyboardDesignS, EKeyboardDesignO));
         definication();
     }
