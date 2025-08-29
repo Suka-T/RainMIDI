@@ -3,3 +3,4 @@ info.visible=true
 notes.design=flat
 player.hborder.visible=false
 player.vborder.visible=false
+keyboard.design=simple

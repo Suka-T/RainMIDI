@@ -21,3 +21,4 @@ player.bgcolor=303030
 player.colorrule=track
 player.hborder.visible=true
 player.vborder.visible=true
+keyboard.design=simple

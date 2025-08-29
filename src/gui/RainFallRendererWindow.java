@@ -5,6 +5,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import layout.LayoutManager;
+import layout.parts.BlackKeyParts;
+import layout.parts.KeyParts;
+import layout.parts.WhiteKeyParts;
 import plg.SystemProperties;
 
 public class RainFallRendererWindow extends RendererWindow {
@@ -33,8 +36,8 @@ public class RainFallRendererWindow extends RendererWindow {
             hitEffectPosY[i] = topOffset + (keyHeight * i);
         }
 
-        aHakken = new KeyInfo[75];
-        aKokken = new KeyInfo[53];
+        aHakken = new KeyParts[75];
+        aKokken = new KeyParts[53];
 
         int kkCnt = 0;
         int hkCnt = 0;
@@ -46,18 +49,27 @@ public class RainFallRendererWindow extends RendererWindow {
             int key = midiNo % 12;
             switch (key) {
                 case 0:
-                case 5:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
                     aHakken[hkCnt].height = hakkenHeight + keyHeight / 2;
-                    aHakken[hkCnt].y -= (int) (keyHeight / 1.5);
+                    aHakken[hkCnt].y -= (int) (keyHeight / 1.5) + 1;
+                    aHakken[hkCnt].midiNo = midiNo;
+                    hkCnt++;
+                    break;
+                case 5:
+                    aHakken[hkCnt] = new WhiteKeyParts();
+                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                    aHakken[hkCnt].y = hitEffectPosY[i];
+                    aHakken[hkCnt].width = hkWidth;
+                    aHakken[hkCnt].height = hakkenHeight + keyHeight / 2;
+                    aHakken[hkCnt].y -= (int) (keyHeight / 1.5) + 1;
                     aHakken[hkCnt].midiNo = midiNo;
                     hkCnt++;
                     break;
                 case 7:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
@@ -67,7 +79,7 @@ public class RainFallRendererWindow extends RendererWindow {
                     hkCnt++;
                     break;
                 case 9:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
@@ -77,26 +89,26 @@ public class RainFallRendererWindow extends RendererWindow {
                     hkCnt++;
                     break;
                 case 2:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = hakkenHeight + keyHeight / 2;
-                    aHakken[hkCnt].y -= (keyHeight / 2.5);
+                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
+                    aHakken[hkCnt].y -= (keyHeight / 2.5) - 0;
                     aHakken[hkCnt].midiNo = midiNo;
                     hkCnt++;
                     break;
                 case 4:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = hakkenHeight + keyHeight / 3;
+                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 3);
                     aHakken[hkCnt].midiNo = midiNo;
                     hkCnt++;
                     break;
                 case 11:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
@@ -109,7 +121,7 @@ public class RainFallRendererWindow extends RendererWindow {
                 case 6:
                 case 8:
                 case 10:
-                    aKokken[kkCnt] = new KeyInfo();
+                    aKokken[kkCnt] = new BlackKeyParts();
                     aKokken[kkCnt].x = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
                     aKokken[kkCnt].y = hitEffectPosY[i];
                     aKokken[kkCnt].width = kkWidth;

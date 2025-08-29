@@ -41,6 +41,11 @@ import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutConfig;
 import layout.LayoutManager;
+import layout.parts.BlackKeyParts;
+import layout.parts.KeyParts;
+import layout.parts.KeyboardPainter;
+import layout.parts.KeyboardPainter.KindOfKey;
+import layout.parts.WhiteKeyParts;
 import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspLayerOrder;
@@ -76,20 +81,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private volatile boolean running = false;
     protected Thread renderThread;
 
-    public class KeyInfo {
-        int x = 0;
-        int y = 0;
-        int width = 0;
-        int height = 0;
-        int midiNo = 0;
-    }
-
-    protected KeyInfo[] aHakken = null;
-    protected KeyInfo[] aKokken = null;
+    protected KeyParts[] aHakken = null;
+    protected KeyParts[] aKokken = null;
 
     protected boolean isFirstRendering = false;
     
     protected UmbrellaUI umbrellaUI = null;
+    
+    protected KeyboardPainter keyboardPainter = null;
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -169,6 +168,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         makeKeyboardRsrc();
         
         umbrellaUI = new UmbrellaUI();
+        keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
     }
 
     public void formatWithCommas(long number, StringBuilder out) {
@@ -214,8 +214,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             hitEffectPosY[i] = topOffset + (keyHeight * i);
         }
 
-        aHakken = new KeyInfo[75];
-        aKokken = new KeyInfo[53];
+        aHakken = new KeyParts[75];
+        aKokken = new KeyParts[53];
 
         int kkCnt = 0;
         int hkCnt = 0;
@@ -228,7 +228,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             switch (key) {
                 case 0:
                 case 5:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
@@ -240,7 +240,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 case 7:
                 case 9:
                 case 2:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
@@ -251,7 +251,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     break;
                 case 4:
                 case 11:
-                    aHakken[hkCnt] = new KeyInfo();
+                    aHakken[hkCnt] = new WhiteKeyParts();
                     aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
@@ -264,7 +264,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 case 6:
                 case 8:
                 case 10:
-                    aKokken[kkCnt] = new KeyInfo();
+                    aKokken[kkCnt] = new BlackKeyParts();
                     aKokken[kkCnt].x = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
                     aKokken[kkCnt].y = hitEffectPosY[i];
                     aKokken[kkCnt].width = kkWidth;
@@ -878,27 +878,26 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
             /* Keyboard */
             Color keyBgColor;
+            boolean isPush = false;
             for (int i = 0; i < aHakken.length; i++) {
                 rgb = getKeyColor(aHakken[i].midiNo);
+                isPush = true;
                 if (rgb == -1) {
                     rgb = Color.WHITE.getRGB();
+                    isPush = false;
                 }
                 keyBgColor = new Color(rgb);
-
-                g.setColor(keyBgColor);
-                g.fill3DRect(aHakken[i].x, aHakken[i].y, aHakken[i].width, aHakken[i].height, true);
-                g.setColor(Color.LIGHT_GRAY);
-                g.drawRect(aHakken[i].x, aHakken[i].y, aHakken[i].width, aHakken[i].height);
+                keyboardPainter.paintKeyparts(g2d, aHakken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.WHITE);
             }
             for (int i = 0; i < aKokken.length; i++) {
                 rgb = getKeyColor(aKokken[i].midiNo);
+                isPush = true;
                 if (rgb == -1) {
                     rgb = Color.BLACK.getRGB();
+                    isPush = false;
                 }
                 keyBgColor = new Color(rgb);
-
-                g.setColor(keyBgColor);
-                g.fill3DRect(aKokken[i].x, aKokken[i].y, aKokken[i].width, aKokken[i].height, true);
+                keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
             }
         }
 

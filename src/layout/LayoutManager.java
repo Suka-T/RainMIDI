@@ -16,25 +16,37 @@ import java.util.Map;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import layout.LayoutConfig.EColorAsign;
+import layout.LayoutConfig.EKeyboardDesign;
 import layout.LayoutConfig.ENotesDesign;
 import layout.parts.ArcNotesPainter;
+import layout.parts.DefaultKeyboardPainter;
 import layout.parts.FlatNotesPainter;
 import layout.parts.FrameNotesPainter;
+import layout.parts.KeyboardPainter;
 import layout.parts.NormalNotesPainter;
 import layout.parts.NotesPainter;
+import layout.parts.SimpleKeyboardPainter;
 import plg.PropertiesNode;
 import plg.SystemProperties;
+import plg.SystemProperties.SyspViewMode;
 import plg.Utility;
 
 public class LayoutManager {
     public static final int DEFAULT_TICK_MEAS = 1;
     
-    private static Map<LayoutConfig.ENotesDesign, NotesPainter> painters = new HashMap<LayoutConfig.ENotesDesign, NotesPainter>() {
+    private static Map<LayoutConfig.ENotesDesign, NotesPainter> notesPainters = new HashMap<LayoutConfig.ENotesDesign, NotesPainter>() {
         {
             put(ENotesDesign.Normal, new NormalNotesPainter());
             put(ENotesDesign.Flat, new FlatNotesPainter());
             put(ENotesDesign.Arc, new ArcNotesPainter());
             put(ENotesDesign.Frame, new FrameNotesPainter());
+        }
+    };
+    
+    private static Map<LayoutConfig.EKeyboardDesign, KeyboardPainter> kbPainters = new HashMap<LayoutConfig.EKeyboardDesign, KeyboardPainter>() {
+        {
+            put(EKeyboardDesign.Default, new DefaultKeyboardPainter());
+            put(EKeyboardDesign.Simple, new SimpleKeyboardPainter());
         }
     };
 
@@ -200,13 +212,22 @@ public class LayoutManager {
     public NotesPainter getNotesPainter() {
         LayoutConfig.ENotesDesign notesDesign = (LayoutConfig.ENotesDesign) layout.getData(LayoutConfig.LC_NOTES_DESIGN);
         if (JMPCoreAccessor.getSoundManager().getMidiUnit().isRenderingOnlyMode() == true) {
-            return painters.get(LayoutConfig.ENotesDesign.Normal);
+            return notesPainters.get(LayoutConfig.ENotesDesign.Normal);
         }
-        return painters.get(notesDesign);
+        return notesPainters.get(notesDesign);
     }
 
     public Color getBgColorReverse() {
         return bgColorReverse;
+    }
+    
+    public KeyboardPainter getKeyboardPainter(SystemProperties.SyspViewMode mode) {
+        LayoutConfig.EKeyboardDesign kbDesign = (LayoutConfig.EKeyboardDesign) layout.getData(LayoutConfig.LC_KEYBOARD_DESIGN);
+        if (mode == SyspViewMode.SIDE_FLOW) {
+            // SideFlowはSimpleのみ対応 
+            return kbPainters.get(LayoutConfig.EKeyboardDesign.Simple);
+        }
+        return kbPainters.get(kbDesign);
     }
 
 }

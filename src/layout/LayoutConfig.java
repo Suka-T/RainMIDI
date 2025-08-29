@@ -33,6 +33,7 @@ public class LayoutConfig {
     public static final String LC_NOTES_COLOR_NUM = "notes.colorNum";
     public static final String LC_NOTES_COLOR = "notes.color";
     public static final String LC_NOTES_COLOR_BORDER_RGB = "notes.border.colorRGB";
+    public static final String LC_KEYBOARD_DESIGN = "keyboard.design";
     
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
@@ -64,6 +65,7 @@ public class LayoutConfig {
             put(LC_NOTES_COLOR + "15", "Track15 notes color");
             put(LC_NOTES_COLOR + "16", "Track16 notes color");
             put(LC_NOTES_COLOR_BORDER_RGB, "Notes border color hilight");
+            put(LC_KEYBOARD_DESIGN, "Keyboard design");
         }
     };
 
@@ -93,6 +95,12 @@ public class LayoutConfig {
 
     private static Object[] CursorPosO = { -1 };
     private static String[] CursorPosS = { "top" };
+    
+    public static enum EKeyboardDesign {
+        Default, Simple;
+    }
+    private static Object[] EKeyboardDesignO = { EKeyboardDesign.Default, EKeyboardDesign.Simple };
+    private static String[] EKeyboardDesignS = { "default", "simple" };
 
     private List<PropertiesNode> nodes;
 
@@ -130,6 +138,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "15", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "16", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "1.5", "0.1", "2.0"));
+        nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Default, EKeyboardDesignS, EKeyboardDesignO));
         definication();
     }
     
