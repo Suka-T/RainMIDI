@@ -83,7 +83,13 @@ public class NotesImageWorker extends ImageWorker {
 
     @Override
     public int getImageWidth() {
-        return (getWidth() * SystemProperties.getInstance().getNotesImageCount()) + (getWidth() / 2);
+        double notesWidthDiff = (double)SystemProperties.getInstance().getNotesWidth() / (double)SystemProperties.CNT_NOTES_WIDTH;
+        if (notesWidthDiff < 0) {
+            notesWidthDiff = 1.0;
+        }
+        int width = getWidth() * SystemProperties.getInstance().getNotesImageCount();
+        int offset = (int)((double)getWidth() / 2.0 * notesWidthDiff);
+        return width + offset;
     }
 
     @Override

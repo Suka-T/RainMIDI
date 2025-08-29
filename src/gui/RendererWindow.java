@@ -966,11 +966,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (SystemProperties.getInstance().isNotesWidthAuto() == true) {
             double fbpm = midiUnit.getFirstTempoInBPM();
             int newCellWidth = (int) (480.0 * (120.0 / fbpm) * SystemProperties.getInstance().getDimOffset());
-            if (newCellWidth < 160) {
-                newCellWidth = 160;
+            if (newCellWidth < SystemProperties.MIN_NOTES_WIDTH) {
+                newCellWidth = SystemProperties.MIN_NOTES_WIDTH;
             }
-            else if (newCellWidth > 2400) {
-                newCellWidth = 2400;
+            else if (newCellWidth > SystemProperties.MAX_NOTES_WIDTH) {
+                newCellWidth = SystemProperties.MAX_NOTES_WIDTH;
             }
             setMeasCellWidth(newCellWidth);
         }

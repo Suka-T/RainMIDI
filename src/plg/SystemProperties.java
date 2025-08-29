@@ -47,8 +47,12 @@ public class SystemProperties {
         }
     };
 
-    private static int DEFAULT_DIM_W = 1280;
-    private static int DEFAULT_DIM_H = 768;
+    public static int MAX_NOTES_WIDTH = 2400;
+    public static int MIN_NOTES_WIDTH = 160;
+    public static int CNT_NOTES_WIDTH = (MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
+    
+    public static int DEFAULT_DIM_W = 1280;
+    public static int DEFAULT_DIM_H = 768;
 
     public static enum SyspViewMode {
         RAIN_FALL, SIDE_FLOW;
@@ -175,12 +179,12 @@ public class SystemProperties {
             notesSpeed = 50;
         }
         notesWidthAuto = notesSpeedIsAuto;
-        notesWidth = 160 + (int) ((double) (2400 - 160) * ((double) notesSpeed / 100.0));
-        if (notesWidth < 160) {
-            notesWidth = 160;
+        notesWidth = MIN_NOTES_WIDTH + (int) ((double) (MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) * ((double) notesSpeed / 100.0));
+        if (notesWidth < MIN_NOTES_WIDTH) {
+            notesWidth = MIN_NOTES_WIDTH;
         }
-        else if (2400 < notesWidth) {
-            notesWidth = 2400;
+        else if (MAX_NOTES_WIDTH < notesWidth) {
+            notesWidth = MAX_NOTES_WIDTH;
         }
 
         // TODO Dimはバグるため720p固定とする
