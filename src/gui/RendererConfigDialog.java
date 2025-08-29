@@ -481,7 +481,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             aboutPanel.setLayout(new BorderLayout(0, 0));
 
             editorPane = new JEditorPane();
-            editorPane.setBackground(UIManager.getColor("TabbedPane.background"));
+            editorPane.setBackground(UIManager.getColor("TextField.background"));
             editorPane.setContentType("text/html");
             editorPane.setEditable(false);
             aboutPanel.add(editorPane, BorderLayout.CENTER);
