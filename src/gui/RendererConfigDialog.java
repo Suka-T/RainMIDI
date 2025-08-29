@@ -70,8 +70,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private static final String WORKNUM_MID = "3";
     private static final String NOTESIMAGENUM_MID = "60";
 
-    private static final String WORKNUM_HIG = "20";
-    private static final String NOTESIMAGENUM_HIG = "100";
+    private static final String WORKNUM_HIG = "3";
+    private static final String NOTESIMAGENUM_HIG = "200";
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
