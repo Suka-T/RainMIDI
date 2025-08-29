@@ -49,7 +49,7 @@ public class SystemProperties {
 
     public static int MAX_NOTES_WIDTH = 2400;
     public static int MIN_NOTES_WIDTH = 160;
-    public static int CNT_NOTES_WIDTH = (MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
+    public static int CNT_NOTES_WIDTH = 320;//(MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
     
     public static int DEFAULT_DIM_W = 1280;
     public static int DEFAULT_DIM_H = 768;

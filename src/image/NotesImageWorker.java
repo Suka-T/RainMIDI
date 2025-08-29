@@ -223,11 +223,13 @@ public class NotesImageWorker extends ImageWorker {
                         int command = statusByte & 0xF0;
                         int channel = statusByte & 0x0F;
                         if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON) && (data2 > 0)) {
-                            noteOnEvents[channel][data1].tick = tick;
-                            noteOnEvents[channel][data1].trackIndex = trk;
-                            noteOnEvents[channel][data1].channel = channel;
-                            noteOnEvents[channel][data1].data1 = data1;
-                            noteOnEvents[channel][data1].data2 = data2;
+                            if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
+                                noteOnEvents[channel][data1].tick = tick;
+                                noteOnEvents[channel][data1].trackIndex = trk;
+                                noteOnEvents[channel][data1].channel = channel;
+                                noteOnEvents[channel][data1].data1 = data1;
+                                noteOnEvents[channel][data1].data2 = data2;
+                            }
                         }
                         else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)
                                 || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
@@ -271,53 +273,51 @@ public class NotesImageWorker extends ImageWorker {
         long startEvent = noteOnEvents[channel][data1].tick;
         noteOnEvents[channel][data1].init();
 
-        // if ((startEvent != -1) && ((endEvent <= startEvent) || (vpStartTick >
-        // endEvent))) {
-        if ((startEvent == -1) || ((endEvent <= startEvent) || (vpStartTick > endEvent)) || (window.isVisible() == false)) {
+        if ((startEvent == -1) || ((endEvent < startEvent) || (mpStartTick > endEvent)) || (window.isVisible() == false)) {
             // 無効データは何もしない
+            return;
+        }
+        
+        // 描画開始
+        int startMeas = (int) ((double) startEvent / (double) midiUnit.getResolution()) + leftMeas;
+        int startOffset = (int) ((double) startEvent % (double) midiUnit.getResolution());
+        nContext.x = (int) (window.getMeasCellWidth() * (startMeas + (double) startOffset / midiUnit.getResolution())) + offsetCoordX;
+        nContext.y = ((127 - data1) * window.getMeasCellHeight()) + topOffset;
+
+        nContext.w = (int) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / midiUnit.getResolution());
+        nContext.h = window.getMeasCellHeight();
+
+        if (nContext.w < 2) {
+            nContext.w = 2;
+        }
+
+        if (LayoutManager.getInstance().getColorRule() == LayoutConfig.EColorRule.Channel) {
+            nContext.bgColor = LayoutManager.getInstance().getNotesColor(channel);
+            nContext.bdColor = LayoutManager.getInstance().getNotesBorderColor(channel);
         }
         else {
-            // 描画開始
-            int startMeas = (int) ((double) startEvent / (double) midiUnit.getResolution()) + leftMeas;
-            int startOffset = (int) ((double) startEvent % (double) midiUnit.getResolution());
-            nContext.x = (int) (window.getMeasCellWidth() * (startMeas + (double) startOffset / midiUnit.getResolution())) + offsetCoordX;
-            nContext.y = ((127 - data1) * window.getMeasCellHeight()) + topOffset;
+            nContext.bgColor = LayoutManager.getInstance().getNotesColor(trk);
+            nContext.bdColor = LayoutManager.getInstance().getNotesBorderColor(trk);
+        }
 
-            nContext.w = (int) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / midiUnit.getResolution());
-            nContext.h = window.getMeasCellHeight();
+        int x1 = nContext.x;
+        int x2 = nContext.x + nContext.w - 1;
+        if ((x2 < 0) || (imgWidth <= x1)) {
 
+        }
+        else {
+            if (x1 < 0) {
+                x1 = 0;
+            }
+            if (x2 >= imgWidth) {
+                x2 = imgWidth - 1;
+            }
+            nContext.x = x1;
+            nContext.w = x2 - x1 + 1;
             if (nContext.w < 2) {
                 nContext.w = 2;
             }
-
-            if (LayoutManager.getInstance().getColorRule() == LayoutConfig.EColorRule.Channel) {
-                nContext.bgColor = LayoutManager.getInstance().getNotesColor(channel);
-                nContext.bdColor = LayoutManager.getInstance().getNotesBorderColor(channel);
-            }
-            else {
-                nContext.bgColor = LayoutManager.getInstance().getNotesColor(trk);
-                nContext.bdColor = LayoutManager.getInstance().getNotesBorderColor(trk);
-            }
-
-            int x1 = nContext.x;
-            int x2 = nContext.x + nContext.w - 1;
-            if ((x2 < 0) || (imgWidth <= x1)) {
-
-            }
-            else {
-                if (x1 < 0) {
-                    x1 = 0;
-                }
-                if (x2 >= imgWidth) {
-                    x2 = imgWidth - 1;
-                }
-                nContext.x = x1;
-                nContext.w = x2 - x1 + 1;
-                if (nContext.w < 2) {
-                    nContext.w = 2;
-                }
-                LayoutManager.getInstance().getNotesPainter().paintNotes(nContext);
-            }
+            LayoutManager.getInstance().getNotesPainter().paintNotes(nContext);
         }
     }
 }
