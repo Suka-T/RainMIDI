@@ -401,7 +401,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     private StringBuilder sb = new StringBuilder(64); // 初期容量を指定
     private Font info1Font = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
-    private Font info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 36);
+    private Font info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 48);
     protected volatile VolatileImage orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
 
@@ -736,8 +736,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
         }
         else if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE2) {
-            int sx = 10;
-            int sy = 40;
+            int sx = 0;
+            int sy = 50;
             Color backStrColor = LayoutManager.getInstance().getBackColor();
             Color topStrColor = LayoutManager.getInstance().getBgColorReverse();
             ;
