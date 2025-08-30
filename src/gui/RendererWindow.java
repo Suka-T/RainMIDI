@@ -101,6 +101,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private void windowCloseFunc() {
         setVisible(false);
         AbstractRenderPlugin.PluginInstance.winArray.remove(this);
+        this.dispose();
+        imageWorkerMgr.dispose();
+        System.gc();
         
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             JMPCoreAccessor.getSoundManager().stop();
@@ -740,7 +743,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int sy = 50;
             Color backStrColor = LayoutManager.getInstance().getBackColor();
             Color topStrColor = LayoutManager.getInstance().getBgColorReverse();
-            ;
+
             g.setFont(info2Font);
 
             sb.setLength(0);

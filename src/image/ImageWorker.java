@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import gui.RendererWindow;
+import jlib.core.JMPCoreAccessor;
 import layout.LayoutManager;
 
 public class ImageWorker implements Runnable {
@@ -34,7 +35,7 @@ public class ImageWorker implements Runnable {
 
     public void stop() {
         service.shutdown();
-        
+
         isExec = false;
     }
 
@@ -78,31 +79,36 @@ public class ImageWorker implements Runnable {
 
     @Override
     public void run() {
-        if (window.isVisible() == false) {
-            if (offScreenImage != null) {
-                // イメージオブジェクトのメモリを解放
-                disposeImage();
+        try {
+            if (window.isVisible() == false) {
+                if (offScreenImage != null) {
+                    // イメージオブジェクトのメモリを解放
+                    disposeImage();
+                }
+                return;
             }
-            return;
+
+            if (offScreenImage == null) {
+                // ノーツ画像
+                offScreenImage = LayoutManager.getInstance().createBufferdImage(getImageWidth(), getImageHeight());
+                offScreenGraphic = offScreenImage.createGraphics();
+            }
+
+            Graphics2D g2d = offScreenImage.createGraphics();
+            g2d.setColor(LayoutManager.getInstance().getBackColor());
+            g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
+            // g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+            // g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
+            g2d.dispose();
+
+            // オフスクリーン描画
+            paintImage(offScreenGraphic);
+
+            isExec = false;
         }
-
-        if (offScreenImage == null) {
-            // ノーツ画像
-            offScreenImage = LayoutManager.getInstance().createBufferdImage(getImageWidth(), getImageHeight());
-            offScreenGraphic = offScreenImage.createGraphics();
+        catch (Throwable e) {
+            JMPCoreAccessor.getSystemManager().errorHandle(e);
         }
-
-        Graphics2D g2d = offScreenImage.createGraphics();
-        g2d.setColor(LayoutManager.getInstance().getBackColor());
-        g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
-        // g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
-        // g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
-        g2d.dispose();
-
-        // オフスクリーン描画
-        paintImage(offScreenGraphic);
-
-        isExec = false;
     }
 
     public int getLeftMeasTh() {
@@ -119,6 +125,13 @@ public class ImageWorker implements Runnable {
 
     public void reset() {
         /* 継承先で処理を記述 */
+    }
+
+    public void dispose() {
+        stop();
+        disposeImage();
+
+        service.close();
     }
 
 }

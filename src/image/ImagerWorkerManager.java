@@ -126,4 +126,10 @@ public class ImagerWorkerManager {
         // nextNotesThread.copyTrackCacheFrom(nextCache);
         nextNotesThread.makeImage();
     }
+    
+    public void dispose() {
+        for (int i = 0; i < workers.length; i++) {
+            workers[i].dispose();
+        }
+    }
 }

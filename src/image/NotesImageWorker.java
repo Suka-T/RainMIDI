@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -250,19 +251,9 @@ public class NotesImageWorker extends ImageWorker {
                     }
                 });
             }
-            catch (Exception e) {
-                e.printStackTrace();
+            catch (IOException e) {
+                JMPCoreAccessor.getSystemManager().errorHandle(e);
             }
-
-            // for (int i = 0; i < 16; i++) {
-            // for (int j = 0; j < 128; j++) {
-            // if (noteOnEvents[i][j].tick != -1) {
-            // paintNt(nContext, noteOnEvents[i][j].trackIndex, leftMeas,
-            // mpEndTick, noteOnEvents[i][j].channel, noteOnEvents[i][j].data1,
-            // noteOnEvents[i][j].data2);
-            // }
-            // }
-            // }
         }
     }
 
