@@ -35,11 +35,11 @@ public class SystemProperties {
             put(SYSP_LAYOUT, "Preload settings file name");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
-            put(SYSP_RENDERER_WORKNUM, "Rendering thread count [3 - 20]");
+            put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
             put(SYSP_RENDERER_NOTESSPEED, "Notes Speed [1 - 100 | auto]");
-            put(SYSP_RENDERER_NOTESIMAGENUM, "Rendering notes image size [3 - 100]");
+            put(SYSP_RENDERER_NOTESIMAGENUM, "Rendering notes image size [3 - 300]");
             put(SYSP_RENDERER_DIMENSION, "Renderer dimension");
             put(SYSP_RENDERER_WINSIZE, "Window size");
             put(SYSP_RENDERER_MONITOR_TYPE, "Monitor view type");
@@ -49,7 +49,7 @@ public class SystemProperties {
 
     public static int MAX_NOTES_WIDTH = 2400;
     public static int MIN_NOTES_WIDTH = 160;
-    public static int CNT_NOTES_WIDTH = 320;//(MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
+    public static int CNT_NOTES_WIDTH = 800;//(MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
     
     public static int DEFAULT_DIM_W = 1280;
     public static int DEFAULT_DIM_H = 768;
@@ -108,11 +108,11 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_LAYOUT, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MODE, PropertiesNodeType.ITEM, SyspViewMode.RAIN_FALL, viewModeItemS, viewModeItemO));
-        nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "3", "3", "20"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "2", "2", "8"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.INT, "-1", "1", "100", NotesSpeedItemS, NotesSpeedItemO));
-        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "60", "3", "200", NotesCountItemS, NotesCountItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "120", "3", "300", NotesCountItemS, NotesCountItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MONITOR_TYPE, PropertiesNodeType.ITEM, SyspMonitorType.TYPE1, monitorTypeItemS, monitorTypeItemO));

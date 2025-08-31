@@ -85,9 +85,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected KeyParts[] aKokken = null;
 
     protected boolean isFirstRendering = false;
-    
+
     protected UmbrellaUI umbrellaUI = null;
-    
+
     protected KeyboardPainter keyboardPainter = null;
 
     public int getOrgWidth() {
@@ -97,17 +97,17 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public int getOrgHeight() {
         return SystemProperties.getInstance().getDimHeight();
     }
-    
+
     private void windowCloseFunc() {
         setVisible(false);
         AbstractRenderPlugin.PluginInstance.winArray.remove(this);
         this.dispose();
         imageWorkerMgr.dispose();
         System.gc();
-        
+
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             JMPCoreAccessor.getSoundManager().stop();
-            
+
             AbstractRenderPlugin.PluginInstance.launch();
         }
     }
@@ -124,7 +124,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 windowCloseFunc();
             }
         });
-        
+
         setLocation(10, 10);
         getContentPane().setPreferredSize(new Dimension(winW, winH));
         pack();
@@ -169,7 +169,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         delayNano = 1_000_000_000 / SystemProperties.getInstance().getFixedFps();
 
         makeKeyboardRsrc();
-        
+
         umbrellaUI = new UmbrellaUI();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
     }
@@ -312,7 +312,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-    
+
                 imageWorkerMgr.stop();
             }
         }
@@ -329,32 +329,32 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         frameCount = 0;
 
         while (running) {
-            long now = System.nanoTime();
+            try {
+                long now = System.nanoTime();
 
-            if (now >= nextFrameTime) {
-                render();
-                frameCount++;
+                if (now >= nextFrameTime) {
+                    render();
+                    frameCount++;
 
-                long elapsed = now - startTime;
-                if (elapsed >= TimeUnit.SECONDS.toNanos(1)) {
-                    fps = frameCount;
-                    frameCount = 0;
-                    startTime = now;
+                    long elapsed = now - startTime;
+                    if (elapsed >= TimeUnit.SECONDS.toNanos(1)) {
+                        fps = frameCount;
+                        frameCount = 0;
+                        startTime = now;
+                    }
+
+                    nextFrameTime += delayNano;
                 }
-
-                nextFrameTime += delayNano;
-            }
-            else {
-                // 次のフレームまで余裕があれば軽く寝る
-                long sleepTimeMillis = (nextFrameTime - now) / 1_000_000;
-                if (sleepTimeMillis > 0) {
-                    try {
+                else {
+                    // 次のフレームまで余裕があれば軽く寝る
+                    long sleepTimeMillis = (nextFrameTime - now) / 1_000_000;
+                    if (sleepTimeMillis > 0) {
                         Thread.sleep(sleepTimeMillis);
                     }
-                    catch (InterruptedException e) {
-                        break;
-                    }
                 }
+            }
+            catch (Throwable e) {
+                JMPCoreAccessor.getSystemManager().errorHandle(e);
             }
         }
     }
@@ -363,7 +363,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
         try {
             paintDisplay(g);
-            
+
             umbrellaUI.paint(g);
         }
         finally {
@@ -977,7 +977,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
             setMeasCellWidth(newCellWidth);
         }
-        
+
         calcDispMeasCount();
 
         int startMeas = (int) midiUnit.getTickPosition() / midiUnit.getResolution();

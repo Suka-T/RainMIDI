@@ -48,7 +48,6 @@ public class ImagerWorkerManager {
     public void firstRender(int leftMeas, int dispMeas, int flipCount) {
         reset(leftMeas, dispMeas, flipCount);
         
-        // 最初のワーカーのレンダリングが終わるまで待つ
         try {
             // 全てのワーカーのレンダリングが終わるまで待つ
             int workerCnt;
@@ -63,42 +62,8 @@ public class ImagerWorkerManager {
         catch (Exception e) {
             e.printStackTrace();
         }
-        
-//        if (workers.length < 10) {
-//            reset(leftMeas, dispMeas, flipCount);
-//            return;
-//        }
-//        
-//        int i = 0;
-//        int offsetLeftMeas = Math.abs(leftMeas);
-//        int flipMergin = -(flipCount);
-//        int flipLine = offsetLeftMeas + ((dispMeas + flipMergin) * i);
-//        workers[i].reset();
-//        workers[i].setLeftMeasTh(-(flipLine));
-//        workers[i].disposeImage();
-//        workers[i].makeImage();
-//        try {
-//            // 最初のワーカーのレンダリングが終わるまで待つ
-//            while (workers[i].isExec()) {
-//                Thread.sleep(50);
-//            }
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        
-//        if (workers.length >= 2) {
-//            for (i = 1; i < workers.length; i++) {
-//                flipLine = offsetLeftMeas + ((dispMeas + flipMergin) * i);
-//                workers[i].reset();
-//                workers[i].setLeftMeasTh(-(flipLine));
-//                workers[i].disposeImage();
-//                workers[i].makeImage();
-//            }
-//        }
-//        currentWorkerIndex = 0;
     }
-
+    
     public void reset(int leftMeas, int dispMeas, int flipCount) {
         int offsetLeftMeas = Math.abs(leftMeas);
         int flipMergin = -(flipCount);
@@ -108,6 +73,17 @@ public class ImagerWorkerManager {
             workers[i].setLeftMeasTh(-(flipLine));
             workers[i].disposeImage();
             workers[i].makeImage();
+            
+            if (3 < workers.length) {
+                while (workers[i].isExec()) {
+                    try {
+                        Thread.sleep(10);
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
         currentWorkerIndex = 0;
     }
