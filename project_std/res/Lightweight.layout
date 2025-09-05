@@ -1,6 +1,9 @@
+cursor.color=#ffffff
 cursor.effect.visible=false
 info.visible=true
 notes.design=flat
 player.hborder.visible=false
 player.vborder.visible=false
-keyboard.design=simple
+notes.effect.in.visible=false
+notes.effect.out.visible=false
+cursor.type=line

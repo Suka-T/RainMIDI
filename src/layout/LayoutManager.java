@@ -23,6 +23,7 @@ import layout.parts.DefaultKeyboardPainter;
 import layout.parts.FlatNotesPainter;
 import layout.parts.FrameNotesPainter;
 import layout.parts.KeyboardPainter;
+import layout.parts.Normal3dNotesPainter;
 import layout.parts.NormalNotesPainter;
 import layout.parts.NotesPainter;
 import layout.parts.SimpleKeyboardPainter;
@@ -33,16 +34,17 @@ import plg.Utility;
 
 public class LayoutManager {
     public static final int DEFAULT_TICK_MEAS = 1;
-    
+
     private static Map<LayoutConfig.ENotesDesign, NotesPainter> notesPainters = new HashMap<LayoutConfig.ENotesDesign, NotesPainter>() {
         {
             put(ENotesDesign.Normal, new NormalNotesPainter());
+            put(ENotesDesign.Normal3D, new Normal3dNotesPainter());
             put(ENotesDesign.Flat, new FlatNotesPainter());
             put(ENotesDesign.Arc, new ArcNotesPainter());
             put(ENotesDesign.Frame, new FrameNotesPainter());
         }
     };
-    
+
     private static Map<LayoutConfig.EKeyboardDesign, KeyboardPainter> kbPainters = new HashMap<LayoutConfig.EKeyboardDesign, KeyboardPainter>() {
         {
             put(EKeyboardDesign.Default, new DefaultKeyboardPainter());
@@ -50,16 +52,10 @@ public class LayoutManager {
         }
     };
 
-    private List<Color> notesColor = null;
-    private List<Color> notesBorderColor = null;
-    private Color cursorColor = null;
-    private Color cursorEffeColor = null;
-
-    private Color bgColor = null;
-    private Color bdColor = null;
-    private Color pbColor = null;
-
-    private Color bgColorReverse = null;
+    private List<ColorInfo> notesColorInfos = null;
+    private ColorInfo cursorColor = null;
+    private ColorInfo playerColor = null;
+    private ColorInfo pbColor = null;
 
     private Canvas rootCanvas = null;
 
@@ -74,7 +70,7 @@ public class LayoutManager {
     public static LayoutManager getInstance() {
         return instance;
     }
-    
+
     public List<PropertiesNode> getNodes() {
         return layout.getNodes();
     }
@@ -91,8 +87,8 @@ public class LayoutManager {
     public void initialize(Canvas canvas) {
         rootCanvas = canvas;
 
-        notesColor = new ArrayList<Color>();
-        notesBorderColor = new ArrayList<Color>();
+        List<Color> notesColor = new ArrayList<Color>();
+        List<Color> notesBorderColor = new ArrayList<Color>();
         ISystemManager sm = JMPCoreAccessor.getSystemManager();
 
         EColorAsign colAsign = (EColorAsign) layout.getData(LayoutConfig.LC_NOTES_COLOR_ASIGN);
@@ -109,7 +105,6 @@ public class LayoutManager {
                 notesColor.add(Utility.convertCodeToHtmlColor(s));
             }
         }
-
         double borderOffset = (double) layout.getData(LayoutConfig.LC_NOTES_COLOR_BORDER_RGB);
         for (Color nc : notesColor) {
             int r = nc.getRed();
@@ -121,16 +116,29 @@ public class LayoutManager {
             b = (int) ((double) b * borderOffset);
             notesBorderColor.add(new Color(r > 255 ? 255 : r, g > 255 ? 255 : g, b > 255 ? 255 : b, a));
         }
+        notesColorInfos = new ArrayList<ColorInfo>();
+        for (int i = 0; i < notesColorNum; i++) {
+            notesColorInfos.add(new ColorInfo(notesColor.get(i), notesBorderColor.get(i)));
+        }
+        
+        cursorColor = new ColorInfo( //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_COLOR)), //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_COLOR)), //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_EFFE_COLOR))//
+        );
 
-        cursorColor = Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_COLOR));
-        cursorEffeColor = Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_EFFE_COLOR));
+        playerColor = new ColorInfo( //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PLAYER_BGCOLOR)), //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PLAYER_BDCOLOR)) //
+        ); //
 
-        bgColor = Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PLAYER_BGCOLOR));
-        bdColor = Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PLAYER_BDCOLOR));
-        pbColor = Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR));
-        bgColorReverse = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.BLACK : Color.WHITE;
+        pbColor = new ColorInfo(//
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR)), //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR)), //
+                Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR)) //
+        ); //
     }
-    
+
     public void initializeConfig() {
         layout.definication();
     }
@@ -141,16 +149,8 @@ public class LayoutManager {
         }
     }
 
-    public Color getNotesColor(int index) {
-        return notesColor.get(index % notesColor.size());
-    }
-
-    public Color getNotesBorderColor(int index) {
-        return notesBorderColor.get(index % notesBorderColor.size());
-    }
-
-    public List<Color> getNotesBorderColors() {
-        return notesBorderColor;
+    public ColorInfo getNotesColor(int index) {
+        return notesColorInfos.get(index % notesColorInfos.size());
     }
 
     public LayoutConfig.ECursorType getCursorType() {
@@ -161,23 +161,15 @@ public class LayoutManager {
         return (LayoutConfig.EColorRule) layout.getData(LayoutConfig.LC_PLAYER_COLOR_RULE);
     }
 
-    public Color getCursorColor() {
+    public ColorInfo getCursorColor() {
         return cursorColor;
     }
 
-    public Color getCursorEffectColor() {
-        return cursorEffeColor;
+    public ColorInfo getPlayerColor() {
+        return playerColor;
     }
 
-    public Color getBackColor() {
-        return bgColor;
-    }
-
-    public Color getBorderColor() {
-        return bdColor;
-    }
-
-    public Color getPitchbendColor() {
+    public ColorInfo getPitchbendColor() {
         return pbColor;
     }
 
@@ -195,6 +187,14 @@ public class LayoutManager {
 
     public boolean isVisibleCursorEffect() {
         return (boolean) layout.getData(LayoutConfig.LC_CURSOR_EFFE_VISIBLE);
+    }
+
+    public boolean isVisibleNotesInEffect() {
+        return (boolean) layout.getData(LayoutConfig.LC_NOTES_HITEFFE_IN);
+    }
+
+    public boolean isVisibleNotesOutEffect() {
+        return (boolean) layout.getData(LayoutConfig.LC_NOTES_HITEFFE_OUT);
     }
 
     public LayoutConfig.ENotesDesign getNotesDesign() {
@@ -217,17 +217,33 @@ public class LayoutManager {
         return notesPainters.get(notesDesign);
     }
 
-    public Color getBgColorReverse() {
-        return bgColorReverse;
-    }
-    
     public KeyboardPainter getKeyboardPainter(SystemProperties.SyspViewMode mode) {
         LayoutConfig.EKeyboardDesign kbDesign = (LayoutConfig.EKeyboardDesign) layout.getData(LayoutConfig.LC_KEYBOARD_DESIGN);
         if (mode == SyspViewMode.SIDE_FLOW) {
-            // SideFlowはSimpleのみ対応 
+            // SideFlowはSimpleのみ対応
             return kbPainters.get(LayoutConfig.EKeyboardDesign.Simple);
         }
         return kbPainters.get(kbDesign);
     }
 
+    public void setNotesBounds(int width, int height) {
+        for (int i = 0; i < notesColorInfos.size(); i++) {
+            notesColorInfos.get(i).createGrad(height);
+        }
+    }
+
+    public int getNotesColorSize() {
+        return notesColorInfos.size();
+    }
+
+    public Color rgbToNotesColor(int rgb, Color defaultColor) {
+        if (rgb != 0) {
+            for (int i = 0; i < notesColorInfos.size(); i++) {
+                if (notesColorInfos.get(i).getBgColor().getRGB() == rgb) {
+                    return notesColorInfos.get(i).getBgColor();
+                }
+            }
+        }
+        return defaultColor;
+    }
 }

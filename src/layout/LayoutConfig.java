@@ -33,6 +33,8 @@ public class LayoutConfig {
     public static final String LC_NOTES_COLOR_NUM = "notes.colorNum";
     public static final String LC_NOTES_COLOR = "notes.color";
     public static final String LC_NOTES_COLOR_BORDER_RGB = "notes.border.colorRGB";
+    public static final String LC_NOTES_HITEFFE_IN = "notes.effect.in.visible";
+    public static final String LC_NOTES_HITEFFE_OUT = "notes.effect.out.visible";
     public static final String LC_KEYBOARD_DESIGN = "keyboard.design";
     
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
@@ -65,15 +67,17 @@ public class LayoutConfig {
             put(LC_NOTES_COLOR + "15", "Track15 notes color");
             put(LC_NOTES_COLOR + "16", "Track16 notes color");
             put(LC_NOTES_COLOR_BORDER_RGB, "Notes border color hilight");
+            put(LC_NOTES_HITEFFE_IN, "Notes line effect of in");
+            put(LC_NOTES_HITEFFE_OUT, "Notes line effect of out");
             put(LC_KEYBOARD_DESIGN, "Keyboard design");
         }
     };
 
     public static enum ENotesDesign {
-        Normal, Flat, Arc, Frame;
+        Normal, Normal3D, Flat, Arc, Frame;
     }
-    private static Object[] ENotesDesignO = { ENotesDesign.Normal, ENotesDesign.Flat, ENotesDesign.Arc, ENotesDesign.Frame };
-    private static String[] ENotesDesignS = { "normal", "flat", "arc", "frame" };
+    private static Object[] ENotesDesignO = { ENotesDesign.Normal, ENotesDesign.Normal3D, ENotesDesign.Flat, ENotesDesign.Arc, ENotesDesign.Frame };
+    private static String[] ENotesDesignS = { "normal", "normal3d", "flat", "arc", "frame" };
 
     public static enum ECursorType {
         Keyboard, Line;
@@ -106,7 +110,7 @@ public class LayoutConfig {
 
     public LayoutConfig() {
         nodes = new ArrayList<>();
-        nodes.add(new PropertiesNode(LC_PLAYER_BGCOLOR, PropertiesNodeType.COLOR, "#111111"));
+        nodes.add(new PropertiesNode(LC_PLAYER_BGCOLOR, PropertiesNodeType.COLOR, "#2f2f2f"));
         nodes.add(new PropertiesNode(LC_PLAYER_BDCOLOR, PropertiesNodeType.COLOR, "#202020"));
         nodes.add(new PropertiesNode(LC_PLAYER_COLOR_RULE, PropertiesNodeType.ITEM, EColorRule.Track, EColorRuleS, EColorRuleO));
         nodes.add(new PropertiesNode(LC_PLAYER_BORDER_VERTICAL_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
@@ -118,26 +122,28 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_CURSOR_POS, PropertiesNodeType.INT, "-1", "", "", CursorPosS, CursorPosO));
         nodes.add(new PropertiesNode(LC_PB_COLOR, PropertiesNodeType.COLOR, "#969696"));
         nodes.add(new PropertiesNode(LC_PB_VISIBLE, PropertiesNodeType.BOOLEAN, "false"));
-        nodes.add(new PropertiesNode(LC_NOTES_DESIGN, PropertiesNodeType.ITEM, ENotesDesign.Normal, ENotesDesignS, ENotesDesignO));
+        nodes.add(new PropertiesNode(LC_NOTES_DESIGN, PropertiesNodeType.ITEM, ENotesDesign.Normal3D, ENotesDesignS, ENotesDesignO));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR_ASIGN, PropertiesNodeType.ITEM, EColorAsign.Asign, EColorAsignS, EColorAsignO));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR_NUM, PropertiesNodeType.INT, "8", "1", "16"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "1", PropertiesNodeType.COLOR, "#B5E48C"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "2", PropertiesNodeType.COLOR, "#FF6FAF"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "3", PropertiesNodeType.COLOR, "#FFD166"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "4", PropertiesNodeType.COLOR, "#FF9E5E"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "5", PropertiesNodeType.COLOR, "#6FCF97"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "6", PropertiesNodeType.COLOR, "#6EC6FF"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "7", PropertiesNodeType.COLOR, "#C7D6E2"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "8", PropertiesNodeType.COLOR, "#F9A7D9"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "9", PropertiesNodeType.COLOR, "#ffffff"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "10", PropertiesNodeType.COLOR, "#ffffff"));
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR_NUM, PropertiesNodeType.INT, "10", "1", "16"));
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "1", PropertiesNodeType.COLOR, "#00E6A8")); // エメラルドグリーン
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "2", PropertiesNodeType.COLOR, "#00C957")); // クリスマスグリーン
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "3", PropertiesNodeType.COLOR, "#FFD700")); // ゴールド
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "4", PropertiesNodeType.COLOR, "#87CEFA")); // ライトブルー
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "5", PropertiesNodeType.COLOR, "#FF69B4")); // ピンク
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "6", PropertiesNodeType.COLOR, "#8A2BE2")); // ビビッドパープル
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "7", PropertiesNodeType.COLOR, "#FF4B4B")); // クリスマスレッド
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "8", PropertiesNodeType.COLOR, "#FF9E5E")); // 温かいオレンジ
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "9", PropertiesNodeType.COLOR, "#4BCFFF")); // スカイブルー
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR + "10", PropertiesNodeType.COLOR, "#B54BFF")); // ビビッドパープル2
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "11", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "12", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "13", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "14", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "15", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "16", PropertiesNodeType.COLOR, "#ffffff"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "1.2", "0.1", "2.0"));
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.5", "0.1", "2.0"));
+        nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_IN, PropertiesNodeType.BOOLEAN, "true"));
+        nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_OUT, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Default, EKeyboardDesignS, EKeyboardDesignO));
         definication();
     }

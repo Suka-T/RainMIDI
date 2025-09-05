@@ -106,7 +106,7 @@ public class NotesImageWorker extends ImageWorker {
 
     protected void paintBorder(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g.setColor(LayoutManager.getInstance().getBorderColor());
+        g.setColor(LayoutManager.getInstance().getPlayerColor().getBdColor());
         g2d.setStroke(bdStroke);
         int x = window.getZeroPosition();
         int y = window.getMeasCellHeight() * 3;
@@ -170,7 +170,7 @@ public class NotesImageWorker extends ImageWorker {
         int pbCenterY = (pbMaxHeight / 2) + 100;
 
         if (LayoutManager.getInstance().isVisiblePbLine() == true) {
-            g.setColor(LayoutManager.getInstance().getPitchbendColor());
+            g.setColor(LayoutManager.getInstance().getPitchbendColor().getBgColor());
             g.drawLine(0, pbCenterY, getImageWidth(), pbCenterY);
         }
 
@@ -283,12 +283,14 @@ public class NotesImageWorker extends ImageWorker {
         }
 
         if (LayoutManager.getInstance().getColorRule() == LayoutConfig.EColorRule.Channel) {
-            nContext.bgColor = LayoutManager.getInstance().getNotesColor(channel);
-            nContext.bdColor = LayoutManager.getInstance().getNotesBorderColor(channel);
+            nContext.bgColor = LayoutManager.getInstance().getNotesColor(channel).getBgColor();
+            nContext.bdColor = LayoutManager.getInstance().getNotesColor(channel).getBdColor();
+            nContext.colorIndex = channel;
         }
         else {
-            nContext.bgColor = LayoutManager.getInstance().getNotesColor(trk);
-            nContext.bdColor = LayoutManager.getInstance().getNotesBorderColor(trk);
+            nContext.bgColor = LayoutManager.getInstance().getNotesColor(trk).getBgColor();
+            nContext.bdColor = LayoutManager.getInstance().getNotesColor(trk).getBdColor();
+            nContext.colorIndex = trk;
         }
 
         int x1 = nContext.x;

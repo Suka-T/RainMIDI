@@ -95,7 +95,7 @@ public class ImageWorker implements Runnable {
             }
 
             Graphics2D g2d = offScreenImage.createGraphics();
-            g2d.setColor(LayoutManager.getInstance().getBackColor());
+            g2d.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
             g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
             // g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
             // g2d.fillRect(0, 0, getImageWidth(), getImageHeight());

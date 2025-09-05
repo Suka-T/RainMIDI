@@ -10,21 +10,25 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
 
     @Override
     void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+        int shadowW = (int)((double)parts.width * 0.06);
         g.setColor(bgColor);
         g.fill3DRect(parts.x, parts.y, parts.width, parts.height, true);
         g.setColor(Color.LIGHT_GRAY);
-        g.fill3DRect(parts.x, parts.y, (int)((double)parts.width * 0.06), parts.height, true);
+        g.fill3DRect(parts.x, parts.y, shadowW, parts.height, true);
         g.setColor(Color.GRAY);
+        g.drawLine(parts.x + shadowW - 1, parts.y, parts.x + shadowW  - 1, parts.y + parts.height - 1);
         g.drawRect(parts.x, parts.y, parts.width, parts.height);
     }
 
     @Override
     void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+        int shadowW = (int)((double)parts.width * 0.02);
         g.setColor(bgColor);
         g.fill3DRect(parts.x, parts.y, parts.width, parts.height, true);
-        g.setColor(Color.LIGHT_GRAY);
-        g.fill3DRect(parts.x, parts.y, (int)((double)parts.width * 0.02), parts.height, true);
+        //g.setColor(Color.LIGHT_GRAY);
+        //g.fill3DRect(parts.x, parts.y, shadowW, parts.height, true);
         g.setColor(Color.GRAY);
+        g.fill3DRect(parts.x, parts.y, shadowW, parts.height, true);
         g.drawRect(parts.x, parts.y, parts.width, parts.height);
     }
 

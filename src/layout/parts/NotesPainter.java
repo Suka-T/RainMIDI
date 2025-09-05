@@ -15,6 +15,7 @@ public abstract class NotesPainter {
         public int h;
         public Color bgColor;
         public Color bdColor;
+        public int colorIndex;
     };
 
     public Context newContext() {
