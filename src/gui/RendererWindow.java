@@ -107,7 +107,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             JMPCoreAccessor.getSoundManager().stop();
-
+            
+            if (JMPCoreAccessor.getWindowManager().getMainWindow().isWindowVisible() == true) {
+                JMPCoreAccessor.getWindowManager().getMainWindow().setWindowVisible(false);
+            }
+            
             AbstractRenderPlugin.PluginInstance.launch();
         }
     }
@@ -404,8 +408,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private StringBuilder sb = new StringBuilder(64); // 初期容量を指定
-    private Font info1Font = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
-    private Font info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 48);
+    private Font info1Font = new Font(Font.SANS_SERIF, Font.PLAIN, 28);
+    private Font info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 64);
     protected volatile VolatileImage orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
 
@@ -611,8 +615,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
             int sx = 10;
-            int sy = 20;
-            int sh = 18;
+            int sy = 30;
+            int sh = 30;
             Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
             Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
             ;
@@ -654,32 +658,28 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             g.setColor(topStrColor);
             g.drawString(sb.toString(), sx, sy);
             sy += sh;
-
+            
             if (midiUnit.isRenderingOnlyMode() == false) {
                 sb.setLength(0);
                 sb.append("NOTES: ");
                 val1 = notesMonitor.getNotesCount();
-                val2 = notesMonitor.getNumOfNotes();
                 formatWithCommas(val1, sb);
-                sb.append(" / ");
-                formatWithCommas(val2, sb);
                 g.setColor(backStrColor);
                 g.drawString(sb.toString(), sx + 1, sy + 1);
                 g.setColor(topStrColor);
                 g.drawString(sb.toString(), sx, sy);
                 sy += sh;
             }
-            else {
-                sb.setLength(0);
-                sb.append("NOTES: ");
-                val2 = notesMonitor.getNumOfNotes();
-                formatWithCommas(val2, sb);
-                g.setColor(backStrColor);
-                g.drawString(sb.toString(), sx + 1, sy + 1);
-                g.setColor(topStrColor);
-                g.drawString(sb.toString(), sx, sy);
-                sy += sh;
-            }
+            
+            sb.setLength(0);
+            sb.append("MAX NT: ");
+            val2 = notesMonitor.getNumOfNotes();
+            formatWithCommas(val2, sb);
+            g.setColor(backStrColor);
+            g.drawString(sb.toString(), sx + 1, sy + 1);
+            g.setColor(topStrColor);
+            g.drawString(sb.toString(), sx, sy);
+            sy += sh;
 
             if (midiUnit.isRenderingOnlyMode() == false) {
                 sb.setLength(0);
@@ -741,7 +741,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         else if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE2) {
             int sx = 0;
-            int sy = 50;
+            int sy = 65;
             Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
             Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
 
@@ -788,6 +788,29 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected int getEffectWidth(int dir) {
         return (dir < 0) ? 2 : 4;
     }
+    
+    private boolean isBetweenColor(int rgbA, int rgbB, int rgbC) {
+        int ar = (rgbA >> 16) & 0xFF;
+        int ag = (rgbA >> 8) & 0xFF;
+        int ab = (rgbA) & 0xFF;
+
+        int br = (rgbB >> 16) & 0xFF;
+        int bg = (rgbB >> 8) & 0xFF;
+        int bb = (rgbB) & 0xFF;
+
+        int cr = (rgbC >> 16) & 0xFF;
+        int cg = (rgbC >> 8) & 0xFF;
+        int cb = (rgbC) & 0xFF;
+
+        return inBetween(ar, br, cr) &&
+               inBetween(ag, bg, cg) &&
+               inBetween(ab, bb, cb);
+    }
+
+    private boolean inBetween(int value, int min, int max) {
+        return (value >= Math.min(min, max)) && (value <= Math.max(min, max));
+    }
+
 
     public int getKeyColor(int midiNo) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
@@ -811,6 +834,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 for (int i = 0; i < LayoutManager.getInstance().getNotesColorSize(); i++) {
                     Color bc = LayoutManager.getInstance().getNotesColor(i).getBdColor();
                     if (rgb == bc.getRGB()) {
+                        rgb = LayoutManager.getInstance().getNotesColor(i).getBgColor().getRGB();
+                        break;
+                    }
+                    
+                    Color grad1 = LayoutManager.getInstance().getNotesColor(i).getGradColorBegin();
+                    Color grad2 = LayoutManager.getInstance().getNotesColor(i).getGradColorEnd();
+                    if (isBetweenColor(rgb, grad1.getRGB(), grad2.getRGB())) {
                         rgb = LayoutManager.getInstance().getNotesColor(i).getBgColor().getRGB();
                         break;
                     }

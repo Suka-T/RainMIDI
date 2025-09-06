@@ -17,7 +17,8 @@ public class ColorInfo {
         this.bdColor = bdColor;
         this.effeColor = Color.WHITE;
         this.gradColor = new ArrayList<Color>();
-        this.gradSize = -1;
+        this.gradColor.add(bgColor);
+        this.gradSize = 1;
         this.bgRevColor = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.BLACK : Color.WHITE;
     }
     
@@ -26,7 +27,8 @@ public class ColorInfo {
         this.bdColor = bdColor;
         this.effeColor = effeColor;
         this.gradColor = new ArrayList<Color>();
-        this.gradSize = -1;
+        this.gradColor.add(bgColor);
+        this.gradSize = 1;
         this.bgRevColor = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.BLACK : Color.WHITE;
     }
     
@@ -44,6 +46,14 @@ public class ColorInfo {
     
     public Color getBgRevColor() {
         return bgRevColor;
+    }
+    
+    public Color getGradColorBegin() {
+        return getGradColor(0);
+    }
+    
+    public Color getGradColorEnd() {
+        return getGradColor(gradSize - 1);
     }
     
     public Color getGradColor(int index) {
@@ -81,6 +91,7 @@ public class ColorInfo {
         int spanB = (bdB - bgB) / size;
 
         int i = 0;
+        gradColor.clear();
         for (; i < size; i++) {
             int r = bgR + spanR * i;
             int g = bgG + spanG * i;

@@ -92,6 +92,10 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
                 // SystemPropertiesの保存 
                 SystemProperties.getInstance().write(propFile);
+                
+                if (JMPCoreAccessor.getSoundManager().getMidiUnit().isValidSequence()) {
+                    JMPCoreAccessor.getSoundManager().initPosition();
+                }
             }
             
             if (SwingUtilities.isEventDispatchThread()) {

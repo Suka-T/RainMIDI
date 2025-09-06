@@ -212,7 +212,13 @@ public class LayoutManager {
     public NotesPainter getNotesPainter() {
         LayoutConfig.ENotesDesign notesDesign = (LayoutConfig.ENotesDesign) layout.getData(LayoutConfig.LC_NOTES_DESIGN);
         if (JMPCoreAccessor.getSoundManager().getMidiUnit().isRenderingOnlyMode() == true) {
-            return notesPainters.get(LayoutConfig.ENotesDesign.Normal);
+            switch (notesDesign) {
+                case Frame:
+                    notesDesign = ENotesDesign.Normal;
+                    break;
+                default:
+                    break;
+            }
         }
         return notesPainters.get(notesDesign);
     }
