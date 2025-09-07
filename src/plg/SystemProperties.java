@@ -28,6 +28,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_DIMENSION = "renderer.dimension";
     public static final String SYSP_RENDERER_WINSIZE = "renderer.windowSize";
     public static final String SYSP_RENDERER_MONITOR_TYPE = "renderer.monitorType";
+    public static final String SYSP_RENDERER_WINEFFECT = "renderer.windowEffect";
     public static final String SYSP_DEBUGMODE = "debugMode";
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
@@ -43,6 +44,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_DIMENSION, "Renderer dimension");
             put(SYSP_RENDERER_WINSIZE, "Window size");
             put(SYSP_RENDERER_MONITOR_TYPE, "Monitor view type");
+            put(SYSP_RENDERER_WINEFFECT, "Window effect");
             put(SYSP_DEBUGMODE, "Debug mode enable");
         }
     };
@@ -65,6 +67,10 @@ public class SystemProperties {
     public static enum SyspMonitorType {
         NONE, TYPE1, TYPE2;
     }
+    
+    public static enum SyspWinEffect {
+        NONE, CIRCLE_VIGNETTE, TOP_VIGNETTE;
+    }
 
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
@@ -84,6 +90,9 @@ public class SystemProperties {
     private static Object[] WinSizeItemO = { /* "2560*1440", "1920*1080", */"1280*720", "854*480", "640*360" };
     private static Object[] WinSizeItemD = { /* "2560*1408", "1920*1024", */"1280*768", "896*512", "640*384" };
     private static String[] WinSizeItemS = { /* "1440p", "1080p", */"720p", "480p", "360p", };
+    
+    private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE };
+    private static String[] winEffeItemS = { "none", "circle_vignette" };
 
     private List<PropertiesNode> nodes;
     private boolean notesWidthAuto = true;
@@ -116,6 +125,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MONITOR_TYPE, PropertiesNodeType.ITEM, SyspMonitorType.TYPE1, monitorTypeItemS, monitorTypeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_WINEFFECT, PropertiesNodeType.ITEM, SyspWinEffect.NONE, winEffeItemS, winEffeItemO));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
     }
@@ -297,6 +307,10 @@ public class SystemProperties {
 
     public SyspMonitorType getMonitorType() {
         return (SyspMonitorType) getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData();
+    }
+    
+    public SyspWinEffect getWinEffect() {
+        return (SyspWinEffect) getPropNode(SYSP_RENDERER_WINEFFECT).getData();
     }
 
     public int getKeyWidth() {

@@ -70,8 +70,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private static final String WORKNUM_MID = "3";
     private static final String NOTESIMAGENUM_MID = "60";
 
-    private static final String WORKNUM_HIG = "3";
-    private static final String NOTESIMAGENUM_HIG = "200";
+    private static final String WORKNUM_HIG = "8";
+    private static final String NOTESIMAGENUM_HIG = "60";
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -121,6 +121,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JRadioButton rdbtnPerfMidButton;
     private JRadioButton rdbtnPerfHighButton;
     private JEditorPane editorPane;
+    private JLabel lblSynthDesc;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -238,14 +239,19 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
                         String synthKey = synthItemKeys.get(comboBoxSynth.getSelectedIndex());
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_SYNTH, (String) synthKey);
+                        updateSynthDescription();
                     }
                 });
-                comboBoxSynth.setBounds(96, 17, 295, 21);
+                comboBoxSynth.setBounds(115, 17, 295, 21);
                 audioSummaryPanel.add(comboBoxSynth);
 
-                JLabel lblSynthLabel = new JLabel("Synthsizer");
+                JLabel lblSynthLabel = new JLabel("MIDI Receiver");
                 lblSynthLabel.setBounds(12, 21, 72, 13);
                 audioSummaryPanel.add(lblSynthLabel);
+                
+                lblSynthDesc = new JLabel("");
+                lblSynthDesc.setBounds(115, 48, 416, 13);
+                audioSummaryPanel.add(lblSynthDesc);
 
                 JPanel layoutSummaryPanel = new JPanel();
                 layoutSummaryPanel.setLayout(null);
@@ -505,6 +511,16 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         }
 
         initialized.set(true);
+    }
+    
+    public void updateSynthDescription() {
+        String description = "";
+        String synthKey = synthItemKeys.get(comboBoxSynth.getSelectedIndex());
+        if (synthKey.equalsIgnoreCase(ISoundManager.AUTO_RECEIVER_NAME)) {
+            description = "";
+            description += "Automatically select an \"" + JMPCoreAccessor.getSoundManager().getMidiToolkit().getAutoSelectRecieverName() + "\"";
+        }
+        lblSynthDesc.setText(description);
     }
     
     public void updateAbout() {
@@ -770,6 +786,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             comboBoxSynth.addItem(s);
         }
         comboBoxSynth.setSelectedIndex(selectedIndex);
+        
+        updateSynthDescription();
     }
 
     @Override

@@ -12,6 +12,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Point;
+import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -50,6 +52,7 @@ import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspMonitorType;
+import plg.SystemProperties.SyspWinEffect;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
 
@@ -107,11 +110,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             JMPCoreAccessor.getSoundManager().stop();
-            
+
             if (JMPCoreAccessor.getWindowManager().getMainWindow().isWindowVisible() == true) {
                 JMPCoreAccessor.getWindowManager().getMainWindow().setWindowVisible(false);
             }
-            
+
             AbstractRenderPlugin.PluginInstance.launch();
         }
     }
@@ -612,6 +615,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         else {
         }
+        
+        paintWindowEffect(g);
 
         if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
             int sx = 10;
@@ -658,7 +663,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             g.setColor(topStrColor);
             g.drawString(sb.toString(), sx, sy);
             sy += sh;
-            
+
             if (midiUnit.isRenderingOnlyMode() == false) {
                 sb.setLength(0);
                 sb.append("NOTES: ");
@@ -670,7 +675,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 g.drawString(sb.toString(), sx, sy);
                 sy += sh;
             }
-            
+
             sb.setLength(0);
             sb.append("MAX NT: ");
             val2 = notesMonitor.getNumOfNotes();
@@ -771,6 +776,38 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
     }
 
+    protected void paintWindowEffect(Graphics g) {
+        int w = getContentPane().getWidth();
+        int h = getContentPane().getHeight();
+
+        if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.CIRCLE_VIGNETTE) {
+            Graphics2D effeG2 = (Graphics2D) g.create();
+            Color bc = LayoutManager.getInstance().getPlayerColor().getBgRev2Color();
+            float radius = (float) (Math.max(w, h) * 0.9f);
+
+            Color[] colorGrad = null;
+            float[] colorF = null;
+            colorF = new float[]{
+                    0.0f, 
+                    0.6f, 
+                    1.0f
+                    };
+            colorGrad = new Color[] { 
+                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 0), 
+                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 80),
+                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 200)
+                    };
+            
+            RadialGradientPaint paint = new RadialGradientPaint(new Point(w / 2, h / 2), radius, colorF, colorGrad);
+
+            effeG2.setPaint(paint);
+
+            // 確認用は円形で塗る
+            effeG2.fillOval(w / 2 - (int) radius, h / 2 - (int) radius, (int) (radius * 2), (int) (radius * 2));
+            effeG2.dispose();
+        }
+    }
+
     private void calcDispMeasCount() {
         int x = getZeroPosition();
         int measLen = 0;
@@ -788,7 +825,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected int getEffectWidth(int dir) {
         return (dir < 0) ? 2 : 4;
     }
-    
+
     private boolean isBetweenColor(int rgbA, int rgbB, int rgbC) {
         int ar = (rgbA >> 16) & 0xFF;
         int ag = (rgbA >> 8) & 0xFF;
@@ -802,15 +839,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int cg = (rgbC >> 8) & 0xFF;
         int cb = (rgbC) & 0xFF;
 
-        return inBetween(ar, br, cr) &&
-               inBetween(ag, bg, cg) &&
-               inBetween(ab, bb, cb);
+        return inBetween(ar, br, cr) && inBetween(ag, bg, cg) && inBetween(ab, bb, cb);
     }
 
     private boolean inBetween(int value, int min, int max) {
         return (value >= Math.min(min, max)) && (value <= Math.max(min, max));
     }
-
 
     public int getKeyColor(int midiNo) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
@@ -837,7 +871,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                         rgb = LayoutManager.getInstance().getNotesColor(i).getBgColor().getRGB();
                         break;
                     }
-                    
+
                     Color grad1 = LayoutManager.getInstance().getNotesColor(i).getGradColorBegin();
                     Color grad2 = LayoutManager.getInstance().getNotesColor(i).getGradColorEnd();
                     if (isBetweenColor(rgb, grad1.getRGB(), grad2.getRGB())) {
@@ -917,7 +951,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 rgb = getKeyColor(aHakken[i].midiNo);
                 isPush = true;
                 if (rgb == 0) {
-					rgb = Color.WHITE.getRGB();
+                    rgb = Color.WHITE.getRGB();
                     isPush = false;
                 }
                 keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.WHITE);
@@ -962,8 +996,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                         for (int j = 0; j < 16; j++) {
                             float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
                             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-                            if (isVisibleNotesIn) g2d.fillRect(effx + (inEffWidth * j), hitEffectPosY[i] - 1, inEffWidth, keyHeight + 2);
-                            if (isVisibleNotesOut) g2d.fillRect(effx - (outEffWidth * j) - outEffWidth, hitEffectPosY[i], outEffWidth, keyHeight);
+                            if (isVisibleNotesIn)
+                                g2d.fillRect(effx + (inEffWidth * j), hitEffectPosY[i], inEffWidth, keyHeight);
+                            if (isVisibleNotesOut)
+                                g2d.fillRect(effx - (outEffWidth * j) - outEffWidth, hitEffectPosY[i], outEffWidth, keyHeight);
                         }
                         /*
                          * for (int j = 0; j < 10; j++) { float alpha = 1.0f - j
@@ -986,14 +1022,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else {
             drawNoEffeLine(g2d, tickBarPosition, 0, tickBarPosition, getOrgHeight(), csrColor);
         }
-
-        g2d.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
-        for (int i = 0; i < 15; i++) {
-            float alpha = (1.0f - ((float) i / 15.0f)) * 0.9f;
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            g2d.fillRect(getOrgWidth() - (4 * (i + 1)), 0, 4, getOrgHeight());
-        }
-        g2d.setComposite(AlphaComposite.SrcOver);
     }
 
     public void resetPage() {
@@ -1057,9 +1085,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         return measCellHeight;
     }
 
-//    public void setMeasCellHeight(int measCellHeight) {
-//        this.measCellHeight = measCellHeight;
-//    }
+    // public void setMeasCellHeight(int measCellHeight) {
+    // this.measCellHeight = measCellHeight;
+    // }
 
     @Override
     public void mouseClicked(MouseEvent e) {
