@@ -10,10 +10,16 @@ public class NormalNotesPainter extends NotesPainter {
     @Override
     public void paintNotes(Context context) {
         Graphics2D g2d = (Graphics2D) context.g;
-        g2d.setColor(context.bgColor);
-        g2d.fillRect(context.x, context.y, context.w, context.h);
-        g2d.setColor(context.bdColor);
-        g2d.drawRect(context.x, context.y, context.w, context.h);
+        if (context.iW > 1) {
+            g2d.setColor(context.bgColor);
+            g2d.fillRect(context.iX, context.iY, context.iW, context.iH);
+            g2d.setColor(context.bdColor);
+            g2d.drawRect(context.iX, context.iY, context.iW, context.iH);
+        }
+        else {
+            g2d.setColor(context.bdColor);
+            g2d.drawLine(context.iX, context.iY, context.iX, context.iY + context.iH - 1);
+        }
     }
 
 }

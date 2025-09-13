@@ -46,7 +46,16 @@ public class ImagerWorkerManager {
     }
     
     public void firstRender(int leftMeas, int dispMeas, int flipCount) {
-        reset(leftMeas, dispMeas, flipCount);
+        int offsetLeftMeas = Math.abs(leftMeas);
+        int flipMergin = -(flipCount);
+        for (int i = 0; i < workers.length; i++) {
+            int flipLine = offsetLeftMeas + ((dispMeas + flipMergin) * i);
+            workers[i].reset();
+            workers[i].setLeftMeasTh(-(flipLine));
+            workers[i].disposeImage();
+            workers[i].makeImage();
+        }
+        currentWorkerIndex = 0;
         
         try {
             // 全てのワーカーのレンダリングが終わるまで待つ

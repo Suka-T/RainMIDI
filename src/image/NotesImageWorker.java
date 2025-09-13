@@ -48,6 +48,9 @@ public class NotesImageWorker extends ImageWorker {
     private NoteOnCache[][] noteOnEvents = null;
     private List<Integer> pbBufferX = null;
     private List<Integer> pbBufferY = null;
+    
+    private NotesPainter notesPainter = null;
+    private NotesPainter.Context nContext = null;
 
     public NotesImageWorker(RendererWindow window, int width, int height) {
         super(window, width, height);
@@ -61,6 +64,9 @@ public class NotesImageWorker extends ImageWorker {
         }
         pbBufferX = new ArrayList<Integer>();
         pbBufferY = new ArrayList<Integer>();
+        
+        notesPainter = LayoutManager.getInstance().getNotesPainter();
+        nContext = notesPainter.newContext();
     }
 
     @Override
@@ -147,7 +153,6 @@ public class NotesImageWorker extends ImageWorker {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        NotesPainter.Context nContext = LayoutManager.getInstance().getNotesPainter().newContext();
         nContext.g = g;
 
         paintBorder(g);
@@ -272,15 +277,11 @@ public class NotesImageWorker extends ImageWorker {
         // 描画開始
         int startMeas = (int) ((double) startEvent / (double) midiUnit.getResolution()) + leftMeas;
         int startOffset = (int) ((double) startEvent % (double) midiUnit.getResolution());
-        nContext.x = (int) (window.getMeasCellWidth() * (startMeas + (double) startOffset / midiUnit.getResolution())) + offsetCoordX;
-        nContext.y = ((127 - data1) * window.getMeasCellHeight()) + topOffset;
+        nContext.x = (float) (window.getMeasCellWidth() * (startMeas + (double) startOffset / (double) midiUnit.getResolution())) + offsetCoordX;
+        nContext.y = (float) ((127 - data1) * window.getMeasCellHeight()) + topOffset;
 
-        nContext.w = (int) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / midiUnit.getResolution());
-        nContext.h = window.getMeasCellHeight();
-
-        if (nContext.w < 2) {
-            nContext.w = 2;
-        }
+        nContext.w = (float) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / (double) midiUnit.getResolution());
+        nContext.h = (float) window.getMeasCellHeight();
 
         if (LayoutManager.getInstance().getColorRule() == LayoutConfig.EColorRule.Channel) {
             nContext.bgColor = LayoutManager.getInstance().getNotesColor(channel).getBgColor();
@@ -293,24 +294,22 @@ public class NotesImageWorker extends ImageWorker {
             nContext.colorIndex = trk;
         }
 
-        int x1 = nContext.x;
-        int x2 = nContext.x + nContext.w - 1;
-        if ((x2 < 0) || (imgWidth <= x1)) {
+        float x1 = nContext.x;
+        float x2 = nContext.x + nContext.w - 1;
+        if ((x2 < 0.0f) || (imgWidth <= x1)) {
 
         }
         else {
-            if (x1 < 0) {
-                x1 = 0;
+            if (x1 < 0.0f) {
+                x1 = 0.0f;
             }
             if (x2 >= imgWidth) {
                 x2 = imgWidth - 1;
             }
             nContext.x = x1;
-            nContext.w = x2 - x1 + 1;
-            if (nContext.w < 2) {
-                nContext.w = 2;
-            }
-            LayoutManager.getInstance().getNotesPainter().paintNotes(nContext);
+            nContext.w = x2 - x1 + 1.0f;
+            nContext.createParam();
+            notesPainter.paintNotes(nContext);
         }
     }
 }

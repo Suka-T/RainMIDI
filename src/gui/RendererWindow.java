@@ -475,22 +475,38 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     private void drawNoEffeLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
         // ======= 調整用パラメータ =======
-        float coreStroke = 5.0f;
+        float coreStroke = 8.0f;   // 中心の線の太さ
+        float borderWidth = 0.5f;  // 白ボーダーの幅
+
+        if (LayoutManager.getInstance().isVisibleCursorEffect() == false) {
+            // ======= ボーダー線 =======
+            g2d.setStroke(new BasicStroke(coreStroke + borderWidth * 2,
+                                          BasicStroke.CAP_ROUND,
+                                          BasicStroke.JOIN_ROUND));
+            
+            g2d.setColor(Color.BLACK);
+            g2d.drawLine(x1, y1, x2, y2);
+        }
 
         // ======= 中心線（コア線） =======
-        g2d.setStroke(new BasicStroke(coreStroke));
+        g2d.setStroke(new BasicStroke(coreStroke,
+                                      BasicStroke.CAP_ROUND,
+                                      BasicStroke.JOIN_ROUND));
         g2d.setColor(baseColor);
         g2d.drawLine(x1, y1, x2, y2);
 
+        // ストロークを戻す（任意）
         g2d.setStroke(new BasicStroke());
+
     }
 
     private void drawGlowingLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
+        
         // ======= 調整用パラメータ =======
         float coreStroke = 5.0f;
-        float glowMaxStroke = 18.0f;
-        float glowMinStroke = 9.0f;
-        float glowStep = 3.0f;
+        float glowMaxStroke = 24.0f;
+        float glowMinStroke = 12.0f;
+        float glowStep = 4.0f;
 
         // ======= カラー分解（ベースカラー → RGB） =======
         int r = baseColor.getRed();
@@ -505,14 +521,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
 
         // ======= 中間グロー層（やや濃い） =======
-        g2d.setStroke(new BasicStroke(glowMinStroke - 1));
-        g2d.setColor(new Color(Math.min(255, r + 40), Math.min(255, g + 40), Math.min(255, b + 40), 100));
-        g2d.drawLine(x1, y1, x2, y2);
+//        g2d.setStroke(new BasicStroke(glowMinStroke - 1));
+//        g2d.setColor(new Color(Math.min(255, r + 40), Math.min(255, g + 40), Math.min(255, b + 40), 100));
+//        g2d.drawLine(x1, y1, x2, y2);
 
         // ======= 中心線（コア線） =======
-        g2d.setStroke(new BasicStroke(coreStroke));
-        g2d.setColor(new Color(Math.min(255, r + 80), Math.min(255, g + 80), Math.min(255, b + 80), 220));
-        g2d.drawLine(x1, y1, x2, y2);
+        //g2d.setStroke(new BasicStroke(coreStroke));
+        //g2d.setColor(new Color(Math.min(255, r + 80), Math.min(255, g + 80), Math.min(255, b + 80), 220));
+        //g2d.drawLine(x1, y1, x2, y2);
 
         g2d.setStroke(new BasicStroke());
     }
@@ -939,37 +955,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int tickX = (int) ((double) relPosTick * (double) getMeasCellWidth() / (double) midiUnit.getResolution());
             g.drawImage(notesImg, -tickX, 0, null);
         }
-
-        int tickBarPosition = LayoutManager.getInstance().getTickBarPosition();
-        int effOrgX = tickBarPosition;
-        int rgb = -1;
-        if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
-            /* Keyboard */
-            Color keyBgColor;
-            boolean isPush = false;
-            for (int i = 0; i < aHakken.length; i++) {
-                rgb = getKeyColor(aHakken[i].midiNo);
-                isPush = true;
-                if (rgb == 0) {
-                    rgb = Color.WHITE.getRGB();
-                    isPush = false;
-                }
-                keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.WHITE);
-                keyboardPainter.paintKeyparts(g2d, aHakken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.WHITE);
-            }
-            for (int i = 0; i < aKokken.length; i++) {
-                rgb = getKeyColor(aKokken[i].midiNo);
-                isPush = true;
-                if (rgb == 0) {
-                    rgb = Color.BLACK.getRGB();
-                    isPush = false;
-                }
-                keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.BLACK);
-                keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
-            }
-        }
+        
 
         /* 衝突エフェクト描画 */
+        int rgb = -1;
+        int tickBarPosition = LayoutManager.getInstance().getTickBarPosition();
         if (tickBarPosition > 0 && validNotesImg == true) {
             boolean isVisibleNotesIn = LayoutManager.getInstance().isVisibleNotesInEffect();
             boolean isVisibleNotesOut = LayoutManager.getInstance().isVisibleNotesOutEffect();
@@ -992,7 +982,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     }
 
                     if (isFocus == true) {
-                        effx = effOrgX;
+                        effx = tickBarPosition;
                         for (int j = 0; j < 16; j++) {
                             float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
                             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -1014,13 +1004,50 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
         }
 
+        int tickBarPositionOffs = 0;
+        if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
+            tickBarPositionOffs = 3;
+        }
+        
         /* Tickbar描画 */
         Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
+        drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
+        /* Tickbarグローエフェクト描画 */
         if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {
-            drawGlowingLine(g2d, tickBarPosition, 0, tickBarPosition, getOrgHeight(), csrColor);
+            drawGlowingLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
         }
-        else {
-            drawNoEffeLine(g2d, tickBarPosition, 0, tickBarPosition, getOrgHeight(), csrColor);
+        
+        rgb = -1;
+        if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
+            /* White Keyboard */
+            Color keyBgColor;
+            boolean isPush = false;
+            for (int i = 0; i < aHakken.length; i++) {
+                rgb = getKeyColor(aHakken[i].midiNo);
+                isPush = true;
+                if (rgb == 0) {
+                    rgb = Color.WHITE.getRGB();
+                    isPush = false;
+                }
+                keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.WHITE);
+                keyboardPainter.paintKeyparts(g2d, aHakken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.WHITE);
+            }
+        }
+        
+        if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
+            /* Black Keyboard */
+            Color keyBgColor;
+            boolean isPush = false;
+            for (int i = 0; i < aKokken.length; i++) {
+                rgb = getKeyColor(aKokken[i].midiNo);
+                isPush = true;
+                if (rgb == 0) {
+                    rgb = Color.BLACK.getRGB();
+                    isPush = false;
+                }
+                keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.BLACK);
+                keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
+            }
         }
     }
 

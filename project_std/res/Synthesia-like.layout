@@ -1,6 +1,7 @@
 description=Synthesia-like design
 cursor.color=A02020
 cursor.effect.color=ffffff
+cursor.effect.visible=false
 cursor.position=top
 cursor.type=keyboard
 info.visible=true
