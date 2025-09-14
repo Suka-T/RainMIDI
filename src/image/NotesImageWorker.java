@@ -243,6 +243,8 @@ public class NotesImageWorker extends ImageWorker {
                                 || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
                             // Note OFF
                             paintNt(nContext, trk, leftMeas, tick, channel, data1, data2);
+                            
+                            noteOnEvents[channel][data1].init();
                         }
                         else {
                         }
@@ -269,7 +271,6 @@ public class NotesImageWorker extends ImageWorker {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         long endEvent = endTick;
         long startEvent = noteOnEvents[channel][data1].tick;
-        noteOnEvents[channel][data1].init();
 
         if ((startEvent == -1) || ((endEvent < startEvent) || (mpStartTick > endEvent)) || (window.isVisible() == false)) {
             // 無効データは何もしない

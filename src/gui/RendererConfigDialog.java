@@ -40,6 +40,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -71,8 +72,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private static final String WORKNUM_MID = "3";
     private static final String NOTESIMAGENUM_MID = "60";
 
-    private static final String WORKNUM_HIG = "8";
-    private static final String NOTESIMAGENUM_HIG = "60";
+    private static final String WORKNUM_HIG = "3";
+    private static final String NOTESIMAGENUM_HIG = "300";
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -475,6 +476,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.add(chckbxIgnoreInBetween);
                 
                 spinnerIgnoreLow = new JSpinner();
+                spinnerIgnoreLow.setModel(new SpinnerNumberModel(1, 1, 127, 1));
                 spinnerIgnoreLow.addChangeListener(new ChangeListener() {
                     public void stateChanged(ChangeEvent arg0) {
                         int value = (int) spinnerIgnoreLow.getValue();
@@ -485,6 +487,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.add(spinnerIgnoreLow);
                 
                 spinnerIgnoreHigh = new JSpinner();
+                spinnerIgnoreHigh.setModel(new SpinnerNumberModel(20, 1, 127, 1));
                 spinnerIgnoreHigh.addChangeListener(new ChangeListener() {
                     public void stateChanged(ChangeEvent arg0) {
                         int value = (int) spinnerIgnoreHigh.getValue();
