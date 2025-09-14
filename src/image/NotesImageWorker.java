@@ -123,7 +123,7 @@ public class NotesImageWorker extends ImageWorker {
                 y -= window.getMeasCellHeight() * 12;
             }
         }
-        x = window.getZeroPosition();
+        x = window.getZeroPosition() + LayoutManager.getInstance().getTickBarPosition();
         y = 0;
         if (LayoutManager.getInstance().isVisibleVerticalBorder() == true) {
             while (x <= getImageWidth()) {
