@@ -42,6 +42,7 @@ import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutConfig;
+import layout.LayoutConfig.EColorRule;
 import layout.LayoutManager;
 import layout.parts.BlackKeyParts;
 import layout.parts.KeyParts;
@@ -914,7 +915,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             if (SystemProperties.getInstance().getLayerOrder() == SyspLayerOrder.ASC) {
                 isAsc = true;
             }
-            int track = notesMonitor.getTopNoteOnTrack(midiNo, isAsc);
+            int track = 0;
+            if (LayoutManager.getInstance().getColorRule() == EColorRule.Track) {
+                track = notesMonitor.getTopNoteOnTrack(midiNo, isAsc);
+            }
+            else {
+                track = notesMonitor.getTopNoteOnChannel(midiNo, isAsc);
+            }
             if (track != -1) {
                 Color color = LayoutManager.getInstance().getNotesColor(track).getBgColor();
                 return color.getRGB();

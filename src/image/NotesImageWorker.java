@@ -229,12 +229,14 @@ public class NotesImageWorker extends ImageWorker {
                         int command = statusByte & 0xF0;
                         int channel = statusByte & 0x0F;
                         if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON) && (data2 > 0)) {
-                            if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
-                                noteOnEvents[channel][data1].tick = tick;
-                                noteOnEvents[channel][data1].trackIndex = trk;
-                                noteOnEvents[channel][data1].channel = channel;
-                                noteOnEvents[channel][data1].data1 = data1;
-                                noteOnEvents[channel][data1].data2 = data2;
+                            if (SystemProperties.getInstance().isGhostNotes(data2) == false) {
+                                if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
+                                    noteOnEvents[channel][data1].tick = tick;
+                                    noteOnEvents[channel][data1].trackIndex = trk;
+                                    noteOnEvents[channel][data1].channel = channel;
+                                    noteOnEvents[channel][data1].data1 = data1;
+                                    noteOnEvents[channel][data1].data2 = data2;
+                                }
                             }
                         }
                         else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)

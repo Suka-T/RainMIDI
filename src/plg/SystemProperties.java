@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import jlib.core.IDataManager;
 import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
@@ -29,6 +33,12 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_WINSIZE = "renderer.windowSize";
     public static final String SYSP_RENDERER_MONITOR_TYPE = "renderer.monitorType";
     public static final String SYSP_RENDERER_WINEFFECT = "renderer.windowEffect";
+    public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_VALID = "renderer.ignoreNotes.audio.valid";
+    public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST = "renderer.ignoreNotes.audio.lowestVel";
+    public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST = "renderer.ignoreNotes.audio.highestVel";
+    public static final String SYSP_RENDERER_IGNORENOTES_RENDER_VALID = "renderer.ignoreNotes.render.valid";
+    public static final String SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST = "renderer.ignoreNotes.render.lowestVel";
+    public static final String SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST = "renderer.ignoreNotes.render.highestVel";
     public static final String SYSP_DEBUGMODE = "debugMode";
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
@@ -45,6 +55,12 @@ public class SystemProperties {
             put(SYSP_RENDERER_WINSIZE, "Window size");
             put(SYSP_RENDERER_MONITOR_TYPE, "Monitor view type");
             put(SYSP_RENDERER_WINEFFECT, "Window effect");
+            put(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, "Ignore notes valid of AUDIO");
+            put(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, "Ignore notes lowest velocity of AUDIO");
+            put(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, "Ignore notes highest velocity of AUDIO");
+            put(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, "Ghost notes invisible");
+            put(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, "Ghost notes lowest velocity");
+            put(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, "Ghost notes highest velocity");
             put(SYSP_DEBUGMODE, "Debug mode enable");
         }
     };
@@ -126,6 +142,12 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MONITOR_TYPE, PropertiesNodeType.ITEM, SyspMonitorType.TYPE1, monitorTypeItemS, monitorTypeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINEFFECT, PropertiesNodeType.ITEM, SyspWinEffect.NONE, winEffeItemS, winEffeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, PropertiesNodeType.BOOLEAN, "true"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, PropertiesNodeType.INT, "20", "1", "128"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, PropertiesNodeType.BOOLEAN, "false"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
     }
@@ -243,6 +265,12 @@ public class SystemProperties {
         }
         keyWidth = (int) ((double) defKeyWidth * dimOffset);
         notesWidth = (int) ((double) notesWidth * dimOffset);
+        
+        String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
+        ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
+        scheduler1.schedule(() -> {
+            JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, synthKey);
+        }, 200, TimeUnit.MILLISECONDS);
     }
 
     public void preloadAudioFiles() {
@@ -253,6 +281,54 @@ public class SystemProperties {
     }
 
     public void loadAudioFiles(File... files) {
+        boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
+        int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
+        int ignoreNotesHighestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST);
+        if (ignoreNotesLowestOfAudio < 0) {
+            ignoreNotesLowestOfAudio = 0;
+        }
+        else if (ignoreNotesLowestOfAudio > 127) {
+            ignoreNotesLowestOfAudio = 127;
+        }
+        if (ignoreNotesHighestOfAudio < 0) {
+            ignoreNotesHighestOfAudio = 0;
+        }
+        else if (ignoreNotesHighestOfAudio > 127) {
+            ignoreNotesHighestOfAudio = 127;
+        }
+        if (ignoreNotesLowestOfAudio > ignoreNotesHighestOfAudio) {
+            validIgnoreNotesOfAudio = false;
+        }
+        if (validIgnoreNotesOfAudio == false) {
+            ignoreNotesLowestOfAudio = 0;
+            ignoreNotesHighestOfAudio = 0;
+        }
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setIgnoreNotesVelocityOfAudio(ignoreNotesLowestOfAudio, ignoreNotesHighestOfAudio);
+        
+        boolean validIgnoreNotesOfRender = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID);
+        int ignoreNotesLowestOfRender = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST);
+        int ignoreNotesHighestOfRender = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST);
+        if (ignoreNotesLowestOfRender < 0) {
+            ignoreNotesLowestOfRender = 0;
+        }
+        else if (ignoreNotesLowestOfRender > 127) {
+            ignoreNotesLowestOfRender = 127;
+        }
+        if (ignoreNotesHighestOfRender < 0) {
+            ignoreNotesHighestOfRender = 0;
+        }
+        else if (ignoreNotesHighestOfRender > 127) {
+            ignoreNotesHighestOfRender = 127;
+        }
+        if (ignoreNotesLowestOfRender > ignoreNotesHighestOfRender) {
+            validIgnoreNotesOfRender = false;
+        }
+        if (validIgnoreNotesOfRender == false) {
+            ignoreNotesLowestOfRender = 0;
+            ignoreNotesHighestOfRender = 0;
+        }
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setIgnoreNotesVelocityOfMonitor(ignoreNotesLowestOfRender, ignoreNotesHighestOfRender);
+        
         // 一番先頭のファイルを取得
         if ((files != null) && (files.length > 0)) {
 
@@ -351,5 +427,9 @@ public class SystemProperties {
 
     public List<File> getPreloadFiles() {
         return preloadFiles;
+    }
+    
+    public boolean isGhostNotes(int velocity) {
+        return JMPCoreAccessor.getSoundManager().getMidiUnit().isGhostNotesOfMonitor(velocity);
     }
 }

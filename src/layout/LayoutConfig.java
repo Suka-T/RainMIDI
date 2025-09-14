@@ -116,7 +116,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_PLAYER_BORDER_VERTICAL_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_PLAYER_BORDER_HORIZON_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_CURSOR_TYPE, PropertiesNodeType.ITEM, ECursorType.Keyboard, ECursorTypeS, ECursorTypeO));
-        nodes.add(new PropertiesNode(LC_CURSOR_COLOR, PropertiesNodeType.COLOR, "#A7E0F5"));
+        nodes.add(new PropertiesNode(LC_CURSOR_COLOR, PropertiesNodeType.COLOR, "#7FFFD4"));
         nodes.add(new PropertiesNode(LC_CURSOR_EFFE_COLOR, PropertiesNodeType.COLOR, "#FFFFFF"));
         nodes.add(new PropertiesNode(LC_CURSOR_EFFE_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_CURSOR_POS, PropertiesNodeType.INT, "-1", "", "", CursorPosS, CursorPosO));
@@ -141,7 +141,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "14", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "15", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "16", PropertiesNodeType.COLOR, "#ffffff"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.5", "0.1", "2.0"));
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.2", "0.1", "2.0"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_IN, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_OUT, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Default, EKeyboardDesignS, EKeyboardDesignO));
