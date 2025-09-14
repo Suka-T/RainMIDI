@@ -1,27 +1,42 @@
 package layout.parts;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 
+import layout.LayoutManager;
+
 public class ArcNotesPainter extends NotesPainter {
-
-    private static final BasicStroke notesBdStroke = new BasicStroke(0.2f);
-    private static final AlphaComposite bdAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
-    private static final BasicStroke normalStroke = new BasicStroke(1.0f);
-
+    
     @Override
     public void paintNotes(Context context) {
+        final int arc = 3;
+        int r = 0;
         Graphics2D g2d = (Graphics2D) context.g;
         if (context.iW > 1) {
-            g2d.setColor(context.bgColor);
-            g2d.fillRoundRect(context.iX, context.iY, context.iW, context.iH, 8, 8);
-            g2d.setStroke(notesBdStroke);
-            g2d.setColor(context.bdColor);
-            g2d.setComposite(bdAlpha);
-            g2d.drawRoundRect(context.iX, context.iY, context.iW, context.iH, 8, 8);
-            g2d.setComposite(AlphaComposite.SrcOver);
-            g2d.setStroke(normalStroke);
+            int i = 0;
+            for (; i < context.iH; i++) {
+                g2d.setColor(LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradColor(i));
+                if (i < arc - 1) {
+                    r = arc - i - 1;
+                    g2d.drawLine(context.iX + r, context.iY + i, context.iX + context.iW - r - 1, context.iY + i);
+                }
+                else if (i >= context.iH - arc) {
+                    r = arc - (context.iH - i);
+                    g2d.drawLine(context.iX + r, context.iY + i, context.iX + context.iW - r - 1, context.iY + i);
+                }
+                else {
+                    r = 0;
+                    g2d.drawLine(context.iX, context.iY + i, context.iX + context.iW - 1, context.iY + i);
+                }
+                
+                g2d.setColor(context.bdColor);
+                if (i == 0 || i == context.iH - 1) {
+                    g2d.drawLine(context.iX + r, context.iY + i, context.iX + context.iW - r - 1, context.iY + i);
+                }
+                else {
+                    g2d.drawLine(context.iX + r, context.iY + i, context.iX + r, context.iY + i);
+                    g2d.drawLine(context.iX + context.iW - r - 1, context.iY + i, context.iX + context.iW - r - 1, context.iY + i);
+                }
+            }
         }
         else {
             g2d.setColor(context.bdColor);
