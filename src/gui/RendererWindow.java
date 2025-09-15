@@ -811,8 +811,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     };
             colorGrad = new Color[] { 
                     new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 0), 
-                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 80),
-                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 200)
+                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 120),
+                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 240)
                     };
             
             RadialGradientPaint paint = new RadialGradientPaint(new Point(w / 2, h / 2), radius, colorF, colorGrad);
