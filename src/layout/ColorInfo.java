@@ -82,13 +82,13 @@ public class ColorInfo {
         int bdG = bdColor.getGreen();
         int bdB = bdColor.getBlue();
         
-        double offs = 1.0;
-        if (bdR - bgR > 0) {
-            offs = 0.25;
-        }
-        else if (bdR - bgR < 0) {
-            offs = 1.25;
-        }
+        double offs = 1.5;
+//        if (bdR - bgR > 0) {
+//            offs = 0.25;
+//        }
+//        else if (bdR - bgR < 0) {
+//            offs = 1.25;
+//        }
         bdR = (int)((double)bdR * offs);
         bdG = (int)((double)bdG * offs);
         bdB = (int)((double)bdB * offs);
