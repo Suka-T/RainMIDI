@@ -101,16 +101,16 @@ public class LayoutConfig {
     private static String[] CursorPosS = { "top" };
     
     public static enum EKeyboardDesign {
-        Default, Simple;
+        Default, Simple, Smart;
     }
-    private static Object[] EKeyboardDesignO = { EKeyboardDesign.Default, EKeyboardDesign.Simple };
-    private static String[] EKeyboardDesignS = { "default", "simple" };
+    private static Object[] EKeyboardDesignO = { EKeyboardDesign.Default, EKeyboardDesign.Simple, EKeyboardDesign.Smart };
+    private static String[] EKeyboardDesignS = { "default", "simple", "smart" };
 
     private List<PropertiesNode> nodes;
 
     public LayoutConfig() {
         nodes = new ArrayList<>();
-        nodes.add(new PropertiesNode(LC_PLAYER_BGCOLOR, PropertiesNodeType.COLOR, "#2f2f2f"));
+        nodes.add(new PropertiesNode(LC_PLAYER_BGCOLOR, PropertiesNodeType.COLOR, "#000000"));
         nodes.add(new PropertiesNode(LC_PLAYER_BDCOLOR, PropertiesNodeType.COLOR, "#202020"));
         nodes.add(new PropertiesNode(LC_PLAYER_COLOR_RULE, PropertiesNodeType.ITEM, EColorRule.Track, EColorRuleS, EColorRuleO));
         nodes.add(new PropertiesNode(LC_PLAYER_BORDER_VERTICAL_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
@@ -143,8 +143,8 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "16", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.2", "0.1", "2.0"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_IN, PropertiesNodeType.BOOLEAN, "true"));
-        nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_OUT, PropertiesNodeType.BOOLEAN, "true"));
-        nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Default, EKeyboardDesignS, EKeyboardDesignO));
+        nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_OUT, PropertiesNodeType.BOOLEAN, "false"));
+        nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Smart, EKeyboardDesignS, EKeyboardDesignO));
         definication();
     }
     

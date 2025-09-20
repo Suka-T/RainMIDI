@@ -129,7 +129,7 @@ public class PropertiesNode {
         return data;
     }
     
-    public Set getItems() {
+    public Set<String> getItems() {
         return map.keySet();
     }
     

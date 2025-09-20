@@ -3,7 +3,6 @@ package layout.parts.notes;
 import java.awt.Graphics2D;
 
 import layout.parts.NotesPainter;
-import layout.parts.NotesPainter.Context;
 
 public class FrameNotesPainter extends NotesPainter {
 

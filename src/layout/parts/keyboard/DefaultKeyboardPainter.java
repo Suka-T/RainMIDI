@@ -12,7 +12,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    public void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    protected void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int shadowW = (int)((double)parts.width * 0.06);
         g.setColor(bgColor);
         g.fill3DRect(parts.x, parts.y, parts.width, parts.height, true);
@@ -24,7 +24,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    public void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    protected void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int shadowW = (int)((double)parts.width * 0.02);
         g.setColor(bgColor);
         g.fill3DRect(parts.x, parts.y, parts.width, parts.height, true);
@@ -36,7 +36,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    public void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    protected void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int poffs = 0;
         int offs = (int)((double)parts.width * 0.05);
         g.setColor(bgColor);
@@ -49,7 +49,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    public void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    protected void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int offs = (int)((double)parts.width * 0.05);
         g.setColor(bgColor);
         g.fill3DRect(parts.x + offs, parts.y, parts.width - offs, parts.height, true);

@@ -246,6 +246,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
                     aHakken[hkCnt].height = hakkenHeight;
+                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                    aHakken[hkCnt].orgY = hitEffectPosY[i];
+                    aHakken[hkCnt].orgWidth = hkWidth;
+                    aHakken[hkCnt].orgHeight = keyHeight;
                     aHakken[hkCnt].y -= (keyHeight / 2);
                     aHakken[hkCnt].midiNo = midiNo;
                     hkCnt++;
@@ -258,6 +262,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
                     aHakken[hkCnt].height = hakkenHeight + keyHeight / 2;
+                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                    aHakken[hkCnt].orgY = hitEffectPosY[i];
+                    aHakken[hkCnt].orgWidth = hkWidth;
+                    aHakken[hkCnt].orgHeight = keyHeight;
                     aHakken[hkCnt].y -= (keyHeight / 2);
                     aHakken[hkCnt].midiNo = midiNo;
                     hkCnt++;
@@ -269,6 +277,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     aHakken[hkCnt].y = hitEffectPosY[i];
                     aHakken[hkCnt].width = hkWidth;
                     aHakken[hkCnt].height = hakkenHeight;
+                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                    aHakken[hkCnt].orgY = hitEffectPosY[i];
+                    aHakken[hkCnt].orgWidth = hkWidth;
+                    aHakken[hkCnt].orgHeight = keyHeight;
                     aHakken[hkCnt].midiNo = midiNo;
                     hkCnt++;
                     break;
@@ -282,6 +294,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     aKokken[kkCnt].y = hitEffectPosY[i];
                     aKokken[kkCnt].width = kkWidth;
                     aKokken[kkCnt].height = keyHeight;
+                    aKokken[kkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
+                    aKokken[kkCnt].orgY = hitEffectPosY[i];
+                    aKokken[kkCnt].orgWidth = kkWidth;
+                    aKokken[kkCnt].orgHeight = keyHeight;
                     aKokken[kkCnt].midiNo = midiNo;
                     kkCnt++;
                     break;
@@ -505,7 +521,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private void drawGlowingLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
         
         // ======= 調整用パラメータ =======
-        float coreStroke = 5.0f;
+//        float coreStroke = 5.0f;
         float glowMaxStroke = 24.0f;
         float glowMinStroke = 12.0f;
         float glowStep = 4.0f;
@@ -1030,6 +1046,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             /* White Keyboard */
             Color keyBgColor;
             boolean isPush = false;
+            keyboardPainter.setKeyboardWidth(getKeyboardWidth());
             for (int i = 0; i < aHakken.length; i++) {
                 rgb = getKeyColor(aHakken[i].midiNo);
                 isPush = true;
@@ -1046,6 +1063,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             /* Black Keyboard */
             Color keyBgColor;
             boolean isPush = false;
+            keyboardPainter.setKeyboardWidth(getKeyboardWidth());
             for (int i = 0; i < aKokken.length; i++) {
                 rgb = getKeyColor(aKokken[i].midiNo);
                 isPush = true;

@@ -27,10 +27,6 @@ public class NotesImageWorker extends ImageWorker {
 
     private class NoteOnCache {
         public long tick = -1;
-        public int trackIndex = 0;
-        public int channel = 0;
-        public int data1 = 0;
-        public int data2 = 0;
 
         NoteOnCache() {
             init();
@@ -38,7 +34,6 @@ public class NotesImageWorker extends ImageWorker {
 
         public void init() {
             tick = -1;
-            trackIndex = 0;
         }
     }
 
@@ -232,10 +227,6 @@ public class NotesImageWorker extends ImageWorker {
                             if (SystemProperties.getInstance().isGhostNotes(data2) == false) {
                                 if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
                                     noteOnEvents[channel][data1].tick = tick;
-                                    noteOnEvents[channel][data1].trackIndex = trk;
-                                    noteOnEvents[channel][data1].channel = channel;
-                                    noteOnEvents[channel][data1].data1 = data1;
-                                    noteOnEvents[channel][data1].data2 = data2;
                                 }
                             }
                         }

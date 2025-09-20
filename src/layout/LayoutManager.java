@@ -22,6 +22,7 @@ import layout.parts.KeyboardPainter;
 import layout.parts.NotesPainter;
 import layout.parts.keyboard.DefaultKeyboardPainter;
 import layout.parts.keyboard.SimpleKeyboardPainter;
+import layout.parts.keyboard.SmartKeyboardPainter;
 import layout.parts.notes.ArcNotesPainter;
 import layout.parts.notes.FlatNotesPainter;
 import layout.parts.notes.FrameNotesPainter;
@@ -49,6 +50,7 @@ public class LayoutManager {
         {
             put(EKeyboardDesign.Default, new DefaultKeyboardPainter());
             put(EKeyboardDesign.Simple, new SimpleKeyboardPainter());
+            put(EKeyboardDesign.Smart, new SmartKeyboardPainter());
         }
     };
 
@@ -226,8 +228,14 @@ public class LayoutManager {
     public KeyboardPainter getKeyboardPainter(SystemProperties.SyspViewMode mode) {
         LayoutConfig.EKeyboardDesign kbDesign = (LayoutConfig.EKeyboardDesign) layout.getData(LayoutConfig.LC_KEYBOARD_DESIGN);
         if (mode == SyspViewMode.SIDE_FLOW) {
-            // SideFlowはSimpleのみ対応
-            return kbPainters.get(LayoutConfig.EKeyboardDesign.Simple);
+            switch (kbDesign) {
+                case LayoutConfig.EKeyboardDesign.Default:
+                    // SideFlowはSimpleのみ対応
+                    kbDesign = LayoutConfig.EKeyboardDesign.Simple;
+                    break;
+                default:
+                    break;
+            }
         }
         return kbPainters.get(kbDesign);
     }

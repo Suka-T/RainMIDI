@@ -9,9 +9,8 @@ import layout.parts.KeyboardPainter;
 public class SimpleKeyboardPainter extends KeyboardPainter {
 
     public SimpleKeyboardPainter() {}
-
-    @Override
-    public void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    
+    private void drawKeyImpl(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         g.setColor(bgColor);
         g.fillRect(parts.x, parts.y, parts.width, parts.height);
         g.setColor(Color.GRAY);
@@ -19,27 +18,23 @@ public class SimpleKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    public void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        g.setColor(bgColor);
-        g.fillRect(parts.x, parts.y, parts.width, parts.height);
-        g.setColor(Color.GRAY);
-        g.drawRect(parts.x, parts.y, parts.width, parts.height);
+    protected void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+        drawKeyImpl(g, parts, bgColor, bdColor, isPush);
     }
 
     @Override
-    public void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        g.setColor(bgColor);
-        g.fillRect(parts.x, parts.y, parts.width, parts.height);
-        g.setColor(Color.GRAY);
-        g.drawRect(parts.x, parts.y, parts.width, parts.height);
+    protected void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+        drawKeyImpl(g, parts, bgColor, bdColor, isPush);
     }
 
     @Override
-    public void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        g.setColor(bgColor);
-        g.fillRect(parts.x, parts.y, parts.width, parts.height);
-        g.setColor(Color.GRAY);
-        g.drawRect(parts.x, parts.y, parts.width, parts.height);
+    protected void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+        drawKeyImpl(g, parts, bgColor, bdColor, isPush);
+    }
+
+    @Override
+    protected void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+        drawKeyImpl(g, parts, bgColor, bdColor, isPush);
     }
 
 }
