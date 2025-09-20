@@ -1,7 +1,10 @@
-package layout.parts;
+package layout.parts.keyboard;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import layout.parts.KeyParts;
+import layout.parts.KeyboardPainter;
 
 public class DefaultKeyboardPainter extends KeyboardPainter {
 
@@ -9,7 +12,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int shadowW = (int)((double)parts.width * 0.06);
         g.setColor(bgColor);
         g.fill3DRect(parts.x, parts.y, parts.width, parts.height, true);
@@ -21,7 +24,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int shadowW = (int)((double)parts.width * 0.02);
         g.setColor(bgColor);
         g.fill3DRect(parts.x, parts.y, parts.width, parts.height, true);
@@ -33,7 +36,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int poffs = 0;
         int offs = (int)((double)parts.width * 0.05);
         g.setColor(bgColor);
@@ -46,7 +49,7 @@ public class DefaultKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         int offs = (int)((double)parts.width * 0.05);
         g.setColor(bgColor);
         g.fill3DRect(parts.x + offs, parts.y, parts.width - offs, parts.height, true);

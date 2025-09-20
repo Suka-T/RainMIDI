@@ -1,8 +1,14 @@
-package layout.parts;
+package layout.parts.notes;
 
 import java.awt.Graphics2D;
 
-public class FlatNotesPainter extends NotesPainter {
+import layout.parts.NotesPainter;
+import layout.parts.NotesPainter.Context;
+
+public class NormalNotesPainter extends NotesPainter {
+    public NormalNotesPainter() {
+
+    }
 
     @Override
     public void paintNotes(Context context) {
@@ -10,9 +16,11 @@ public class FlatNotesPainter extends NotesPainter {
         if (context.iW > 1) {
             g2d.setColor(context.bgColor);
             g2d.fillRect(context.iX, context.iY, context.iW, context.iH);
+            g2d.setColor(context.bdColor);
+            g2d.drawRect(context.iX, context.iY, context.iW, context.iH);
         }
         else {
-            g2d.setColor(context.bgColor);
+            g2d.setColor(context.bdColor);
             g2d.drawLine(context.iX, context.iY, context.iX, context.iY + context.iH - 1);
         }
     }

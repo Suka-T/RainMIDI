@@ -5,9 +5,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import layout.LayoutManager;
-import layout.parts.BlackKeyParts;
 import layout.parts.KeyParts;
-import layout.parts.WhiteKeyParts;
+import layout.parts.key.BlackKeyParts;
+import layout.parts.key.WhiteKeyParts;
 import plg.SystemProperties;
 
 public class RainFallRendererWindow extends RendererWindow {

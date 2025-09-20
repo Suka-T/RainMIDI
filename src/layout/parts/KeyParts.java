@@ -14,6 +14,6 @@ public class KeyParts {
     public KeyParts() {
     }
 
-    public void  draw(Graphics g, Color bgColor, Color bdColor, boolean isPush) {
+    public void draw(Graphics g, Color bgColor, Color bdColor, boolean isPush) {
     }
 }

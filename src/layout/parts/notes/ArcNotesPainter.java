@@ -1,8 +1,10 @@
-package layout.parts;
+package layout.parts.notes;
 
 import java.awt.Graphics2D;
 
 import layout.LayoutManager;
+import layout.parts.NotesPainter;
+import layout.parts.NotesPainter.Context;
 
 public class ArcNotesPainter extends NotesPainter {
     

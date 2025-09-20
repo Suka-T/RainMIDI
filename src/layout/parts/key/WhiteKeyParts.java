@@ -1,7 +1,9 @@
-package layout.parts;
+package layout.parts.key;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import layout.parts.KeyParts;
 
 public class WhiteKeyParts extends KeyParts {
 

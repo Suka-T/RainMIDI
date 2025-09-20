@@ -1,14 +1,17 @@
-package layout.parts;
+package layout.parts.keyboard;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import layout.parts.KeyParts;
+import layout.parts.KeyboardPainter;
 
 public class SimpleKeyboardPainter extends KeyboardPainter {
 
     public SimpleKeyboardPainter() {}
 
     @Override
-    void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         g.setColor(bgColor);
         g.fillRect(parts.x, parts.y, parts.width, parts.height);
         g.setColor(Color.GRAY);
@@ -16,7 +19,7 @@ public class SimpleKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         g.setColor(bgColor);
         g.fillRect(parts.x, parts.y, parts.width, parts.height);
         g.setColor(Color.GRAY);
@@ -24,7 +27,7 @@ public class SimpleKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         g.setColor(bgColor);
         g.fillRect(parts.x, parts.y, parts.width, parts.height);
         g.setColor(Color.GRAY);
@@ -32,7 +35,7 @@ public class SimpleKeyboardPainter extends KeyboardPainter {
     }
 
     @Override
-    void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
+    public void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
         g.setColor(bgColor);
         g.fillRect(parts.x, parts.y, parts.width, parts.height);
         g.setColor(Color.GRAY);
