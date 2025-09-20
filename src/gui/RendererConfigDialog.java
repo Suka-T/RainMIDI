@@ -254,7 +254,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 JLabel lblSynthLabel = new JLabel("MIDI Receiver");
                 lblSynthLabel.setBounds(12, 21, 72, 13);
                 audioSummaryPanel.add(lblSynthLabel);
-                
+
                 lblSynthDesc = new JLabel("");
                 lblSynthDesc.setBounds(115, 48, 416, 13);
                 audioSummaryPanel.add(lblSynthDesc);
@@ -452,11 +452,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 });
                 rdbtnMonitorType2.setBounds(330, 170, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType2);
-                
+
                 JLabel lblIgnoreNotesLabel = new JLabel("Ignore Notes");
                 lblIgnoreNotesLabel.setBounds(12, 197, 72, 13);
                 systemSummaryPanel.add(lblIgnoreNotesLabel);
-                
+
                 chckbxIgnoreNotesValid = new JCheckBox("Invisible Ghost Notes");
                 chckbxIgnoreNotesValid.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -465,7 +465,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 });
                 chckbxIgnoreNotesValid.setBounds(96, 193, 149, 21);
                 systemSummaryPanel.add(chckbxIgnoreNotesValid);
-                
+
                 chckbxIgnoreInBetween = new JCheckBox("Ignore audio in between two velocity values");
                 chckbxIgnoreInBetween.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -474,7 +474,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 });
                 chckbxIgnoreInBetween.setBounds(96, 216, 303, 21);
                 systemSummaryPanel.add(chckbxIgnoreInBetween);
-                
+
                 spinnerIgnoreLow = new JSpinner();
                 spinnerIgnoreLow.setModel(new SpinnerNumberModel(1, 1, 127, 1));
                 spinnerIgnoreLow.addChangeListener(new ChangeListener() {
@@ -485,7 +485,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 });
                 spinnerIgnoreLow.setBounds(213, 243, 58, 20);
                 systemSummaryPanel.add(spinnerIgnoreLow);
-                
+
                 spinnerIgnoreHigh = new JSpinner();
                 spinnerIgnoreHigh.setModel(new SpinnerNumberModel(20, 1, 127, 1));
                 spinnerIgnoreHigh.addChangeListener(new ChangeListener() {
@@ -496,12 +496,12 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 });
                 spinnerIgnoreHigh.setBounds(370, 243, 58, 20);
                 systemSummaryPanel.add(spinnerIgnoreHigh);
-                
+
                 JLabel lblLow = new JLabel("Lowest");
                 lblLow.setHorizontalAlignment(SwingConstants.RIGHT);
                 lblLow.setBounds(159, 246, 50, 13);
                 systemSummaryPanel.add(lblLow);
-                
+
                 JLabel lblHigh = new JLabel("Highest");
                 lblHigh.setHorizontalAlignment(SwingConstants.RIGHT);
                 lblHigh.setBounds(315, 246, 50, 13);
@@ -572,7 +572,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
         initialized.set(true);
     }
-    
+
     public void updateSynthDescription() {
         String description = "";
         String synthKey = synthItemKeys.get(comboBoxSynth.getSelectedIndex());
@@ -582,7 +582,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         }
         lblSynthDesc.setText(description);
     }
-    
+
     public void updateAbout() {
         // HTMLコンテンツの作成
         String appName = "AppName";
@@ -610,11 +610,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     + "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
                     + "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, "
                     + "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " + "SOFTWARE.";
-    
+
             String htmlContent = "<html><body style='font-family: Arial, sans-serif; text-align: center; margin: 10px;'>" + "<h1>" + appName + "</h1>"
                     + "<p>Version " + appVersion + "</p>" + "<hr style='width: 50%; margin: 5px auto;'>" + "<p>&copy; " + currentYear + " " + company
                     + ". All Rights Reserved.</p>" + "<p style='font-size: 0.8em; color: gray; text-align: left;'>" + licenseText + "</p>" + "</body></html>";
-            
+
             editorPane.setText(htmlContent);
         }
     }
@@ -652,7 +652,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         updateSystemItems();
         updateDesignItems();
 
-        String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_LAYOUT).getDataString();
+        String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_LAYOUT).getDataString();
         if (layoutName != null && layoutName.isEmpty() == false) {
             lblSelectedLayoutLabel.setText(layoutName);
         }
@@ -746,16 +746,16 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 }
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID)) {
-                chckbxIgnoreNotesValid.setSelected((boolean)node.getData());
+                chckbxIgnoreNotesValid.setSelected((boolean) node.getData());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID)) {
-                chckbxIgnoreInBetween.setSelected((boolean)node.getData());
+                chckbxIgnoreInBetween.setSelected((boolean) node.getData());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST)) {
-                spinnerIgnoreLow.setValue((int)node.getData());
+                spinnerIgnoreLow.setValue((int) node.getData());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST)) {
-                spinnerIgnoreHigh.setValue((int)node.getData());
+                spinnerIgnoreHigh.setValue((int) node.getData());
             }
 
             if (SystemProperties.SwapKeyName.containsKey(keyName)) {
@@ -858,7 +858,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             comboBoxSynth.addItem(s);
         }
         comboBoxSynth.setSelectedIndex(selectedIndex);
-        
+
         updateSynthDescription();
     }
 
@@ -923,14 +923,14 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         LayoutManager.getInstance().read(selectedFile);
                         String layoutName = Utility.getFileNameNotExtension(selectedFile);
                         if (layoutName != null && layoutName.isEmpty() == false) {
-                            setSystemTableParam(SystemProperties.SYSP_LAYOUT, layoutName);
+                            setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, layoutName);
                             lblSelectedLayoutLabel.setText(layoutName);
                         }
                         updateDesignItems();
                     }
                     catch (IOException e1) {
                         LayoutManager.getInstance().initializeConfig();
-                        setSystemTableParam(SystemProperties.SYSP_LAYOUT, "");
+                        setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
                         lblSelectedLayoutLabel.setText("Default Design");
                         updateDesignItems();
                     }
@@ -943,6 +943,14 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 // 複数選択を許可
                 chooser.setMultiSelectionEnabled(true);
 
+                String path = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_DEFAULT_PATH).getDataString();
+                File dir = new File(path);
+                if (path.isEmpty() == false) {
+                    if (dir.exists() && dir.isDirectory()) {
+                        chooser.setCurrentDirectory(dir);
+                    }
+                }
+
                 // ダイアログを開く
                 SystemProperties.getInstance().getPreloadFiles().clear();
                 int result = chooser.showOpenDialog(null);
@@ -950,6 +958,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     File[] files = chooser.getSelectedFiles(); // 複数ファイル
                     for (File f : files) {
                         SystemProperties.getInstance().getPreloadFiles().add(f);
+                        setSystemTableParam(SystemProperties.SYSP_FILE_DEFAULT_PATH, f.getParent());
                     }
                     setVisible(false);
 
@@ -966,7 +975,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             }
             case "DEF_LAYOUT":
                 LayoutManager.getInstance().initializeConfig();
-                setSystemTableParam(SystemProperties.SYSP_LAYOUT, "");
+                setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
                 lblSelectedLayoutLabel.setText("Default Design");
                 updateDesignItems();
                 break;

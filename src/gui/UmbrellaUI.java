@@ -17,6 +17,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 import jlib.core.JMPCoreAccessor;
+import plg.SystemProperties;
 
 public class UmbrellaUI implements MouseListener, MouseMotionListener {
     
@@ -83,11 +84,23 @@ public class UmbrellaUI implements MouseListener, MouseMotionListener {
 
                 // 複数選択を許可
                 chooser.setMultiSelectionEnabled(true);
+                
+                String path = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_DEFAULT_PATH).getDataString();
+                File dir = new File(path);
+                if (path.isEmpty() == false) {
+                    if (dir.exists() && dir.isDirectory()) {
+                        chooser.setCurrentDirectory(dir);
+                    }
+                }
 
                 // ダイアログを開く
                 int result = chooser.showOpenDialog(null);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File[] files = chooser.getSelectedFiles(); // 複数ファイル
+                    
+                    SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_DEFAULT_PATH).setObject(files[0].getParent());
+                    
+                    JMPCoreAccessor.getSoundManager().stop();
                     if (files.length >= 2) {
                         JMPCoreAccessor.getFileManager().loadDualFileToPlay(files[0], files[1]);
                     }

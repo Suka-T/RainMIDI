@@ -22,7 +22,8 @@ import jlib.midi.IMidiUnit;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
-    public static final String SYSP_LAYOUT = "layout";
+    public static final String SYSP_FILE_LAYOUT = "file.layout";
+    public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
     public static final String SYSP_RENDERER_MODE = "renderer.mode";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
@@ -45,7 +46,8 @@ public class SystemProperties {
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
-            put(SYSP_LAYOUT, "Preload settings file name");
+            put(SYSP_FILE_LAYOUT, "Preload Layout file name");
+            put(SYSP_FILE_DEFAULT_PATH, "Default folder");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
@@ -140,7 +142,8 @@ public class SystemProperties {
     private SystemProperties() {
         nodes = new ArrayList<>();
 
-        nodes.add(new PropertiesNode(SYSP_LAYOUT, PropertiesNodeType.STRING, ""));
+        nodes.add(new PropertiesNode(SYSP_FILE_LAYOUT, PropertiesNodeType.STRING, ""));
+        nodes.add(new PropertiesNode(SYSP_FILE_DEFAULT_PATH, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MODE, PropertiesNodeType.ITEM, SyspViewMode.RAIN_FALL, viewModeItemS, viewModeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "2", "2", "64"));
@@ -373,7 +376,7 @@ public class SystemProperties {
     }
 
     public String getLayoutFile() {
-        return (String) getPropNode(SYSP_LAYOUT).getData();
+        return (String) getPropNode(SYSP_FILE_LAYOUT).getData();
     }
 
     public boolean isDebugMode() {
