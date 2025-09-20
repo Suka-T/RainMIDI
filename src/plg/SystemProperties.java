@@ -18,6 +18,7 @@ import jlib.core.IDataManager;
 import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
+import jlib.midi.IMidiUnit;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
@@ -26,6 +27,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_MODE = "renderer.mode";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
+    public static final String SYSP_RENDERER_KEY_FOCUS_FUNC = "renderer.keyFocusFunc";
     public static final String SYSP_RENDERER_LAYERORDER = "renderer.layerOrder";
     public static final String SYSP_RENDERER_NOTESSPEED = "renderer.notesSpeed";
     public static final String SYSP_RENDERER_NOTESIMAGENUM = "renderer.notesImageNum";
@@ -48,6 +50,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_MODE, "Renderer view mode");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
+            put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
             put(SYSP_RENDERER_NOTESSPEED, "Notes Speed [1 - 100 | auto]");
             put(SYSP_RENDERER_NOTESIMAGENUM, "Rendering notes image size [3 - 300]");
@@ -76,6 +79,10 @@ public class SystemProperties {
         RAIN_FALL, SIDE_FLOW;
     }
 
+    public static enum SyspKeyFocusFunc {
+        MIDI_EVENT, COLOR;
+    }
+    
     public static enum SyspLayerOrder {
         ASC, DESC;
     }
@@ -91,6 +98,9 @@ public class SystemProperties {
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
 
+    private static Object[] keyFocusFuncItemO = { SyspKeyFocusFunc.MIDI_EVENT, SyspKeyFocusFunc.COLOR };
+    private static String[] keyFocusFuncItemS = { "midi_event", "color" };
+    
     private static Object[] layerOrderItemO = { SyspLayerOrder.ASC, SyspLayerOrder.DESC };
     private static String[] layerOrderItemS = { "asc", "desc" };
 
@@ -136,6 +146,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "2", "2", "64"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.INT, "-1", "1", "100", NotesSpeedItemS, NotesSpeedItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "120", "3", "1000", NotesCountItemS, NotesCountItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
@@ -377,6 +388,14 @@ public class SystemProperties {
         return (SyspViewMode) getPropNode(SYSP_RENDERER_MODE).getData();
     }
 
+    public SyspKeyFocusFunc getKeyFocusFunc() {
+        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        if (midiUnit.isRenderingOnlyMode() == true) {
+            return SyspKeyFocusFunc.COLOR;
+        }
+        return (SyspKeyFocusFunc) getPropNode(SYSP_RENDERER_KEY_FOCUS_FUNC).getData();
+    }
+    
     public SyspLayerOrder getLayerOrder() {
         return (SyspLayerOrder) getPropNode(SYSP_RENDERER_LAYERORDER).getData();
     }

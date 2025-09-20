@@ -51,6 +51,7 @@ import layout.parts.KeyboardPainter.KindOfKey;
 import layout.parts.WhiteKeyParts;
 import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
+import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspMonitorType;
 import plg.SystemProperties.SyspWinEffect;
@@ -865,7 +866,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     public int getKeyColor(int midiNo) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        if (midiUnit.isRenderingOnlyMode() == true) {
+        if (SystemProperties.getInstance().getKeyFocusFunc() == SyspKeyFocusFunc.COLOR) {
             BufferedImage notesImg = (BufferedImage) imageWorkerMgr.getNotesImage();
             if (notesImg == null) {
                 return 0;
