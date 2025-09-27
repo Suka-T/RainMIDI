@@ -1,4 +1,5 @@
 import jlib.core.IDataManager;
+import jmp.JMPFlags;
 import jmp.JMPLoader;
 import jmp.file.ConfigDatabaseWrapper;
 import std.StandAlonePluginInvoker;
@@ -9,6 +10,7 @@ public class RainMIDI_std {
         JMPLoader.UseConfigFile = false;
         JMPLoader.UseHistoryFile = false;
         JMPLoader.UseSkinFile = false;
+        JMPFlags.UseUnsynchronizedMidiPacket = false;
 
         ConfigDatabaseWrapper cfg = new ConfigDatabaseWrapper();
         cfg.setConfigParamToBoolean(IDataManager.CFG_KEY_SHOW_STARTUP_DEVICE_SETUP, false);
