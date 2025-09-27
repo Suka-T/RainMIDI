@@ -609,6 +609,35 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
             g.drawString(sb.toString(), strX, strY + (fsize / 2));
+            strY += fsize;
+            
+            if (midiUnit.isProgressNowAnalyzing() == true) {
+                fsize = 14;
+                g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fsize));
+                fm = g.getFontMetrics();
+                
+                sb.setLength(0);
+                sb.append("TICK: ").append(midiUnit.getProgressReadTick());
+                stringWidth = fm.stringWidth(sb.toString());
+                strX = (paneWidth - stringWidth) / 2;
+                g.drawString(sb.toString(), strX, strY + (fsize / 2));
+                strY += fsize;
+                
+                sb.setLength(0);
+                sb.append("NOTES: ").append(midiUnit.getProgressNotesCount());
+                stringWidth = fm.stringWidth(sb.toString());
+                strX = (paneWidth - stringWidth) / 2;
+                g.drawString(sb.toString(), strX, strY + (fsize / 2));
+                strY += fsize;
+                
+                sb.setLength(0);
+                sb.append("TRACK: ").append(midiUnit.getProgressFinTrackNum()).append("/").append(midiUnit.getNumOfTrack());
+                stringWidth = fm.stringWidth(sb.toString());
+                strX = (paneWidth - stringWidth) / 2;
+                g.drawString(sb.toString(), strX, strY + (fsize / 2));
+                strY += fsize;
+            }
+            
             drawSpinner((Graphics2D) g);
         }
         else if (midiUnit.isValidSequence() == false && isFirstRendering == false) {
