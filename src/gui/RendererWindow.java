@@ -112,10 +112,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             JMPCoreAccessor.getSoundManager().stop();
-
+            
             if (JMPCoreAccessor.getWindowManager().getMainWindow().isWindowVisible() == true) {
                 JMPCoreAccessor.getWindowManager().getMainWindow().setWindowVisible(false);
             }
+            
+            JMPCoreAccessor.getSoundManager().removeMidiSequence();
 
             AbstractRenderPlugin.PluginInstance.launch();
         }
