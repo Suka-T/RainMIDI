@@ -90,7 +90,7 @@ public class SystemProperties {
     }
 
     public static enum SyspMonitorType {
-        NONE, TYPE1, TYPE2;
+        NONE, TYPE1, TYPE2, TYPE3;
     }
     
     public static enum SyspWinEffect {
@@ -106,8 +106,8 @@ public class SystemProperties {
     private static Object[] layerOrderItemO = { SyspLayerOrder.ASC, SyspLayerOrder.DESC };
     private static String[] layerOrderItemS = { "asc", "desc" };
 
-    private static Object[] monitorTypeItemO = { SyspMonitorType.NONE, SyspMonitorType.TYPE1, SyspMonitorType.TYPE2 };
-    private static String[] monitorTypeItemS = { "none", "type1", "type2" };
+    private static Object[] monitorTypeItemO = { SyspMonitorType.NONE, SyspMonitorType.TYPE1, SyspMonitorType.TYPE2, SyspMonitorType.TYPE3 };
+    private static String[] monitorTypeItemS = { "none", "type1", "type2", "type3" };
 
     private static Object[] NotesSpeedItemO = { -1 };
     private static String[] NotesSpeedItemS = { "auto" };

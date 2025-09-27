@@ -7,6 +7,7 @@ import java.util.List;
 public class ColorInfo {
     protected Color bgColor = null;
     protected Color bdColor = null;
+    protected Color shadowColor = null;
     protected Color effeColor = null;
     protected Color bgRevColor = null;
     protected Color bgRev2Color = null;
@@ -22,6 +23,7 @@ public class ColorInfo {
         this.gradSize = 1;
         this.bgRevColor = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.BLACK : Color.WHITE;
         this.bgRev2Color = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.WHITE : Color.BLACK;
+        createShadowColor();
     }
     
     public ColorInfo(Color bgColor, Color bdColor, Color effeColor) {
@@ -33,6 +35,19 @@ public class ColorInfo {
         this.gradSize = 1;
         this.bgRevColor = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.BLACK : Color.WHITE;
         this.bgRev2Color = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.WHITE : Color.BLACK;
+        createShadowColor();
+    }
+    
+    private void createShadowColor() {
+        double borderOffset = 0.5;
+        int r = this.bgColor.getRed();
+        int g = this.bgColor.getGreen();
+        int b = this.bgColor.getBlue();
+        //int a = this.bgColor.getAlpha();
+        r = (int) ((double) r * borderOffset);
+        g = (int) ((double) g * borderOffset);
+        b = (int) ((double) b * borderOffset);
+        this.shadowColor = new Color(r, g, b);
     }
     
     public Color getBgColor() {
@@ -78,20 +93,9 @@ public class ColorInfo {
         int bgG = bgColor.getGreen();
         int bgB = bgColor.getBlue();
 
-        int bdR = bdColor.getRed();
-        int bdG = bdColor.getGreen();
-        int bdB = bdColor.getBlue();
-        
-        double offs = 1.5;
-//        if (bdR - bgR > 0) {
-//            offs = 0.25;
-//        }
-//        else if (bdR - bgR < 0) {
-//            offs = 1.25;
-//        }
-        bdR = (int)((double)bdR * offs);
-        bdG = (int)((double)bdG * offs);
-        bdB = (int)((double)bdB * offs);
+        int bdR = shadowColor.getRed();
+        int bdG = shadowColor.getGreen();
+        int bdB = shadowColor.getBlue();
 
         int spanR = (bdR - bgR) / size;
         int spanG = (bdG - bgG) / size;

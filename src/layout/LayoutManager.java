@@ -230,7 +230,7 @@ public class LayoutManager {
         if (mode == SyspViewMode.SIDE_FLOW) {
             switch (kbDesign) {
                 case LayoutConfig.EKeyboardDesign.Default:
-                    // SideFlowはSimpleのみ対応
+                    // SideFlowはDefault非対応 
                     kbDesign = LayoutConfig.EKeyboardDesign.Simple;
                     break;
                 default:

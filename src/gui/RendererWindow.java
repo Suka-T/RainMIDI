@@ -431,6 +431,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private StringBuilder sb = new StringBuilder(64); // 初期容量を指定
     private Font info1Font = new Font(Font.SANS_SERIF, Font.PLAIN, 28);
     private Font info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 64);
+    private Font info3Font = new Font(Font.SANS_SERIF, Font.PLAIN, 28);
     protected volatile VolatileImage orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
 
@@ -805,6 +806,50 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 g.drawString(sb.toString(), sx, sy);
             }
         }
+        else if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE3) {
+            int sx = 0;
+            int sy = 30;
+            int sh = 28;
+            Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
+            Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
+            long val1, val2;
+            int width;
+            String text;
+            FontMetrics fm;
+            g.setFont(info3Font);
+            
+            sb.setLength(0);
+            val1 = (int) midiUnit.getTempoInBPM();
+            val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
+            sb.append(val1).append(".").append(val2).append(" BPM");
+            text = sb.toString();
+            fm = g.getFontMetrics();
+            width = fm.stringWidth(text);
+            sx = (getWidth() - width) / 2;
+            g.setColor(backStrColor);
+            g.drawString(sb.toString(), sx + 1, sy + 1);
+            g.setColor(topStrColor);
+            g.drawString(sb.toString(), sx, sy);
+            sy += sh;
+            
+            if (midiUnit.isRenderingOnlyMode() == false) {
+                sb.setLength(0);
+                val1 = midiUnit.getSignatureInfo().getNumerator();
+                val2 = midiUnit.getSignatureInfo().getDenominator();
+                sb.append(val1).append("/").append(val2).append(" ").append(midiUnit.getSignatureInfo().getAccidental());
+
+                text = sb.toString();
+                fm = g.getFontMetrics();
+                width = fm.stringWidth(text);
+
+                sx = (getWidth() - width) / 2;
+                g.setColor(backStrColor);
+                g.drawString(sb.toString(), sx + 1, sy + 1);
+                g.setColor(topStrColor);
+                g.drawString(sb.toString(), sx, sy);
+                sy += sh;
+            }
+        }
         else {
             /* mode = NONE */
         }
@@ -884,7 +929,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         if (SystemProperties.getInstance().getKeyFocusFunc() == SyspKeyFocusFunc.COLOR) {
             BufferedImage notesImg = (BufferedImage) imageWorkerMgr.getNotesImage();
-            if (notesImg == null) {
+            if (notesImg == null || JMPCoreAccessor.getSoundManager().isPlay() == false) {
                 return 0;
             }
             long tickPos = midiUnit.getTickPosition();

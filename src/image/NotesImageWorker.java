@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -251,8 +250,8 @@ public class NotesImageWorker extends ImageWorker {
                     }
                 });
             }
-            catch (IOException e) {
-                JMPCoreAccessor.getSystemManager().errorHandle(e);
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
