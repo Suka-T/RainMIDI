@@ -144,6 +144,10 @@ public class LayoutManager {
     public void initializeConfig() {
         layout.definication();
     }
+    
+    public void invalidateEffectConfig() {
+        layout.invalidateEffectConfig();
+    }
 
     public void read(File f) throws IOException {
         if (f.exists() == true) {

@@ -129,6 +129,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JSpinner spinnerIgnoreLow;
     private JSpinner spinnerIgnoreHigh;
     private JRadioButton rdbtnMonitorType3;
+    private JCheckBox chckbxInvalidateEffect;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -210,7 +211,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
         setModal(true);
-        setBounds(100, 100, 641, 618);
+        setBounds(100, 100, 641, 635);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -305,7 +306,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 layoutSummaryPanel.setLayout(null);
                 layoutSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "Design", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                layoutSummaryPanel.setBounds(12, 158, 584, 98);
+                layoutSummaryPanel.setBounds(12, 158, 584, 116);
                 panel.add(layoutSummaryPanel);
 
                 lblSelectedLayoutLabel = new JLabel("Default Design");
@@ -316,20 +317,28 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 JButton btnLoadLayoutButton = new JButton("Load Design");
                 btnLoadLayoutButton.setActionCommand("LOAD_LAYOUT");
                 btnLoadLayoutButton.addActionListener(this);
-                btnLoadLayoutButton.setBounds(318, 61, 121, 26);
+                btnLoadLayoutButton.setBounds(318, 80, 121, 26);
                 layoutSummaryPanel.add(btnLoadLayoutButton);
 
                 JButton btnDefaultButton = new JButton("Default");
                 btnDefaultButton.setActionCommand("DEF_LAYOUT");
                 btnDefaultButton.addActionListener(this);
-                btnDefaultButton.setBounds(451, 61, 121, 26);
+                btnDefaultButton.setBounds(451, 80, 121, 26);
                 layoutSummaryPanel.add(btnDefaultButton);
+                
+                chckbxInvalidateEffect = new JCheckBox("Invalidate Effect");
+                chckbxInvalidateEffect.setBounds(24, 57, 169, 21);
+                layoutSummaryPanel.add(chckbxInvalidateEffect);
+                
+                JLabel lblInvalidateEffectDesc = new JLabel("<html>If your PC does not have a GPU,<br>we recommend turning this on.</html>");
+                lblInvalidateEffectDesc.setBounds(56, 80, 215, 26);
+                layoutSummaryPanel.add(lblInvalidateEffectDesc);
 
                 JPanel systemSummaryPanel = new JPanel();
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 266, 584, 229);
+                systemSummaryPanel.setBounds(12, 284, 584, 229);
                 panel.add(systemSummaryPanel);
 
                 JLabel lblWindowSizeLabel = new JLabel("Window Size");
@@ -883,6 +892,10 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             updateItem();
             updateSynthItem();
             updateAbout();
+            
+            if (SystemProperties.getInstance().isGpuAvailable() == false) {
+                chckbxInvalidateEffect.setSelected(true);
+            }
         }
         super.setVisible(b);
     }
@@ -913,6 +926,10 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     break;
                 }
             }
+        }
+        
+        if (chckbxInvalidateEffect.isSelected()) {
+            LayoutManager.getInstance().invalidateEffectConfig();
         }
     }
 

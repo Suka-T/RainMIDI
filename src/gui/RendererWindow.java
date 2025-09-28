@@ -32,6 +32,7 @@ import java.awt.image.VolatileImage;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
@@ -112,11 +113,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             JMPCoreAccessor.getSoundManager().stop();
-            
+
             if (JMPCoreAccessor.getWindowManager().getMainWindow().isWindowVisible() == true) {
                 JMPCoreAccessor.getWindowManager().getMainWindow().setWindowVisible(false);
             }
-            
+
             JMPCoreAccessor.getSoundManager().removeMidiSequence();
 
             AbstractRenderPlugin.PluginInstance.launch();
@@ -352,32 +353,38 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     @Override
     public void run() {
-        long startTime = System.nanoTime();
-        long nextFrameTime = startTime;
-        frameCount = 0;
+        final long frameInterval = delayNano; // 1フレームあたりナノ秒
+        long lastTime = System.nanoTime();
+        long fpsCounterTime = lastTime;
+        int frameCount = 0;
 
         while (running) {
             try {
                 long now = System.nanoTime();
+                long elapsed = now - lastTime;
 
-                if (now >= nextFrameTime) {
-                    render();
+                if (elapsed >= frameInterval) {
+                    render(); // 描画処理
                     frameCount++;
+                    lastTime += frameInterval;
 
-                    long elapsed = now - startTime;
-                    if (elapsed >= TimeUnit.SECONDS.toNanos(1)) {
+                    // FPS計測（1秒ごと）
+                    if (now - fpsCounterTime >= TimeUnit.SECONDS.toNanos(1)) {
                         fps = frameCount;
                         frameCount = 0;
-                        startTime = now;
+                        fpsCounterTime = now;
                     }
-
-                    nextFrameTime += delayNano;
                 }
                 else {
-                    // 次のフレームまで余裕があれば軽く寝る
-                    long sleepTimeMillis = (nextFrameTime - now) / 1_000_000;
-                    if (sleepTimeMillis > 0) {
-                        Thread.sleep(sleepTimeMillis);
+                    // 次フレームまで余裕があればスリープ
+                    long sleepNanos = frameInterval - elapsed;
+                    if (sleepNanos > 0) {
+                        long sleepMillis = sleepNanos / 1_000_000;
+                        int sleepNanoRemainder = (int) (sleepNanos % 1_000_000);
+                        if (sleepMillis > 0)
+                            Thread.sleep(sleepMillis);
+                        if (sleepNanoRemainder > 0)
+                            LockSupport.parkNanos(sleepNanoRemainder);
                     }
                 }
             }
@@ -496,23 +503,19 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     private void drawNoEffeLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
         // ======= 調整用パラメータ =======
-        float coreStroke = 8.0f;   // 中心の線の太さ
-        float borderWidth = 0.5f;  // 白ボーダーの幅
+        float coreStroke = 8.0f; // 中心の線の太さ
+        float borderWidth = 0.5f; // 白ボーダーの幅
 
         if (LayoutManager.getInstance().isVisibleCursorEffect() == false) {
             // ======= ボーダー線 =======
-            g2d.setStroke(new BasicStroke(coreStroke + borderWidth * 2,
-                                          BasicStroke.CAP_ROUND,
-                                          BasicStroke.JOIN_ROUND));
-            
+            g2d.setStroke(new BasicStroke(coreStroke + borderWidth * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
             g2d.setColor(Color.BLACK);
             g2d.drawLine(x1, y1, x2, y2);
         }
 
         // ======= 中心線（コア線） =======
-        g2d.setStroke(new BasicStroke(coreStroke,
-                                      BasicStroke.CAP_ROUND,
-                                      BasicStroke.JOIN_ROUND));
+        g2d.setStroke(new BasicStroke(coreStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.setColor(baseColor);
         g2d.drawLine(x1, y1, x2, y2);
 
@@ -522,9 +525,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private void drawGlowingLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
-        
+
         // ======= 調整用パラメータ =======
-//        float coreStroke = 5.0f;
+        // float coreStroke = 5.0f;
         float glowMaxStroke = 24.0f;
         float glowMinStroke = 12.0f;
         float glowStep = 4.0f;
@@ -542,14 +545,16 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
 
         // ======= 中間グロー層（やや濃い） =======
-//        g2d.setStroke(new BasicStroke(glowMinStroke - 1));
-//        g2d.setColor(new Color(Math.min(255, r + 40), Math.min(255, g + 40), Math.min(255, b + 40), 100));
-//        g2d.drawLine(x1, y1, x2, y2);
+        // g2d.setStroke(new BasicStroke(glowMinStroke - 1));
+        // g2d.setColor(new Color(Math.min(255, r + 40), Math.min(255, g + 40),
+        // Math.min(255, b + 40), 100));
+        // g2d.drawLine(x1, y1, x2, y2);
 
         // ======= 中心線（コア線） =======
-        //g2d.setStroke(new BasicStroke(coreStroke));
-        //g2d.setColor(new Color(Math.min(255, r + 80), Math.min(255, g + 80), Math.min(255, b + 80), 220));
-        //g2d.drawLine(x1, y1, x2, y2);
+        // g2d.setStroke(new BasicStroke(coreStroke));
+        // g2d.setColor(new Color(Math.min(255, r + 80), Math.min(255, g + 80),
+        // Math.min(255, b + 80), 220));
+        // g2d.drawLine(x1, y1, x2, y2);
 
         g2d.setStroke(new BasicStroke());
     }
@@ -610,34 +615,35 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             strX = (paneWidth - stringWidth) / 2;
             g.drawString(sb.toString(), strX, strY + (fsize / 2));
             strY += fsize;
-            
+
             if (midiUnit.isProgressNowAnalyzing() == true) {
-                fsize = 14;
+                strY += 5;
+                fsize = 16;
                 g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fsize));
                 fm = g.getFontMetrics();
-                
-                sb.setLength(0);
-                sb.append("TICK: ").append(midiUnit.getProgressReadTick());
-                stringWidth = fm.stringWidth(sb.toString());
-                strX = (paneWidth - stringWidth) / 2;
-                g.drawString(sb.toString(), strX, strY + (fsize / 2));
-                strY += fsize;
-                
+
+                // sb.setLength(0);
+                // sb.append("TICK: ").append(midiUnit.getProgressReadTick());
+                // stringWidth = fm.stringWidth(sb.toString());
+                // strX = (paneWidth - stringWidth) / 2;
+                // g.drawString(sb.toString(), strX, strY + (fsize / 2));
+                // strY += fsize + 2;
+
                 sb.setLength(0);
                 sb.append("NOTES: ").append(midiUnit.getProgressNotesCount());
                 stringWidth = fm.stringWidth(sb.toString());
                 strX = (paneWidth - stringWidth) / 2;
                 g.drawString(sb.toString(), strX, strY + (fsize / 2));
-                strY += fsize;
-                
+                strY += fsize + 2;
+
                 sb.setLength(0);
                 sb.append("TRACK: ").append(midiUnit.getProgressFinTrackNum()).append("/").append(midiUnit.getNumOfTrack());
                 stringWidth = fm.stringWidth(sb.toString());
                 strX = (paneWidth - stringWidth) / 2;
                 g.drawString(sb.toString(), strX, strY + (fsize / 2));
-                strY += fsize;
+                strY += fsize + 2;
             }
-            
+
             drawSpinner((Graphics2D) g);
         }
         else if (midiUnit.isValidSequence() == false && isFirstRendering == false) {
@@ -681,7 +687,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         else {
         }
-        
+
         paintWindowEffect(g);
 
         if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
@@ -848,7 +854,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             String text;
             FontMetrics fm;
             g.setFont(info3Font);
-            
+
             sb.setLength(0);
             val1 = (int) midiUnit.getTempoInBPM();
             val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
@@ -862,7 +868,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             g.setColor(topStrColor);
             g.drawString(sb.toString(), sx, sy);
             sy += sh;
-            
+
             if (midiUnit.isRenderingOnlyMode() == false) {
                 sb.setLength(0);
                 val1 = midiUnit.getSignatureInfo().getNumerator();
@@ -897,17 +903,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
             Color[] colorGrad = null;
             float[] colorF = null;
-            colorF = new float[]{
-                    0.0f, 
-                    0.6f, 
-                    1.0f
-                    };
-            colorGrad = new Color[] { 
-                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 0), 
-                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 120),
-                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 240)
-                    };
-            
+            colorF = new float[] { 0.0f, 0.6f, 1.0f };
+            colorGrad = new Color[] { new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 0), new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 120),
+                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 240) };
+
             RadialGradientPaint paint = new RadialGradientPaint(new Point(w / 2, h / 2), radius, colorF, colorGrad);
 
             effeG2.setPaint(paint);
@@ -1055,7 +1054,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int tickX = (int) ((double) relPosTick * (double) getMeasCellWidth() / (double) midiUnit.getResolution());
             g.drawImage(notesImg, -tickX, 0, null);
         }
-        
 
         /* 衝突エフェクト描画 */
         int rgb = -1;
@@ -1108,7 +1106,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
             tickBarPositionOffs = 3;
         }
-        
+
         /* Tickbar描画 */
         Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
         drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
@@ -1116,7 +1114,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {
             drawGlowingLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
         }
-        
+
         rgb = -1;
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
             /* White Keyboard */
@@ -1134,7 +1132,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 keyboardPainter.paintKeyparts(g2d, aHakken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.WHITE);
             }
         }
-        
+
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
             /* Black Keyboard */
             Color keyBgColor;

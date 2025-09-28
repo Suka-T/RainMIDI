@@ -136,9 +136,10 @@ public class SystemProperties {
     private int windowHeight = 720;
 
     private List<File> preloadFiles = new ArrayList<File>();
+    
+    private boolean isGPUAvailable = false;
 
     private static SystemProperties instance = new SystemProperties();
-
     private SystemProperties() {
         nodes = new ArrayList<>();
 
@@ -164,6 +165,8 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
+        
+        isGPUAvailable = Utility.isGpuAvailable();
     }
 
     public static SystemProperties getInstance() {
@@ -453,5 +456,9 @@ public class SystemProperties {
     
     public boolean isGhostNotes(int velocity) {
         return JMPCoreAccessor.getSoundManager().getMidiUnit().isGhostNotesOfMonitor(velocity);
+    }
+
+    public boolean isGpuAvailable() {
+        return isGPUAvailable;
     }
 }

@@ -141,7 +141,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "14", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "15", PropertiesNodeType.COLOR, "#ffffff"));
         nodes.add(new PropertiesNode(LC_NOTES_COLOR + "16", PropertiesNodeType.COLOR, "#ffffff"));
-        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.5", "0.1", "2.0"));
+        nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.35", "0.1", "2.0"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_IN, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_OUT, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Smart, EKeyboardDesignS, EKeyboardDesignO));
@@ -158,6 +158,16 @@ public class LayoutConfig {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    public void invalidateEffectConfig() {
+        // エフェクト有の設定を無効化する 
+        getPropNode(LC_CURSOR_EFFE_VISIBLE).setObject("false");
+        getPropNode(LC_NOTES_HITEFFE_IN).setObject("false");
+        getPropNode(LC_NOTES_HITEFFE_OUT).setObject("false");
+        if (getPropNode(LC_KEYBOARD_DESIGN).getData() == EKeyboardDesign.Smart) {
+            getPropNode(LC_KEYBOARD_DESIGN).setObject("default");
         }
     }
     

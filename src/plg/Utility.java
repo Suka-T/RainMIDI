@@ -1,6 +1,10 @@
 package plg;
 
 import java.awt.Color;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.VolatileImage;
 import java.io.File;
 
 public class Utility {
@@ -198,5 +202,14 @@ public class Utility {
             }
         }
         return ret;
+    }
+    
+    public static boolean isGpuAvailable() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        GraphicsConfiguration gc = gd.getDefaultConfiguration();
+
+        VolatileImage vi = gc.createCompatibleVolatileImage(1, 1);
+        return vi != null && vi.getCapabilities().isAccelerated();
     }
 }
