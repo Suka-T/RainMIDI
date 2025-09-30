@@ -99,14 +99,9 @@ public class UmbrellaUI implements MouseListener, MouseMotionListener {
                     File[] files = chooser.getSelectedFiles(); // 複数ファイル
                     
                     SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_DEFAULT_PATH).setObject(files[0].getParent());
-                    
                     JMPCoreAccessor.getSoundManager().stop();
-                    if (files.length >= 2) {
-                        JMPCoreAccessor.getFileManager().loadDualFileToPlay(files[0], files[1]);
-                    }
-                    else {
-                        JMPCoreAccessor.getFileManager().loadFileToPlay(files[0]);
-                    }
+                    
+                    SystemProperties.getInstance().loadAudioFiles(files);
                 }
                 break;
             }

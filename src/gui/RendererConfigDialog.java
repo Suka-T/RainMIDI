@@ -18,9 +18,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractCellEditor;
@@ -995,12 +992,6 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
                     commit();
                     isCommitClose = true;
-
-                    // ファイルロードを予約する
-                    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-                    scheduler.schedule(() -> {
-                        SystemProperties.getInstance().preloadAudioFiles();
-                    }, 400, TimeUnit.MILLISECONDS);
                 }
                 break;
             }
@@ -1011,11 +1002,13 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 updateDesignItems();
                 break;
             case "OK":
+                SystemProperties.getInstance().getPreloadFiles().clear();
                 commit();
                 isCommitClose = true;
                 setVisible(false);
                 break;
             case "Cancel":
+                SystemProperties.getInstance().getPreloadFiles().clear();
                 isCommitClose = false;
                 setVisible(false);
                 break;

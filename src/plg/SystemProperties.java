@@ -283,21 +283,6 @@ public class SystemProperties {
         keyWidth = (int) ((double) defKeyWidth * dimOffset);
         notesWidth = (int) ((double) notesWidth * dimOffset);
         
-        String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
-        ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
-        scheduler1.schedule(() -> {
-            JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, synthKey);
-        }, 200, TimeUnit.MILLISECONDS);
-    }
-
-    public void preloadAudioFiles() {
-        if (preloadFiles.isEmpty() == false) {
-            loadAudioFiles(preloadFiles.toArray(new File[0]));
-            preloadFiles.clear();
-        }
-    }
-
-    public void loadAudioFiles(File... files) {
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
         int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
         int ignoreNotesHighestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST);
@@ -346,6 +331,27 @@ public class SystemProperties {
         }
         JMPCoreAccessor.getSoundManager().getMidiUnit().setIgnoreNotesVelocityOfMonitor(ignoreNotesLowestOfRender, ignoreNotesHighestOfRender);
         
+        String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
+        ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
+        scheduler1.schedule(() -> {
+            JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, synthKey);
+        }, 200, TimeUnit.MILLISECONDS);
+        
+        // ファイルロードを予約する
+        ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
+        scheduler2.schedule(() -> {
+            SystemProperties.getInstance().preloadAudioFiles();
+        }, 400, TimeUnit.MILLISECONDS);
+    }
+
+    public void preloadAudioFiles() {
+        if (preloadFiles.isEmpty() == false) {
+            loadAudioFiles(preloadFiles.toArray(new File[0]));
+            preloadFiles.clear();
+        }
+    }
+
+    public void loadAudioFiles(File... files) {
         // 一番先頭のファイルを取得
         if ((files != null) && (files.length > 0)) {
 
