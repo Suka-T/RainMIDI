@@ -327,6 +327,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 layoutSummaryPanel.add(btnDefaultButton);
                 
                 chckbxInvalidateEffect = new JCheckBox("Invalidate Effect");
+                chckbxInvalidateEffect.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT, chckbxInvalidateEffect.isSelected() ? "true" : "false");
+                    }
+                });
                 chckbxInvalidateEffect.setBounds(24, 57, 169, 21);
                 layoutSummaryPanel.add(chckbxInvalidateEffect);
                 
@@ -783,6 +788,9 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST)) {
                 spinnerIgnoreHigh.setValue((int) node.getData());
             }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT)) {
+                chckbxInvalidateEffect.setSelected((boolean)node.getData());
+            }
 
             if (SystemProperties.SwapKeyName.containsKey(keyName)) {
                 keyName = SystemProperties.SwapKeyName.get(keyName);
@@ -892,13 +900,12 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     public void setVisible(boolean b) {
         if (b) {
             isCommitClose = false;
+            if (SystemProperties.getInstance().isGpuAvailable() == false) {
+                SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT).setObject("true");
+            }
             updateItem();
             updateSynthItem();
             updateAbout();
-            
-            if (SystemProperties.getInstance().isGpuAvailable() == false) {
-                chckbxInvalidateEffect.setSelected(true);
-            }
         }
         super.setVisible(b);
     }
@@ -929,10 +936,6 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     break;
                 }
             }
-        }
-        
-        if (chckbxInvalidateEffect.isSelected()) {
-            LayoutManager.getInstance().invalidateEffectConfig();
         }
     }
 

@@ -19,6 +19,7 @@ import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
+import layout.LayoutManager;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
@@ -37,6 +38,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_WINSIZE = "renderer.windowSize";
     public static final String SYSP_RENDERER_MONITOR_TYPE = "renderer.monitorType";
     public static final String SYSP_RENDERER_WINEFFECT = "renderer.windowEffect";
+    public static final String SYSP_RENDERER_INVALIDATE_EFFECT = "renderer.invalidateEffect";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_VALID = "renderer.ignoreNotes.audio.valid";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST = "renderer.ignoreNotes.audio.lowestVel";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST = "renderer.ignoreNotes.audio.highestVel";
@@ -62,6 +64,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_WINSIZE, "Window size");
             put(SYSP_RENDERER_MONITOR_TYPE, "Monitor view type");
             put(SYSP_RENDERER_WINEFFECT, "Window effect");
+            put(SYSP_RENDERER_INVALIDATE_EFFECT, "Invalidate Effect");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, "Ignore notes valid of AUDIO");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, "Ignore notes lowest velocity of AUDIO");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, "Ignore notes highest velocity of AUDIO");
@@ -159,6 +162,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MONITOR_TYPE, PropertiesNodeType.ITEM, SyspMonitorType.TYPE1, monitorTypeItemS, monitorTypeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINEFFECT, PropertiesNodeType.ITEM, SyspWinEffect.NONE, winEffeItemS, winEffeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_INVALIDATE_EFFECT, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, PropertiesNodeType.INT, "20", "1", "128"));
@@ -285,6 +289,11 @@ public class SystemProperties {
         }
         keyWidth = (int) ((double) defKeyWidth * dimOffset);
         notesWidth = (int) ((double) notesWidth * dimOffset);
+        
+        boolean isInvalidateEffe = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
+        if (isInvalidateEffe == true) {
+            LayoutManager.getInstance().invalidateEffectConfig();
+        }
         
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
         int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
