@@ -25,6 +25,7 @@ public class SystemProperties {
     public static final String SYSP_FILE_LAYOUT = "file.layout";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
+    public static final String SYSP_AUDIO_USAGE_MIDI_BUF = "audio.usageRamOfMidi";
     public static final String SYSP_RENDERER_MODE = "renderer.mode";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
@@ -49,6 +50,7 @@ public class SystemProperties {
             put(SYSP_FILE_LAYOUT, "Preload Layout file name");
             put(SYSP_FILE_DEFAULT_PATH, "Default folder");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
+            put(SYSP_AUDIO_USAGE_MIDI_BUF, "Usage RAM of MIDI Event Buffer");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
@@ -163,6 +165,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
+        nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_BUF, PropertiesNodeType.INT, "50", "1", "100"));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
         
@@ -330,6 +333,9 @@ public class SystemProperties {
             ignoreNotesHighestOfRender = 0;
         }
         JMPCoreAccessor.getSoundManager().getMidiUnit().setIgnoreNotesVelocityOfMonitor(ignoreNotesLowestOfRender, ignoreNotesHighestOfRender);
+        
+        int usageRamMidi = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF);
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageRamOfMidiEventBuffer((double)usageRamMidi / 100.0);
         
         String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
         ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);

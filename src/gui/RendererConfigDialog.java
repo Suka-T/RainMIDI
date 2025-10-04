@@ -64,13 +64,16 @@ import plg.Utility;
 public class RendererConfigDialog extends JDialog implements ActionListener {
 
     private static final String WORKNUM_LOW = "3";
-    private static final String NOTESIMAGENUM_LOW = "10";
+    private static final String NOTESIMAGENUM_LOW = "30";
+    private static final String USAGE_MIDIRAM_LOW = "5";
 
     private static final String WORKNUM_MID = "3";
     private static final String NOTESIMAGENUM_MID = "60";
+    private static final String USAGE_MIDIRAM_MID = "25";
 
     private static final String WORKNUM_HIG = "3";
     private static final String NOTESIMAGENUM_HIG = "300";
+    private static final String USAGE_MIDIRAM_HIG = "100";
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -360,6 +363,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     public void actionPerformed(ActionEvent e) {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_LOW);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_LOW);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_LOW);
                     }
                 });
                 buttonGroup.add(rdbtnPerfLowButton);
@@ -372,6 +376,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     public void actionPerformed(ActionEvent e) {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_MID);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_MID);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_MID);
                     }
                 });
                 buttonGroup.add(rdbtnPerfMidButton);
@@ -383,6 +388,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     public void actionPerformed(ActionEvent e) {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_HIG);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_HIG);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_HIG);
                     }
                 });
                 buttonGroup.add(rdbtnPerfHighButton);
