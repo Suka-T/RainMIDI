@@ -56,6 +56,7 @@ import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspMonitorType;
 import plg.SystemProperties.SyspWinEffect;
+import plg.Utility;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
 
@@ -95,6 +96,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected UmbrellaUI umbrellaUI = null;
 
     protected KeyboardPainter keyboardPainter = null;
+    
+    protected boolean isAvailableGpu = true;
+    protected BufferedImage backBuffer = null;
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -185,6 +189,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         umbrellaUI = new UmbrellaUI();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
+        
+        isAvailableGpu = Utility.isGpuAvailable();
     }
 
     public void formatWithCommas(long number, StringBuilder out) {
@@ -364,7 +370,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 long elapsed = now - lastTime;
 
                 if (elapsed >= frameInterval) {
-                    render(); // 描画処理
+                    if (isAvailableGpu) {
+                        render(); // 描画処理
+                    }
+                    else {
+                        renderSoft(); // ソフトレンダリング 
+                    }
                     frameCount++;
                     lastTime += frameInterval;
 
@@ -398,14 +409,38 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
         try {
             paintDisplay(g);
-
-            umbrellaUI.paint(g);
         }
         finally {
             // Graphics オブジェクトの解放
             g.dispose();
         }
         strategy.show();
+    }
+    
+    protected void renderSoft() {
+        // CPU上オフスクリーン描画用のバックバッファーを用意 
+        if (backBuffer == null) {
+            backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        }
+
+        Graphics2D g = backBuffer.createGraphics();
+        try {
+            paintDisplay(g);
+        } finally {
+            g.dispose();
+        }
+
+        // バッファを画面に転送 
+        Graphics2D screen = (Graphics2D) canvas.getGraphics();
+        try {
+            screen.drawImage(backBuffer, 0, 0, null);
+        } finally {
+            screen.dispose();
+        }
+        
+        if (backBuffer.getWidth() != getWidth() || backBuffer.getHeight() != getHeight()) {
+            backBuffer = null;
+        }
     }
 
     public void init() {
@@ -890,6 +925,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else {
             /* mode = NONE */
         }
+        
+        umbrellaUI.paint(g);
     }
 
     protected void paintWindowEffect(Graphics g) {
