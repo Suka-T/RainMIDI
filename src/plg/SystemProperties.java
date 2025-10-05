@@ -298,18 +298,6 @@ public class SystemProperties {
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
         int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
         int ignoreNotesHighestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST);
-        if (ignoreNotesLowestOfAudio < 0) {
-            ignoreNotesLowestOfAudio = 0;
-        }
-        else if (ignoreNotesLowestOfAudio > 127) {
-            ignoreNotesLowestOfAudio = 127;
-        }
-        if (ignoreNotesHighestOfAudio < 0) {
-            ignoreNotesHighestOfAudio = 0;
-        }
-        else if (ignoreNotesHighestOfAudio > 127) {
-            ignoreNotesHighestOfAudio = 127;
-        }
         if (ignoreNotesLowestOfAudio > ignoreNotesHighestOfAudio) {
             validIgnoreNotesOfAudio = false;
         }
@@ -322,18 +310,6 @@ public class SystemProperties {
         boolean validIgnoreNotesOfRender = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID);
         int ignoreNotesLowestOfRender = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST);
         int ignoreNotesHighestOfRender = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST);
-        if (ignoreNotesLowestOfRender < 0) {
-            ignoreNotesLowestOfRender = 0;
-        }
-        else if (ignoreNotesLowestOfRender > 127) {
-            ignoreNotesLowestOfRender = 127;
-        }
-        if (ignoreNotesHighestOfRender < 0) {
-            ignoreNotesHighestOfRender = 0;
-        }
-        else if (ignoreNotesHighestOfRender > 127) {
-            ignoreNotesHighestOfRender = 127;
-        }
         if (ignoreNotesLowestOfRender > ignoreNotesHighestOfRender) {
             validIgnoreNotesOfRender = false;
         }
@@ -345,6 +321,9 @@ public class SystemProperties {
         
         int usageRamMidi = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageRamOfMidiEventBuffer((double)usageRamMidi / 100.0);
+        
+        // MIDI解析スレッド数を指定 
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageAnalyzeThreadCount(8);
         
         String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
         ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
