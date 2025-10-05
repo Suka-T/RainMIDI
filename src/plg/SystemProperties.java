@@ -27,6 +27,7 @@ public class SystemProperties {
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
     public static final String SYSP_AUDIO_USAGE_MIDI_BUF = "audio.usageRamOfMidi";
+    public static final String SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD = "audio.usageMidiAnalyThreadCnt";
     public static final String SYSP_RENDERER_MODE = "renderer.mode";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
@@ -52,7 +53,8 @@ public class SystemProperties {
             put(SYSP_FILE_LAYOUT, "Preload Layout file name");
             put(SYSP_FILE_DEFAULT_PATH, "Default folder");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
-            put(SYSP_AUDIO_USAGE_MIDI_BUF, "Usage RAM of MIDI Event Buffer");
+            put(SYSP_AUDIO_USAGE_MIDI_BUF, "Use RAM of MIDI Event Buffer");
+            put(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, "Use MIDI Analyze Thread Count");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
@@ -151,6 +153,8 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_FILE_LAYOUT, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_FILE_DEFAULT_PATH, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
+        nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_BUF, PropertiesNodeType.INT, "50", "1", "100"));
+        nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, PropertiesNodeType.INT, "8", "1", "24"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MODE, PropertiesNodeType.ITEM, SyspViewMode.RAIN_FALL, viewModeItemS, viewModeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "2", "2", "64"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
@@ -169,7 +173,6 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
-        nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_BUF, PropertiesNodeType.INT, "50", "1", "100"));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
         
@@ -322,8 +325,9 @@ public class SystemProperties {
         int usageRamMidi = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageRamOfMidiEventBuffer((double)usageRamMidi / 100.0);
         
-        // MIDI解析スレッド数を指定 
-        JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageAnalyzeThreadCount(8);
+        // MIDI解析スレッド数を指定
+        int usageThCountMidi = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD);
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageAnalyzeThreadCount(usageThCountMidi);
         
         String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
         ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
