@@ -11,6 +11,7 @@ public class RainMIDI_std {
         JMPLoader.UseHistoryFile = false;
         JMPLoader.UseSkinFile = false;
         JMPFlags.UseUnsynchronizedMidiPacket = false;
+        JMPFlags.DualFileLoadToSoundFunc = 2;
 
         ConfigDatabaseWrapper cfg = new ConfigDatabaseWrapper();
         cfg.setConfigParamToBoolean(IDataManager.CFG_KEY_SHOW_STARTUP_DEVICE_SETUP, false);
