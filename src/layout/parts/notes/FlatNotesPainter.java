@@ -11,7 +11,7 @@ public class FlatNotesPainter extends NotesPainter {
         Graphics2D g2d = (Graphics2D) context.g;
         if (context.iW > 1) {
             g2d.setColor(context.bgColor);
-            g2d.fillRect(context.iX, context.iY, context.iW, context.iH);
+            g2d.fillRect(context.iX, context.iY, context.iW - 1, context.iH);
         }
         else {
             g2d.setColor(context.bgColor);
