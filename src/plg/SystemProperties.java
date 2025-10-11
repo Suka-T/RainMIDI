@@ -20,6 +20,11 @@ import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import layout.LayoutManager;
+import layout.parts.MonitorPainter;
+import layout.parts.monitor.AnalyzeMonitorPainter;
+import layout.parts.monitor.ClassicalMonitorPainter;
+import layout.parts.monitor.NoneMonitorPainter;
+import layout.parts.monitor.NotesCountMonitorPainter;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
@@ -181,6 +186,15 @@ public class SystemProperties {
         
         isGPUAvailable = Utility.isGpuAvailable();
     }
+    
+    private static Map<SyspMonitorType, MonitorPainter> monitorPainters = new HashMap<SyspMonitorType, MonitorPainter>() {
+        {
+            put(SyspMonitorType.NONE, new NoneMonitorPainter());
+            put(SyspMonitorType.TYPE1, new AnalyzeMonitorPainter());
+            put(SyspMonitorType.TYPE2, new NotesCountMonitorPainter());
+            put(SyspMonitorType.TYPE3, new ClassicalMonitorPainter());
+        }
+    };
 
     public static SystemProperties getInstance() {
         return instance;
@@ -471,5 +485,9 @@ public class SystemProperties {
 
     public boolean isGpuAvailable() {
         return isGPUAvailable;
+    }
+    
+    public MonitorPainter getMonitorPainter() {
+        return monitorPainters.get((SyspMonitorType)getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData());
     }
 }

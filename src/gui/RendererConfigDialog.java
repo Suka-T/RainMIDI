@@ -66,14 +66,26 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private static final String WORKNUM_LOW = "3";
     private static final String NOTESIMAGENUM_LOW = "30";
     private static final String USAGE_MIDIRAM_LOW = "5";
+    private static final String USAGE_MIDI_ANA_LOW = "1";
+    private static final String USAGE_MIDI_EXT_LOW = "1";
 
-    private static final String WORKNUM_MID = "3";
+    private static final String WORKNUM_MID = "5";
     private static final String NOTESIMAGENUM_MID = "60";
     private static final String USAGE_MIDIRAM_MID = "25";
+    private static final String USAGE_MIDI_ANA_MID = "8";
+    private static final String USAGE_MIDI_EXT_MID = "6";
 
-    private static final String WORKNUM_HIG = "3";
-    private static final String NOTESIMAGENUM_HIG = "300";
-    private static final String USAGE_MIDIRAM_HIG = "100";
+    private static final String WORKNUM_HIG = "8";
+    private static final String NOTESIMAGENUM_HIG = "120";
+    private static final String USAGE_MIDIRAM_HIG = "25";
+    private static final String USAGE_MIDI_ANA_HIG = "8";
+    private static final String USAGE_MIDI_EXT_HIG = "6";
+    
+    private static final String WORKNUM_MAX = "8";
+    private static final String NOTESIMAGENUM_MAX = "300";
+    private static final String USAGE_MIDIRAM_MAX = "100";
+    private static final String USAGE_MIDI_ANA_MAX = "24";
+    private static final String USAGE_MIDI_EXT_MAX = "24";
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -130,6 +142,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JSpinner spinnerIgnoreHigh;
     private JRadioButton rdbtnMonitorType3;
     private JCheckBox chckbxInvalidateEffect;
+    private JRadioButton rdbtnPerfMaxButton;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -369,6 +382,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_LOW);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_LOW);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_LOW);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_LOW);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_LOW);
                     }
                 });
                 buttonGroup.add(rdbtnPerfLowButton);
@@ -382,6 +397,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_MID);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_MID);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_MID);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_MID);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_MID);
                     }
                 });
                 buttonGroup.add(rdbtnPerfMidButton);
@@ -394,11 +411,27 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_HIG);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_HIG);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_HIG);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_HIG);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_HIG);
                     }
                 });
                 buttonGroup.add(rdbtnPerfHighButton);
                 rdbtnPerfHighButton.setBounds(330, 69, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfHighButton);
+                
+                rdbtnPerfMaxButton = new JRadioButton("Max !!");
+                rdbtnPerfMaxButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_WORKNUM, WORKNUM_MAX);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESIMAGENUM, NOTESIMAGENUM_MAX);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_MAX);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_MAX);
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_MAX);
+                    }
+                });
+                buttonGroup.add(rdbtnPerfMaxButton);
+                rdbtnPerfMaxButton.setBounds(447, 69, 113, 21);
+                systemSummaryPanel.add(rdbtnPerfMaxButton);
 
                 JLabel lblNotesSpeedLabel = new JLabel("Notes Speed");
                 lblNotesSpeedLabel.setBounds(12, 96, 72, 13);
@@ -737,10 +770,14 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 else if (workNum.equals(WORKNUM_HIG) && imgNum.equals(NOTESIMAGENUM_HIG)) {
                     rdbtnPerfHighButton.setSelected(true);
                 }
+                else if (workNum.equals(WORKNUM_MAX) && imgNum.equals(NOTESIMAGENUM_MAX)) {
+                    rdbtnPerfMaxButton.setSelected(true);
+                }
                 else {
                     rdbtnPerfLowButton.setSelected(false);
                     rdbtnPerfMidButton.setSelected(false);
                     rdbtnPerfHighButton.setSelected(false);
+                    rdbtnPerfMaxButton.setSelected(false);
                 }
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_LAYERORDER)) {

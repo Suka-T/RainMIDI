@@ -48,13 +48,14 @@ import layout.LayoutManager;
 import layout.parts.KeyParts;
 import layout.parts.KeyboardPainter;
 import layout.parts.KeyboardPainter.KindOfKey;
+import layout.parts.MonitorPainter;
 import layout.parts.key.BlackKeyParts;
 import layout.parts.key.WhiteKeyParts;
+import layout.parts.monitor.MonitorData;
 import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
-import plg.SystemProperties.SyspMonitorType;
 import plg.SystemProperties.SyspWinEffect;
 import plg.Utility;
 
@@ -96,6 +97,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected UmbrellaUI umbrellaUI = null;
 
     protected KeyboardPainter keyboardPainter = null;
+    protected MonitorPainter monitorPainter = null;
     
     protected boolean isAvailableGpu = true;
     protected BufferedImage backBuffer = null;
@@ -189,39 +191,40 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         umbrellaUI = new UmbrellaUI();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
+        monitorPainter = SystemProperties.getInstance().getMonitorPainter();
         
         isAvailableGpu = Utility.isGpuAvailable();
     }
-
-    public void formatWithCommas(long number, StringBuilder out) {
-
-        // 負数対応（符号のみ処理）
-        boolean negative = number < 0;
-        if (negative) {
-            number = -number;
-        }
-
-        // 数字を一時バッファに逆順で格納
-        char[] buffer = new char[20];
-        int index = buffer.length;
-
-        int digitCount = 0;
-        do {
-            if (digitCount > 0 && digitCount % 3 == 0) {
-                buffer[--index] = ',';
-            }
-            buffer[--index] = (char) ('0' + (number % 10));
-            number /= 10;
-            digitCount++;
-        }
-        while (number > 0);
-
-        if (negative) {
-            buffer[--index] = '-';
-        }
-
-        out.append(buffer, index, buffer.length - index);
-    }
+//
+//    public void formatWithCommas(long number, StringBuilder out) {
+//
+//        // 負数対応（符号のみ処理）
+//        boolean negative = number < 0;
+//        if (negative) {
+//            number = -number;
+//        }
+//
+//        // 数字を一時バッファに逆順で格納
+//        char[] buffer = new char[20];
+//        int index = buffer.length;
+//
+//        int digitCount = 0;
+//        do {
+//            if (digitCount > 0 && digitCount % 3 == 0) {
+//                buffer[--index] = ',';
+//            }
+//            buffer[--index] = (char) ('0' + (number % 10));
+//            number /= 10;
+//            digitCount++;
+//        }
+//        while (number > 0);
+//
+//        if (negative) {
+//            buffer[--index] = '-';
+//        }
+//
+//        out.append(buffer, index, buffer.length - index);
+//    }
 
     public int getKeyboardWidth() {
         return SystemProperties.getInstance().getKeyWidth();
@@ -473,9 +476,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private StringBuilder sb = new StringBuilder(64); // 初期容量を指定
-    private Font info1Font = new Font(Font.SANS_SERIF, Font.PLAIN, 28);
-    private Font info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 64);
-    private Font info3Font = new Font(Font.SANS_SERIF, Font.PLAIN, 28);
     protected volatile VolatileImage orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
 
@@ -511,8 +511,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         angle += 0.1;
 
         Color armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
-
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2d.translate(w / 2, h / 2);
         g2d.rotate(angle);
@@ -593,9 +591,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         g2d.setStroke(new BasicStroke());
     }
+    
+    private MonitorData monitorInfo = new MonitorData();
 
     public void paintDisplay(Graphics g) {
-        INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
 
         /* ノーツ描画 */
@@ -679,7 +678,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 strY += fsize + 2;
             }
 
-            drawSpinner((Graphics2D) g);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            drawSpinner(g2);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
         else if (midiUnit.isValidSequence() == false && isFirstRendering == false) {
             g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 32));
@@ -725,208 +726,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         paintWindowEffect(g);
 
-        if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
-            int sx = 10;
-            int sy = 30;
-            int sh = 30;
-            Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-            Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
-            ;
-            g.setFont(info1Font);
-
-            sb.setLength(0);
-            sb.append("TIME: ");
-            long val1 = JMPCoreAccessor.getSoundManager().getPositionSecond() / 60;
-            if (val1 < 10)
-                sb.append('0');
-            sb.append(val1);
-            sb.append(":");
-            long val2 = JMPCoreAccessor.getSoundManager().getPositionSecond() % 60;
-            if (val2 < 10)
-                sb.append('0');
-            sb.append(val2);
-            sb.append(" / ");
-            val1 = JMPCoreAccessor.getSoundManager().getLengthSecond() / 60;
-            if (val1 < 10)
-                sb.append('0');
-            sb.append(val1);
-            sb.append(":");
-            val2 = JMPCoreAccessor.getSoundManager().getLengthSecond() % 60;
-            if (val2 < 10)
-                sb.append('0');
-            sb.append(val2);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-
-            sb.setLength(0);
-            sb.append("TICK: ");
-            val1 = JMPCoreAccessor.getSoundManager().getMidiUnit().getTickPosition();
-            formatWithCommas(val1, sb);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-
-            if (midiUnit.isRenderingOnlyMode() == false) {
-                sb.setLength(0);
-                sb.append("NOTES: ");
-                val1 = notesMonitor.getNotesCount();
-                formatWithCommas(val1, sb);
-                g.setColor(backStrColor);
-                g.drawString(sb.toString(), sx + 1, sy + 1);
-                g.setColor(topStrColor);
-                g.drawString(sb.toString(), sx, sy);
-                sy += sh;
-            }
-
-            sb.setLength(0);
-            sb.append("MAX NT: ");
-            val2 = notesMonitor.getNumOfNotes();
-            formatWithCommas(val2, sb);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-
-            if (midiUnit.isRenderingOnlyMode() == false) {
-                sb.setLength(0);
-                val1 = (long) notesMonitor.getNps();
-                sb.append("NPS: ");
-                formatWithCommas(val1, sb);
-                sb.append(" / ");
-                val1 = (long) notesMonitor.getMaxNps();
-                formatWithCommas(val1, sb);
-                g.setColor(backStrColor);
-                g.drawString(sb.toString(), sx + 1, sy + 1);
-                g.setColor(topStrColor);
-                g.drawString(sb.toString(), sx, sy);
-                sy += sh;
-            }
-
-            if (midiUnit.isRenderingOnlyMode() == false) {
-                sb.setLength(0);
-                val1 = (long) notesMonitor.getPolyphony();
-                sb.append("POLY: ").append(val1);
-                g.setColor(backStrColor);
-                g.drawString(sb.toString(), sx + 1, sy + 1);
-                g.setColor(topStrColor);
-                g.drawString(sb.toString(), sx, sy);
-                sy += sh;
-            }
-
-            sb.setLength(0);
-            val1 = (int) midiUnit.getTempoInBPM();
-            val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
-            sb.append("BPM: ").append(val1).append(".").append(val2);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-
-            sb.setLength(0);
-            val1 = getFPS();
-            sb.append("FPS: ").append(val1);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-
-            if (SystemProperties.getInstance().isDebugMode() == true) {
-                for (int i = 0; i < imageWorkerMgr.getNumOfWorker(); i++) {
-                    int dbx = sx + (i * 15);
-                    if (imageWorkerMgr.getWorker(i).isExec() == false) {
-                        g.setColor(Color.GREEN);
-                    }
-                    else {
-                        g.setColor(Color.RED);
-                    }
-                    g.fillRect(dbx, sy + 5, 10, 10);
-                }
-            }
-        }
-        else if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE2) {
-            int sx = 0;
-            int sy = 65;
-            Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-            Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
-
-            g.setFont(info2Font);
-
-            sb.setLength(0);
-
-            long val1 = 0;
-            if (midiUnit.isRenderingOnlyMode() == false) {
-                sb.setLength(0);
-                val1 = notesMonitor.getNotesCount();
-                formatWithCommas(val1, sb);
-
-                String text = sb.toString();
-                FontMetrics fm = g.getFontMetrics();
-                int width = fm.stringWidth(text);
-
-                sx = (getWidth() - width) / 2;
-                g.setColor(backStrColor);
-                g.drawString(sb.toString(), sx + 1, sy + 1);
-                g.setColor(topStrColor);
-                g.drawString(sb.toString(), sx, sy);
-            }
-        }
-        else if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE3) {
-            int sx = 0;
-            int sy = 30;
-            int sh = 28;
-            Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-            Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
-            long val1, val2;
-            int width;
-            String text;
-            FontMetrics fm;
-            g.setFont(info3Font);
-
-            sb.setLength(0);
-            val1 = (int) midiUnit.getTempoInBPM();
-            val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
-            sb.append(val1).append(".").append(val2).append(" BPM");
-            text = sb.toString();
-            fm = g.getFontMetrics();
-            width = fm.stringWidth(text);
-            sx = (getWidth() - width) / 2;
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-
-            if (midiUnit.isRenderingOnlyMode() == false) {
-                sb.setLength(0);
-                val1 = midiUnit.getSignatureInfo().getNumerator();
-                val2 = midiUnit.getSignatureInfo().getDenominator();
-                sb.append(val1).append("/").append(val2).append(" ").append(midiUnit.getSignatureInfo().getAccidental());
-
-                text = sb.toString();
-                fm = g.getFontMetrics();
-                width = fm.stringWidth(text);
-
-                sx = (getWidth() - width) / 2;
-                g.setColor(backStrColor);
-                g.drawString(sb.toString(), sx + 1, sy + 1);
-                g.setColor(topStrColor);
-                g.drawString(sb.toString(), sx, sy);
-                sy += sh;
-            }
-        }
-        else {
-            /* mode = NONE */
-        }
+        monitorInfo.fps = getFPS();
+        monitorInfo.width = getWidth();
+        monitorInfo.height = getHeight();
         
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        monitorPainter.paintMonitor(g, monitorInfo);
         umbrellaUI.paint(g);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     protected void paintWindowEffect(Graphics g) {
@@ -1192,7 +999,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         if (SystemProperties.getInstance().isNotesWidthAuto() == true) {
             double fbpm = midiUnit.getFirstTempoInBPM();
-            int newCellWidth = (int) (480.0 * (120.0 / fbpm) * SystemProperties.getInstance().getDimOffset());
+            int newCellWidth = (int) (480.0 * (140.0 / fbpm) * SystemProperties.getInstance().getDimOffset());
             if (newCellWidth < SystemProperties.MIN_NOTES_WIDTH) {
                 newCellWidth = SystemProperties.MIN_NOTES_WIDTH;
             }

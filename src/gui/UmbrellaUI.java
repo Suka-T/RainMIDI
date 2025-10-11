@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -160,7 +159,6 @@ public class UmbrellaUI implements MouseListener, MouseMotionListener {
             int centerY = pressY;
             Graphics2D g2d = (Graphics2D) g;
 
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setStroke(new BasicStroke(2));
             g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
 
