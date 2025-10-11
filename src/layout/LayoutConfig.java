@@ -144,7 +144,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_NOTES_COLOR_BORDER_RGB, PropertiesNodeType.DOUBLE, "0.35", "0.1", "2.0"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_IN, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_NOTES_HITEFFE_OUT, PropertiesNodeType.BOOLEAN, "false"));
-        nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Smart, EKeyboardDesignS, EKeyboardDesignO));
+        nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Default, EKeyboardDesignS, EKeyboardDesignO));
         definication();
     }
     
