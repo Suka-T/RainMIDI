@@ -1,5 +1,6 @@
 package plg;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -67,7 +68,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
             put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
-            put(SYSP_RENDERER_NOTESSPEED, "Notes Speed [1 - 100 | auto]");
+            put(SYSP_RENDERER_NOTESSPEED, "Notes Speed [0.1 - 5.0]");
             put(SYSP_RENDERER_NOTESIMAGENUM, "Rendering notes image size [3 - 300]");
             put(SYSP_RENDERER_DIMENSION, "Renderer dimension");
             put(SYSP_RENDERER_WINSIZE, "Window size");
@@ -86,7 +87,7 @@ public class SystemProperties {
 
     public static int MAX_NOTES_WIDTH = 2400;
     public static int MIN_NOTES_WIDTH = 160;
-    public static int CNT_NOTES_WIDTH = 800;//(MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
+    public static int CNT_NOTES_WIDTH = MIN_NOTES_WIDTH;//(MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
     
     public static int DEFAULT_DIM_W = 1280;
     public static int DEFAULT_DIM_H = 768;
@@ -123,9 +124,6 @@ public class SystemProperties {
     private static Object[] monitorTypeItemO = { SyspMonitorType.NONE, SyspMonitorType.TYPE1, SyspMonitorType.TYPE2, SyspMonitorType.TYPE3 };
     private static String[] monitorTypeItemS = { "none", "type1", "type2", "type3" };
 
-    private static Object[] NotesSpeedItemO = { -1 };
-    private static String[] NotesSpeedItemS = { "auto" };
-
     private static Object[] NotesCountItemO = { -1 };
     private static String[] NotesCountItemS = { "auto" };
 
@@ -137,8 +135,6 @@ public class SystemProperties {
     private static String[] winEffeItemS = { "none", "circle_vignette" };
 
     private List<PropertiesNode> nodes;
-    private boolean notesWidthAuto = true;
-    private int notesWidth = 420;
     private int keyWidth = 50;
 
     private int dimWidth = DEFAULT_DIM_W;
@@ -154,6 +150,9 @@ public class SystemProperties {
     private boolean isGPUAvailable = false;
 
     private static SystemProperties instance = new SystemProperties();
+    
+    private String generalFontName = "";
+    
     private SystemProperties() {
         nodes = new ArrayList<>();
 
@@ -168,7 +167,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
-        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.INT, "-1", "1", "100", NotesSpeedItemS, NotesSpeedItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.DOUBLE, "1.0", "0.1", "5.0"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "120", "3", "1000", NotesCountItemS, NotesCountItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
@@ -185,6 +184,12 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
         
         isGPUAvailable = Utility.isGpuAvailable();
+        if (Utility.isWindows()) {
+            generalFontName = "Meiryo";
+        }
+        else {
+            generalFontName = Font.SANS_SERIF;
+        }
     }
     
     private static Map<SyspMonitorType, MonitorPainter> monitorPainters = new HashMap<SyspMonitorType, MonitorPainter>() {
@@ -246,23 +251,6 @@ public class SystemProperties {
     }
 
     public void iniialize() {
-
-        // 以下、ネイティブ変数に分ける
-        int notesSpeed = (int) getData(SYSP_RENDERER_NOTESSPEED);
-        boolean notesSpeedIsAuto = false;
-        if (notesSpeed == -1) {
-            notesSpeedIsAuto = true;
-            notesSpeed = 50;
-        }
-        notesWidthAuto = notesSpeedIsAuto;
-        notesWidth = MIN_NOTES_WIDTH + (int) ((double) (MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) * ((double) notesSpeed / 100.0));
-        if (notesWidth < MIN_NOTES_WIDTH) {
-            notesWidth = MIN_NOTES_WIDTH;
-        }
-        else if (MAX_NOTES_WIDTH < notesWidth) {
-            notesWidth = MAX_NOTES_WIDTH;
-        }
-
         // TODO Dimはバグるため720p固定とする
         PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
         dimNode.setObject("1280*768");
@@ -308,7 +296,6 @@ public class SystemProperties {
             defKeyWidth = 120;
         }
         keyWidth = (int) ((double) defKeyWidth * dimOffset);
-        notesWidth = (int) ((double) notesWidth * dimOffset);
         
         boolean isInvalidateEffe = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
         if (isInvalidateEffe == true) {
@@ -443,14 +430,6 @@ public class SystemProperties {
         return keyWidth;
     }
 
-    public int getNotesWidth() {
-        return notesWidth;
-    }
-
-    public boolean isNotesWidthAuto() {
-        return notesWidthAuto;
-    }
-
     public int getNotesImageCount() {
         return (int) getPropNode(SYSP_RENDERER_NOTESIMAGENUM).getData();
     }
@@ -489,5 +468,13 @@ public class SystemProperties {
     
     public MonitorPainter getMonitorPainter() {
         return monitorPainters.get((SyspMonitorType)getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData());
+    }
+    
+    public double getNotesSpeed() {
+        return (double)getPropNode(SYSP_RENDERER_NOTESSPEED).getData();
+    }
+
+    public String getGeneralFontName() {
+        return generalFontName;
     }
 }

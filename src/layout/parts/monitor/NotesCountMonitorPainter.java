@@ -10,6 +10,7 @@ import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import plg.Utility;
 
 public class NotesCountMonitorPainter extends MonitorPainter {
 
@@ -17,14 +18,9 @@ public class NotesCountMonitorPainter extends MonitorPainter {
     private StringBuilder sb = new StringBuilder();
 
     public NotesCountMonitorPainter() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
+        if (Utility.isWindows()) {
             info2Font = new Font("Calibri", Font.PLAIN, 64);
         }
-//        else if (os.contains("mac")) {
-//        }
-//        else if (os.contains("nux") || os.contains("nix")) {
-//        }
         else {
             info2Font = new Font(Font.SANS_SERIF, Font.PLAIN, 64);
         }

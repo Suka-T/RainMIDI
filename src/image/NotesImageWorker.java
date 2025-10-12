@@ -84,7 +84,7 @@ public class NotesImageWorker extends ImageWorker {
 
     @Override
     public int getImageWidth() {
-        double notesWidthDiff = (double)SystemProperties.getInstance().getNotesWidth() / (double)SystemProperties.CNT_NOTES_WIDTH;
+        double notesWidthDiff = (double)window.getMeasCellWidth() / (double)SystemProperties.CNT_NOTES_WIDTH;
         if (notesWidthDiff < 0) {
             notesWidthDiff = 1.0;
         }

@@ -32,7 +32,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -86,6 +85,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private static final String USAGE_MIDIRAM_MAX = "100";
     private static final String USAGE_MIDI_ANA_MAX = "24";
     private static final String USAGE_MIDI_EXT_MAX = "24";
+    
+    private static final String NOTES_SPEED_SLOW = "0.4";
+    private static final String NOTES_SPEED_NORM = "1.0";
+    private static final String NOTES_SPEED_FAST = "2.0";
+    private static final String NOTES_SPEED_VFAST = "4.0";
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -115,8 +119,6 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JLabel lblSelectedLayoutLabel;
     private JComboBox<String> comboBoxWindowSize;
     private final ButtonGroup buttonGroup = new ButtonGroup();
-    private JCheckBox chckbxNotesSpeedAuto;
-    private JSlider sliderNotesSpeed;
 
     private AtomicBoolean initialized = new AtomicBoolean(false);
     private final ButtonGroup buttonGroup_1 = new ButtonGroup();
@@ -143,6 +145,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JRadioButton rdbtnMonitorType3;
     private JCheckBox chckbxInvalidateEffect;
     private JRadioButton rdbtnPerfMaxButton;
+    private JRadioButton rdbtnNotesSpeedSlow;
+    private JRadioButton rdbtnNotesSpeedNormal;
+    private final ButtonGroup buttonGroup_4 = new ButtonGroup();
+    private JRadioButton rdbtnNotesSpeedFast;
+    private JRadioButton rdbtnNotesSpeedVeryFast;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -224,7 +231,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
         setModal(true);
-        setBounds(100, 100, 641, 635);
+        setBounds(100, 100, 641, 603);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -356,7 +363,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 284, 584, 229);
+                systemSummaryPanel.setBounds(12, 284, 584, 195);
                 panel.add(systemSummaryPanel);
 
                 JLabel lblWindowSizeLabel = new JLabel("Window Size");
@@ -437,34 +444,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 lblNotesSpeedLabel.setBounds(12, 96, 72, 13);
                 systemSummaryPanel.add(lblNotesSpeedLabel);
 
-                chckbxNotesSpeedAuto = new JCheckBox("Auto");
-                chckbxNotesSpeedAuto.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        updateNotesSpeed(chckbxNotesSpeedAuto.isSelected(), sliderNotesSpeed.getValue());
-                    }
-                });
-                chckbxNotesSpeedAuto.setSelected(true);
-                chckbxNotesSpeedAuto.setBounds(96, 92, 81, 21);
-                systemSummaryPanel.add(chckbxNotesSpeedAuto);
-
-                sliderNotesSpeed = new JSlider();
-                sliderNotesSpeed.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        if (!initialized.get())
-                            return; // 初期化中は無視
-
-                        if (!sliderNotesSpeed.getValueIsAdjusting()) {
-                            chckbxNotesSpeedAuto.setSelected(false);
-                            updateNotesSpeed(false, sliderNotesSpeed.getValue());
-                        }
-                    }
-                });
-                sliderNotesSpeed.setMinimum(1);
-                sliderNotesSpeed.setBounds(96, 119, 476, 21);
-                systemSummaryPanel.add(sliderNotesSpeed);
-
                 JLabel lblNotesOrderLabel = new JLabel("Notes Layer");
-                lblNotesOrderLabel.setBounds(12, 151, 72, 13);
+                lblNotesOrderLabel.setBounds(12, 119, 72, 13);
                 systemSummaryPanel.add(lblNotesOrderLabel);
 
                 rdbtnRenderOrderAsc = new JRadioButton("Track1 is Back");
@@ -474,7 +455,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_1.add(rdbtnRenderOrderAsc);
-                rdbtnRenderOrderAsc.setBounds(96, 147, 113, 21);
+                rdbtnRenderOrderAsc.setBounds(96, 115, 113, 21);
                 systemSummaryPanel.add(rdbtnRenderOrderAsc);
 
                 rdbtnRenderOrderDesc = new JRadioButton("Track1 is Top");
@@ -484,7 +465,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_1.add(rdbtnRenderOrderDesc);
-                rdbtnRenderOrderDesc.setBounds(213, 147, 113, 21);
+                rdbtnRenderOrderDesc.setBounds(213, 115, 113, 21);
                 systemSummaryPanel.add(rdbtnRenderOrderDesc);
 
                 JLabel lblViewModeLabel = new JLabel("View Mode");
@@ -512,7 +493,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.add(rdbtnModeSideFlow);
 
                 JLabel lblMonitorTypeLabel = new JLabel("Monitor Type");
-                lblMonitorTypeLabel.setBounds(12, 174, 72, 13);
+                lblMonitorTypeLabel.setBounds(12, 142, 72, 13);
                 systemSummaryPanel.add(lblMonitorTypeLabel);
 
                 rdbtnMonitorNone = new JRadioButton("None");
@@ -522,7 +503,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "none");
                     }
                 });
-                rdbtnMonitorNone.setBounds(96, 170, 113, 21);
+                rdbtnMonitorNone.setBounds(96, 138, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorNone);
 
                 rdbtnMonitorType1 = new JRadioButton("Notes Analyzer");
@@ -532,7 +513,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type1");
                     }
                 });
-                rdbtnMonitorType1.setBounds(213, 170, 113, 21);
+                rdbtnMonitorType1.setBounds(213, 138, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType1);
 
                 rdbtnMonitorType2 = new JRadioButton("Counter");
@@ -542,7 +523,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type2");
                     }
                 });
-                rdbtnMonitorType2.setBounds(330, 170, 113, 21);
+                rdbtnMonitorType2.setBounds(330, 138, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType2);
 
                 rdbtnMonitorType3 = new JRadioButton("Classical");
@@ -552,11 +533,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type3");
                     }
                 });
-                rdbtnMonitorType3.setBounds(447, 170, 113, 21);
+                rdbtnMonitorType3.setBounds(447, 138, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType3);
 
                 JLabel lblIgnoreNotesLabel = new JLabel("Ignore Notes");
-                lblIgnoreNotesLabel.setBounds(12, 197, 72, 13);
+                lblIgnoreNotesLabel.setBounds(12, 165, 72, 13);
                 systemSummaryPanel.add(lblIgnoreNotesLabel);
 
                 chckbxIgnoreNotesValid = new JCheckBox("Invisible Ghost Notes");
@@ -565,8 +546,48 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID, "" + chckbxIgnoreNotesValid.isSelected());
                     }
                 });
-                chckbxIgnoreNotesValid.setBounds(96, 193, 149, 21);
+                chckbxIgnoreNotesValid.setBounds(96, 161, 149, 21);
                 systemSummaryPanel.add(chckbxIgnoreNotesValid);
+                
+                rdbtnNotesSpeedSlow = new JRadioButton("Slow");
+                rdbtnNotesSpeedSlow.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESSPEED, NOTES_SPEED_SLOW);
+                    }
+                });
+                buttonGroup_4.add(rdbtnNotesSpeedSlow);
+                rdbtnNotesSpeedSlow.setBounds(96, 92, 113, 21);
+                systemSummaryPanel.add(rdbtnNotesSpeedSlow);
+                
+                rdbtnNotesSpeedNormal = new JRadioButton("Normal");
+                rdbtnNotesSpeedNormal.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESSPEED, NOTES_SPEED_NORM);
+                    }
+                });
+                buttonGroup_4.add(rdbtnNotesSpeedNormal);
+                rdbtnNotesSpeedNormal.setBounds(213, 92, 113, 21);
+                systemSummaryPanel.add(rdbtnNotesSpeedNormal);
+                
+                rdbtnNotesSpeedFast = new JRadioButton("Fast");
+                rdbtnNotesSpeedFast.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESSPEED, NOTES_SPEED_FAST);
+                    }
+                });
+                buttonGroup_4.add(rdbtnNotesSpeedFast);
+                rdbtnNotesSpeedFast.setBounds(330, 92, 113, 21);
+                systemSummaryPanel.add(rdbtnNotesSpeedFast);
+                
+                rdbtnNotesSpeedVeryFast = new JRadioButton("Very Fast");
+                rdbtnNotesSpeedVeryFast.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESSPEED, NOTES_SPEED_VFAST);
+                    }
+                });
+                buttonGroup_4.add(rdbtnNotesSpeedVeryFast);
+                rdbtnNotesSpeedVeryFast.setBounds(447, 92, 113, 21);
+                systemSummaryPanel.add(rdbtnNotesSpeedVeryFast);
             }
             {
                 JPanel rendererPanel = new JPanel();
@@ -680,23 +701,6 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         }
     }
 
-    private void updateNotesSpeed(boolean isAuto, int value) {
-        if (isAuto) {
-            setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESSPEED, "auto");
-        }
-        else {
-            setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTESSPEED, String.valueOf(value));
-        }
-
-        sliderNotesSpeed.setEnabled(!isAuto);
-    }
-
-    private void resetNotesSpeed(boolean isAuto, int value) {
-        chckbxNotesSpeedAuto.setSelected(isAuto);
-        sliderNotesSpeed.setValue(value);
-        sliderNotesSpeed.setEnabled(!isAuto);
-    }
-
     public void setSystemTableParam(String key, String value) {
         if (rendererTable.isEditing()) {
             rendererTable.getCellEditor().stopCellEditing();
@@ -743,19 +747,24 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 comboBoxWindowSize.setSelectedItem(node.getDataString());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_NOTESSPEED)) {
-                String s = node.getDataString();
-                if (s.equals("auto")) {
-                    resetNotesSpeed(true, 50);
+                String notesSpeed = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_NOTESSPEED).getDataString();
+                if (notesSpeed.equals(NOTES_SPEED_SLOW)) {
+                    rdbtnNotesSpeedSlow.setSelected(true);
+                }
+                else if (notesSpeed.equals(NOTES_SPEED_NORM)) {
+                    rdbtnNotesSpeedNormal.setSelected(true);
+                }
+                else if (notesSpeed.equals(NOTES_SPEED_FAST)) {
+                    rdbtnNotesSpeedFast.setSelected(true);
+                }
+                else if (notesSpeed.equals(NOTES_SPEED_VFAST)) {
+                    rdbtnNotesSpeedVeryFast.setSelected(true);
                 }
                 else {
-                    int val = 50;
-                    try {
-                        val = Integer.parseInt(s);
-                    }
-                    catch (Exception e) {
-                        val = 50;
-                    }
-                    resetNotesSpeed(false, val);
+                    rdbtnNotesSpeedSlow.setSelected(false);
+                    rdbtnNotesSpeedNormal.setSelected(false);
+                    rdbtnNotesSpeedFast.setSelected(false);
+                    rdbtnNotesSpeedVeryFast.setSelected(false);
                 }
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_WORKNUM)) {

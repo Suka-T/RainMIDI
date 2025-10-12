@@ -98,9 +98,15 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected KeyboardPainter keyboardPainter = null;
     protected MonitorPainter monitorPainter = null;
-    
+
     protected boolean isAvailableGpu = true;
     protected BufferedImage backBuffer = null;
+
+    private Font msgFont = null;
+    private Font msgFontS = null;
+    private Font msgFontSS = null;
+    
+    private long debugRenderTime = 0;
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -180,7 +186,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
         });
 
-        measCellWidth = SystemProperties.getInstance().getNotesWidth();
+        measCellWidth = 480; // 暫定で初期値を入れておく
         measCellHeight = getOrgHeight() / 128;// 5;
 
         LayoutManager.getInstance().initialize(canvas);
@@ -192,39 +198,43 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         umbrellaUI = new UmbrellaUI();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
         monitorPainter = SystemProperties.getInstance().getMonitorPainter();
-        
+
+        msgFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 28);
+        msgFontS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 18);
+        msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
+
         isAvailableGpu = Utility.isGpuAvailable();
     }
-//
-//    public void formatWithCommas(long number, StringBuilder out) {
-//
-//        // 負数対応（符号のみ処理）
-//        boolean negative = number < 0;
-//        if (negative) {
-//            number = -number;
-//        }
-//
-//        // 数字を一時バッファに逆順で格納
-//        char[] buffer = new char[20];
-//        int index = buffer.length;
-//
-//        int digitCount = 0;
-//        do {
-//            if (digitCount > 0 && digitCount % 3 == 0) {
-//                buffer[--index] = ',';
-//            }
-//            buffer[--index] = (char) ('0' + (number % 10));
-//            number /= 10;
-//            digitCount++;
-//        }
-//        while (number > 0);
-//
-//        if (negative) {
-//            buffer[--index] = '-';
-//        }
-//
-//        out.append(buffer, index, buffer.length - index);
-//    }
+    //
+    // public void formatWithCommas(long number, StringBuilder out) {
+    //
+    // // 負数対応（符号のみ処理）
+    // boolean negative = number < 0;
+    // if (negative) {
+    // number = -number;
+    // }
+    //
+    // // 数字を一時バッファに逆順で格納
+    // char[] buffer = new char[20];
+    // int index = buffer.length;
+    //
+    // int digitCount = 0;
+    // do {
+    // if (digitCount > 0 && digitCount % 3 == 0) {
+    // buffer[--index] = ',';
+    // }
+    // buffer[--index] = (char) ('0' + (number % 10));
+    // number /= 10;
+    // digitCount++;
+    // }
+    // while (number > 0);
+    //
+    // if (negative) {
+    // buffer[--index] = '-';
+    // }
+    //
+    // out.append(buffer, index, buffer.length - index);
+    // }
 
     public int getKeyboardWidth() {
         return SystemProperties.getInstance().getKeyWidth();
@@ -377,7 +387,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                         render(); // 描画処理
                     }
                     else {
-                        renderSoft(); // ソフトレンダリング 
+                        renderSoft(); // ソフトレンダリング
                     }
                     frameCount++;
                     lastTime += frameInterval;
@@ -419,9 +429,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         strategy.show();
     }
-    
+
     protected void renderSoft() {
-        // CPU上オフスクリーン描画用のバックバッファーを用意 
+        // CPU上オフスクリーン描画用のバックバッファーを用意
         if (backBuffer == null) {
             backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         }
@@ -429,18 +439,20 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         Graphics2D g = backBuffer.createGraphics();
         try {
             paintDisplay(g);
-        } finally {
+        }
+        finally {
             g.dispose();
         }
 
-        // バッファを画面に転送 
+        // バッファを画面に転送
         Graphics2D screen = (Graphics2D) canvas.getGraphics();
         try {
             screen.drawImage(backBuffer, 0, 0, null);
-        } finally {
+        }
+        finally {
             screen.dispose();
         }
-        
+
         if (backBuffer.getWidth() != getWidth() || backBuffer.getHeight() != getHeight()) {
             backBuffer = null;
         }
@@ -455,6 +467,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (midiUnit.isValidSequence() == false || running == false || isVisible() == false) {
             return;
         }
+        
+        debugRenderTime = 0;
 
         isFirstRendering = true;
 
@@ -591,7 +605,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         g2d.setStroke(new BasicStroke());
     }
-    
+
     private MonitorData monitorInfo = new MonitorData();
 
     public void paintDisplay(Graphics g) {
@@ -619,9 +633,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         copyFromNotesImage(g);
 
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         if (JMPCoreAccessor.getSystemManager().getStatus(ISystemManager.SYSTEM_STATUS_ID_FILE_LOADING) == true && isFirstRendering == false) {
             int fsize = 28;
-            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fsize));
+            g.setFont(msgFont);
             g.setColor(LayoutManager.getInstance().getCursorColor().getBgColor());
             FontMetrics fm = g.getFontMetrics();
             int stringWidth = 0;
@@ -653,7 +669,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             if (midiUnit.isProgressNowAnalyzing() == true) {
                 strY += 5;
                 fsize = 16;
-                g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fsize));
+                g.setFont(msgFontS);
                 fm = g.getFontMetrics();
 
                 // sb.setLength(0);
@@ -677,13 +693,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 g.drawString(sb.toString(), strX, strY + (fsize / 2));
                 strY += fsize + 2;
             }
-
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             drawSpinner(g2);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
         else if (midiUnit.isValidSequence() == false && isFirstRendering == false) {
-            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 32));
+            g.setFont(msgFont);
             FontMetrics fm = g.getFontMetrics();
             g.setColor(LayoutManager.getInstance().getPlayerColor().getBgRevColor());
             sb.setLength(0);
@@ -703,8 +716,16 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else if (imageWorkerMgr.getNotesImage() == null || isFirstRendering == true) {
             // 描画が追いついていない
             int fsize = 28;
+
+            int finWorker = 0;
+            for (int i = 0; i < imageWorkerMgr.getNumOfWorker(); i++) {
+                if (imageWorkerMgr.getWorker(i).isExec() == false) {
+                    finWorker++;
+                }
+            }
+
             g.setColor(LayoutManager.getInstance().getCursorColor().getBgColor());
-            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fsize));
+            g.setFont(msgFont);
             FontMetrics fm = g.getFontMetrics();
             sb.setLength(0);
             sb.append("...φ(｡_｡*)");
@@ -719,20 +740,65 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
             g.drawString(sb.toString(), strX, strY + (fsize / 2));
+
+            g.setFont(msgFontS);
+            sb.setLength(0);
+            sb.append(finWorker).append("/").append(imageWorkerMgr.getNumOfWorker());
+            fm = g.getFontMetrics();
+            stringWidth = fm.stringWidth(sb.toString());
+            stringHeight = fm.getHeight();
+            strX = (paneWidth - stringWidth) / 2;
+            strY = (paneHeight - stringHeight) / 2 + 38;
+            g.drawString(sb.toString(), strX, strY + (fsize / 2));
             drawSpinner((Graphics2D) g);
         }
         else {
         }
 
+        if (SystemProperties.getInstance().isDebugMode() == true) {
+            INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
+            for (int i = 0; i < imageWorkerMgr.getNumOfWorker(); i++) {
+                int dbx = 10 + (i * 15);
+                if (imageWorkerMgr.getWorker(i).isExec() == false) {
+                    g.setColor(Color.GREEN);
+                }
+                else {
+                    g.setColor(Color.RED);
+                }
+                g.fillRect(dbx, paneHeight - 35, 10, 10);
+                g.setColor(Color.BLACK);
+                g.drawRect(dbx, paneHeight - 35, 10, 10);
+                if (debugRenderTime < imageWorkerMgr.getWorker(i).getDebugRenderTime()) {
+                    debugRenderTime = imageWorkerMgr.getWorker(i).getDebugRenderTime();
+                }
+            }
+
+            g.setFont(msgFontSS);
+            sb.setLength(0);
+            int val1 = (int) midiUnit.getTempoInBPM();
+            int val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
+            sb.append("FPS:").append(getFPS()).append(", BPM:").append(val1).append(".").append(val2)
+                    .append(", PPQ:").append(midiUnit.getResolution())
+                    .append(", TICK:").append(midiUnit.getTickPosition()).append("/").append(midiUnit.getTickLength())
+                    .append(", NOTES:").append(notesMonitor.getNotesCount()).append("/").append(notesMonitor.getNumOfNotes())
+                    .append(", PEEK_RENDER:").append(debugRenderTime).append("ms");
+            int strX = 10;
+            int strY = paneHeight - 10;
+            g.setColor(Color.BLACK);
+            g.drawString(sb.toString(), strX + 1, strY + 1);
+            g.setColor(Color.GREEN);
+            g.drawString(sb.toString(), strX, strY);
+        }
+
         paintWindowEffect(g);
 
         monitorInfo.fps = getFPS();
-        monitorInfo.width = getWidth();
-        monitorInfo.height = getHeight();
-        
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        monitorInfo.width = paneWidth;
+        monitorInfo.height = paneHeight;
+
         monitorPainter.paintMonitor(g, monitorInfo);
         umbrellaUI.paint(g);
+
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
@@ -997,17 +1063,18 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     public void resetPage() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        if (SystemProperties.getInstance().isNotesWidthAuto() == true) {
-            double fbpm = midiUnit.getFirstTempoInBPM();
-            int newCellWidth = (int) (480.0 * (140.0 / fbpm) * SystemProperties.getInstance().getDimOffset());
-            if (newCellWidth < SystemProperties.MIN_NOTES_WIDTH) {
-                newCellWidth = SystemProperties.MIN_NOTES_WIDTH;
-            }
-            else if (newCellWidth > SystemProperties.MAX_NOTES_WIDTH) {
-                newCellWidth = SystemProperties.MAX_NOTES_WIDTH;
-            }
-            setMeasCellWidth(newCellWidth);
+        double fbpm = midiUnit.getFirstTempoInBPM();
+        double baseBpm = 140.0 * SystemProperties.getInstance().getNotesSpeed(); // NotesSpeed
+                                                                                 // =
+                                                                                 // baseとの乖離ってことにする
+        int newCellWidth = (int) (480.0 * (baseBpm / fbpm) * SystemProperties.getInstance().getDimOffset());
+        if (newCellWidth < SystemProperties.MIN_NOTES_WIDTH) {
+            newCellWidth = SystemProperties.MIN_NOTES_WIDTH;
         }
+        else if (newCellWidth > SystemProperties.MAX_NOTES_WIDTH) {
+            newCellWidth = SystemProperties.MAX_NOTES_WIDTH;
+        }
+        setMeasCellWidth(newCellWidth);
 
         calcDispMeasCount();
 
@@ -1024,12 +1091,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     private void flipPage() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        int startMeas = (int) midiUnit.getTickPosition() / midiUnit.getResolution();
         int offsetLeftMeas = getLeftMeas();
         offsetLeftMeas = (offsetLeftMeas < 0) ? -(offsetLeftMeas) : offsetLeftMeas;
         int flipMergin = -(NEXT_FLIP_COUNT);
         int flipLine = (offsetLeftMeas + dispMeasCount + flipMergin);
-        if (startMeas >= flipLine) {
+        long flipTick = flipLine * midiUnit.getResolution();
+        if (midiUnit.getTickPosition() >= flipTick) {
             setLeftMeas(-(flipLine));
             offsetLeftMeas = getLeftMeas();
             imageWorkerMgr.flipPage(offsetLeftMeas, dispMeasCount, NEXT_FLIP_COUNT);

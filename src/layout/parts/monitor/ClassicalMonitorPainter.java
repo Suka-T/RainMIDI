@@ -9,14 +9,14 @@ import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import plg.Utility;
 
 public class ClassicalMonitorPainter extends MonitorPainter {
 
     private Font info3Font = null;
     private StringBuilder sb = new StringBuilder();
     public ClassicalMonitorPainter() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
+        if (Utility.isWindows()) {
             info3Font = new Font("Calibri", Font.PLAIN, 28);
         }
         else {

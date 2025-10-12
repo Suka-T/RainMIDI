@@ -9,6 +9,7 @@ import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import plg.Utility;
 
 public class AnalyzeMonitorPainter extends MonitorPainter {
 
@@ -16,8 +17,7 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
     private StringBuilder sb = new StringBuilder();
     private static final int FONT_SIZE = 32;
     public AnalyzeMonitorPainter() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
+        if (Utility.isWindows()) {
             info1Font = new Font("Calibri", Font.PLAIN, FONT_SIZE);
         }
         else {
@@ -141,19 +141,6 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.setColor(topStrColor);
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
-
-//        if (SystemProperties.getInstance().isDebugMode() == true) {
-//            for (int i = 0; i < imageWorkerMgr.getNumOfWorker(); i++) {
-//                int dbx = sx + (i * 15);
-//                if (imageWorkerMgr.getWorker(i).isExec() == false) {
-//                    g.setColor(Color.GREEN);
-//                }
-//                else {
-//                    g.setColor(Color.RED);
-//                }
-//                g.fillRect(dbx, sy + 5, 10, 10);
-//            }
-//        }
     }
 
 }

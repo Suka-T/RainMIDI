@@ -20,6 +20,8 @@ public class ImageWorker implements Runnable {
     private int height = 0;
     private ExecutorService service = null;
     protected RendererWindow window = null;
+    
+    private long debugRenderTime = 0;
 
     public ImageWorker(RendererWindow window, int width, int height) {
         super();
@@ -80,6 +82,8 @@ public class ImageWorker implements Runnable {
     @Override
     public void run() {
         try {
+            debugRenderTime = 0;
+            
             if (window.isVisible() == false) {
                 if (offScreenImage != null) {
                     // イメージオブジェクトのメモリを解放
@@ -87,6 +91,8 @@ public class ImageWorker implements Runnable {
                 }
                 return;
             }
+            
+            long start = System.currentTimeMillis();
 
             if (offScreenImage == null) {
                 // ノーツ画像
@@ -103,7 +109,10 @@ public class ImageWorker implements Runnable {
 
             // オフスクリーン描画
             paintImage(offScreenGraphic);
-
+            
+            long end = System.currentTimeMillis();
+            debugRenderTime = end - start;
+            
             isExec = false;
         }
         catch (Throwable e) {
@@ -132,6 +141,10 @@ public class ImageWorker implements Runnable {
         disposeImage();
 
         service.close();
+    }
+
+    public long getDebugRenderTime() {
+        return debugRenderTime;
     }
 
 }
