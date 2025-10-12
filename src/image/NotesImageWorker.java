@@ -101,7 +101,7 @@ public class NotesImageWorker extends ImageWorker {
         }
 
         paintBorder(g);
-        paintNotes(g, getLeftMeasTh());
+        paintNotes(g);
     }
 
     protected void paintBorder(Graphics g) {
@@ -135,8 +135,37 @@ public class NotesImageWorker extends ImageWorker {
     private long mpEndTick = 0;
     private int offsetCoordX = 0;
     private int topOffset = 0;
+    
+    @Override
+    protected boolean calcViewport() {
+        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        
+        offsetCoordX = LayoutManager.getInstance().getTickBarPosition();
+        int offsetCoordXtoMeas = offsetCoordX / window.getMeasCellWidth();
+        int offsetCoordXtoTick = offsetCoordXtoMeas * midiUnit.getResolution();
+        int totalMeasCount = (int) ((double) window.getDispMeasCount() * 1.0);
 
-    protected void paintNotes(Graphics g, int leftMeas) {
+        long absLeftMeas = -(leftMeasTh);
+        long vpLenTick = (totalMeasCount * midiUnit.getResolution());
+        vpStartTick = absLeftMeas * midiUnit.getResolution() - offsetCoordXtoTick;
+        vpEndTick = vpStartTick + vpLenTick + (offsetCoordXtoTick * 2);
+        
+        mpStartTick = vpStartTick - vpLenTick;
+        if (mpStartTick < 0) {
+            mpStartTick = 0;
+        }
+        mpEndTick = vpEndTick + vpLenTick;
+        
+        boolean ret = true;
+        long tLength = midiUnit.getTickLength();
+        if (tLength < mpStartTick || mpEndTick < 0) {
+            ret = false;
+            System.out.println("(skip)render notes: " + mpStartTick + "-" + mpEndTick);
+        }
+        return ret;
+    }
+
+    protected void paintNotes(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
@@ -155,15 +184,6 @@ public class NotesImageWorker extends ImageWorker {
 
         // 上部位置の調整
         topOffset = (window.getMeasCellHeight() * (127 - window.getTopMidiNumber()));
-        offsetCoordX = LayoutManager.getInstance().getTickBarPosition();
-        int offsetCoordXtoMeas = offsetCoordX / window.getMeasCellWidth();
-        int offsetCoordXtoTick = offsetCoordXtoMeas * midiUnit.getResolution();
-        int totalMeasCount = (int) ((double) window.getDispMeasCount() * 1.0);
-
-        long absLeftMeas = -(leftMeas);
-        long vpLenTick = (totalMeasCount * midiUnit.getResolution());
-        vpStartTick = absLeftMeas * midiUnit.getResolution() - offsetCoordXtoTick;
-        vpEndTick = vpStartTick + vpLenTick + (offsetCoordXtoTick * 2);
 
         int pbMaxHeight = 100;
         int pbCenterY = (pbMaxHeight / 2) + 100;
@@ -176,14 +196,6 @@ public class NotesImageWorker extends ImageWorker {
         if (notesMonitor.getNumOfTrack() <= 0) {
             return;
         }
-
-        mpStartTick = vpStartTick - vpLenTick;
-        if (mpStartTick < 0) {
-            mpStartTick = 0;
-        }
-        mpEndTick = vpEndTick + vpLenTick;
-
-        System.out.println("render notes: " + mpStartTick + "-" + mpEndTick);
 
         int trkBegin = 0;
         int trkEnd = 0;
@@ -198,6 +210,8 @@ public class NotesImageWorker extends ImageWorker {
             trkEnd = -1;
             trkDir = -1;
         }
+        
+        System.out.println("render notes: " + mpStartTick + "-" + mpEndTick);
 
         for (int trkIndex = trkBegin; trkIndex != trkEnd; trkIndex += trkDir) {
             for (int i = 0; i < 16; i++) {
@@ -232,7 +246,7 @@ public class NotesImageWorker extends ImageWorker {
                         else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)
                                 || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
                             // Note OFF
-                            paintNt(nContext, trk, leftMeas, tick, channel, data1, data2);
+                            paintNt(nContext, trk, leftMeasTh, tick, channel, data1, data2);
                             
                             noteOnEvents[channel][data1].init();
                         }

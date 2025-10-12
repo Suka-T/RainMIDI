@@ -12,7 +12,7 @@ import jlib.core.JMPCoreAccessor;
 import layout.LayoutManager;
 
 public class ImageWorker implements Runnable {
-    private int leftMeasTh = 0;
+    protected int leftMeasTh = 0;
     protected volatile BufferedImage offScreenImage;
     protected Graphics2D offScreenGraphic;
     private boolean isExec = false;
@@ -89,10 +89,20 @@ public class ImageWorker implements Runnable {
                     // イメージオブジェクトのメモリを解放
                     disposeImage();
                 }
+                isExec = false;
                 return;
             }
             
             long start = System.currentTimeMillis();
+            
+            if (calcViewport() == false) {
+                if (offScreenImage != null) {
+                    // イメージオブジェクトのメモリを解放
+                    disposeImage();
+                }
+                isExec = false;
+                return;
+            }
 
             if (offScreenImage == null) {
                 // ノーツ画像
@@ -126,6 +136,11 @@ public class ImageWorker implements Runnable {
 
     public void setLeftMeasTh(int leftMeasTh) {
         this.leftMeasTh = leftMeasTh;
+    }
+    
+    protected boolean calcViewport() {
+        /* 継承先で処理を記述 */
+        return false;
     }
 
     protected void paintImage(Graphics g) {
