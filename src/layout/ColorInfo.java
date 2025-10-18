@@ -1,6 +1,8 @@
 package layout;
 
 import java.awt.Color;
+import java.awt.LinearGradientPaint;
+import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,9 @@ public class ColorInfo {
     protected Color effeColor = null;
     protected Color bgRevColor = null;
     protected Color bgRev2Color = null;
+    
+    // グラデーション描画の高速化対応 
+    protected Paint gradPainter = null;
 
     protected List<Color> gradColor = null;
     protected int gradSize = -1;
@@ -100,6 +105,11 @@ public class ColorInfo {
         int spanR = (bdR - bgR) / size;
         int spanG = (bdG - bgG) / size;
         int spanB = (bdB - bgB) / size;
+        
+        gradPainter = new LinearGradientPaint(0f, 0f, 0f, (float)size, 
+                new float[] { 0f, 1f },
+                new Color[] { bgColor, shadowColor }
+        );
 
         int i = 0;
         gradColor.clear();
@@ -111,5 +121,9 @@ public class ColorInfo {
             gradColor.add(c);
         }
         gradSize = size;
+    }
+    
+    public Paint getGradPainter() {
+        return gradPainter;
     }
 }

@@ -16,11 +16,22 @@ public class Normal3dNotesPainter extends NotesPainter {
         Graphics2D g2d = (Graphics2D) context.g;
         if (context.iW > 1) {
             int i = 0;
-            for (; i < context.iH; i++) {
-                //g2d.setColor(layout.LayoutManager.getInstance().getNotesGradation(context.colorIndex, i));
-                g2d.setColor(LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradColor(i));
-                g2d.drawLine(context.iX, context.iY + i, context.iX + context.iW - 1, context.iY + i);
-            }
+// PainterはGC多発で遅いため使わない 
+//            if (LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradPainter() != null) {
+//                AffineTransform oldTx = g2d.getTransform();
+//                g2d.translate(context.iX, context.iY);
+//                //ag2.scale(1.0, context.iH);
+//                g2d.setPaint(LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradPainter());
+//                g2d.fillRect(0, 0, context.iW, context.iH);
+//                g2d.setTransform(oldTx);
+//            }
+//            else {
+                for (; i < context.iH; i++) {
+                    //g2d.setColor(layout.LayoutManager.getInstance().getNotesGradation(context.colorIndex, i));
+                    g2d.setColor(LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradColor(i));
+                    g2d.drawLine(context.iX, context.iY + i, context.iX + context.iW - 1, context.iY + i);
+                }
+//            }
             g2d.setColor(context.bdColor);
             g2d.drawRect(context.iX, context.iY, context.iW, context.iH);
         }

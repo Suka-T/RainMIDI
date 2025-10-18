@@ -136,6 +136,45 @@ public class NotesImageWorker extends ImageWorker {
     private int offsetCoordX = 0;
     private int topOffset = 0;
     
+    // インナー関数 
+    private MappedParseFunc mpFunc = new MappedParseFunc() {
+
+        @Override
+        public void sysexMessage(int trk, long tick, int statusByte, byte[] sysexData, int length) {
+        }
+
+        @Override
+        public void shortMessage(int trk, long tick, int statusByte, int data1, int data2) {
+            int command = statusByte & 0xF0;
+            int channel = statusByte & 0x0F;
+            if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON) && (data2 > 0)) {
+                if (SystemProperties.getInstance().isGhostNotes(data2) == false) {
+                    if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
+                        noteOnEvents[channel][data1].tick = tick;
+                    }
+                }
+            }
+            else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)
+                    || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
+                // Note OFF
+                paintNt(nContext, trk, leftMeasTh, tick, channel, data1, data2);
+                
+                noteOnEvents[channel][data1].init();
+            }
+            else {
+            }
+        }
+
+        @Override
+        public void metaMessage(int trk, long tick, int type, byte[] metaData, int length) {
+        }
+        
+        @Override
+        public boolean interrupt() {
+            return isExec() == false;
+        }
+    };
+    
     @Override
     protected boolean calcViewport() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
@@ -226,43 +265,10 @@ public class NotesImageWorker extends ImageWorker {
             g2d.setStroke(normalStroke);
 
             try {
-                midiUnit.parseMappedByteBuffer((short) trkIndex, new MappedParseFunc(mpStartTick, mpEndTick) {
-
-                    @Override
-                    public void sysexMessage(int trk, long tick, int statusByte, byte[] sysexData, int length) {
-                    }
-
-                    @Override
-                    public void shortMessage(int trk, long tick, int statusByte, int data1, int data2) {
-                        int command = statusByte & 0xF0;
-                        int channel = statusByte & 0x0F;
-                        if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON) && (data2 > 0)) {
-                            if (SystemProperties.getInstance().isGhostNotes(data2) == false) {
-                                if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
-                                    noteOnEvents[channel][data1].tick = tick;
-                                }
-                            }
-                        }
-                        else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)
-                                || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
-                            // Note OFF
-                            paintNt(nContext, trk, leftMeasTh, tick, channel, data1, data2);
-                            
-                            noteOnEvents[channel][data1].init();
-                        }
-                        else {
-                        }
-                    }
-
-                    @Override
-                    public void metaMessage(int trk, long tick, int type, byte[] metaData, int length) {
-                    }
-                    
-                    @Override
-                    public boolean interrupt() {
-                        return isExec() == false;
-                    }
-                });
+                mpFunc.setStartTick(mpStartTick);
+                mpFunc.setEndTick(mpEndTick);
+                mpFunc.setReadFlag(MappedParseFunc.READ_FLAG_SHORT_MESSAGE);
+                midiUnit.parseMappedByteBuffer((short) trkIndex, mpFunc);
             }
             catch (Exception e) {
                 e.printStackTrace();
