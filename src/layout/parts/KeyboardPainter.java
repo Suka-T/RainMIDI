@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public abstract class KeyboardPainter {
     
-    protected int keyboardWidth;
+    protected int keyboardWidth = 0;
     
     public static enum KindOfKey {
         WHITE,

@@ -65,6 +65,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     // 次のページにフリップするpx数
     public static final int NEXT_FLIP_COUNT = 0;
+    
+    public static final int HIT_EFFECT_STEPS = 16;
 
     protected Canvas canvas;
     protected BufferStrategy strategy;
@@ -85,6 +87,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected int topMidiNumber = 127;
 
     protected int[] hitEffectPosY = null;
+    protected AlphaComposite[] hitEffeSteps = null;
 
     private volatile boolean running = false;
     protected Thread renderThread;
@@ -204,37 +207,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
 
         isAvailableGpu = Utility.isGpuAvailable();
+        
+        hitEffeSteps = new AlphaComposite[HIT_EFFECT_STEPS];
+        for (int j = 0; j < 16; j++) {
+            float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
+            hitEffeSteps[j] = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+        }
     }
-    //
-    // public void formatWithCommas(long number, StringBuilder out) {
-    //
-    // // 負数対応（符号のみ処理）
-    // boolean negative = number < 0;
-    // if (negative) {
-    // number = -number;
-    // }
-    //
-    // // 数字を一時バッファに逆順で格納
-    // char[] buffer = new char[20];
-    // int index = buffer.length;
-    //
-    // int digitCount = 0;
-    // do {
-    // if (digitCount > 0 && digitCount % 3 == 0) {
-    // buffer[--index] = ',';
-    // }
-    // buffer[--index] = (char) ('0' + (number % 10));
-    // number /= 10;
-    // digitCount++;
-    // }
-    // while (number > 0);
-    //
-    // if (negative) {
-    // buffer[--index] = '-';
-    // }
-    //
-    // out.append(buffer, index, buffer.length - index);
-    // }
 
     public int getKeyboardWidth() {
         return SystemProperties.getInstance().getKeyWidth();
@@ -991,21 +970,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
                     if (isFocus == true) {
                         effx = tickBarPosition;
-                        for (int j = 0; j < 16; j++) {
-                            float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
-                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                        for (int j = 0; j < HIT_EFFECT_STEPS; j++) {
+                            g2d.setComposite(hitEffeSteps[j]);
                             if (isVisibleNotesIn)
                                 g2d.fillRect(effx + (inEffWidth * j), hitEffectPosY[i], inEffWidth, keyHeight);
                             if (isVisibleNotesOut)
                                 g2d.fillRect(effx - (outEffWidth * j) - outEffWidth, hitEffectPosY[i], outEffWidth, keyHeight);
                         }
-                        /*
-                         * for (int j = 0; j < 10; j++) { float alpha = 1.0f - j
-                         * * 0.1f; g2d.setComposite(AlphaComposite.getInstance(
-                         * AlphaComposite.SRC_OVER, alpha)); g2d.fillRect(effx,
-                         * hitEffectPosY[i], effWidth, keyHeight); effx +=
-                         * effWidth; }
-                         */
                         g2d.setComposite(AlphaComposite.SrcOver);
                     }
                 }
