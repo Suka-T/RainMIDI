@@ -36,6 +36,7 @@ public class SystemProperties {
     public static final String SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD = "audio.usageMidiAnalyThreadCnt";
     public static final String SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD = "audio.usageMidiExtractThreadCnt";
     public static final String SYSP_RENDERER_MODE = "renderer.mode";
+    public static final String SYSP_RENDERER_NOTES_COLOR_BITS = "renderer.notesColorBits";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
     public static final String SYSP_RENDERER_KEY_FOCUS_FUNC = "renderer.keyFocusFunc";
@@ -64,6 +65,7 @@ public class SystemProperties {
             put(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, "Use MIDI Analyze Thread Count [1 - 24]");
             put(SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, "Use MIDI Extract Thread Count [1 - 24]");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
+            put(SYSP_RENDERER_NOTES_COLOR_BITS, "NotesImage color bit depth");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
             put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
@@ -111,6 +113,10 @@ public class SystemProperties {
     public static enum SyspWinEffect {
         NONE, CIRCLE_VIGNETTE, TOP_VIGNETTE;
     }
+    
+    public static enum SyspColorBitsDepth {
+        RGB_888, RGB_565, GRAY;
+    }
 
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
@@ -133,6 +139,9 @@ public class SystemProperties {
     
     private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE };
     private static String[] winEffeItemS = { "none", "circle_vignette" };
+    
+    private static Object[] colorBitsItemO = { SyspColorBitsDepth.RGB_888, SyspColorBitsDepth.RGB_565, SyspColorBitsDepth.GRAY };
+    private static String[] colorBitsItemS = { "rgb888", "rgb565", "gray" };
 
     private List<PropertiesNode> nodes;
     private int keyWidth = 50;
@@ -163,6 +172,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, PropertiesNodeType.INT, "8", "1", "24"));
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, PropertiesNodeType.INT, "6", "1", "24"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MODE, PropertiesNodeType.ITEM, SyspViewMode.RAIN_FALL, viewModeItemS, viewModeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTES_COLOR_BITS, PropertiesNodeType.ITEM, SyspColorBitsDepth.RGB_888, colorBitsItemS, colorBitsItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "5", "2", "64"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));

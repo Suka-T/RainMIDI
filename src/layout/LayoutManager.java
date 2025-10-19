@@ -30,6 +30,7 @@ import layout.parts.notes.Normal3dNotesPainter;
 import layout.parts.notes.NormalNotesPainter;
 import plg.PropertiesNode;
 import plg.SystemProperties;
+import plg.SystemProperties.SyspColorBitsDepth;
 import plg.SystemProperties.SyspViewMode;
 import plg.Utility;
 
@@ -77,13 +78,28 @@ public class LayoutManager {
         return layout.getNodes();
     }
 
-    public VolatileImage createLayerImage(int width, int height) {
+    public VolatileImage createDisplayImage(int width, int height) {
         GraphicsConfiguration gc = rootCanvas.getGraphicsConfiguration();
         return gc.createCompatibleVolatileImage(width, height, Transparency.OPAQUE);
     }
 
     public BufferedImage createBufferdImage(int width, int height) {
-        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int bmpFormat = BufferedImage.TYPE_INT_RGB;
+        SyspColorBitsDepth depthType = (SyspColorBitsDepth) SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS).getData();
+        System.out.println(depthType);
+        switch (depthType) {
+            case GRAY:
+                bmpFormat = BufferedImage.TYPE_BYTE_GRAY;
+                break;
+            case RGB_565:
+                bmpFormat = BufferedImage.TYPE_USHORT_565_RGB;
+                break;
+            case RGB_888:
+            default:
+                bmpFormat = BufferedImage.TYPE_INT_RGB;
+                break;
+        }
+        return new BufferedImage(width, height, bmpFormat);
     }
 
     public void initialize(Canvas canvas) {

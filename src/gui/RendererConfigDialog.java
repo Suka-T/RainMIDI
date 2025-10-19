@@ -63,28 +63,32 @@ import plg.Utility;
 public class RendererConfigDialog extends JDialog implements ActionListener {
 
     private static final String WORKNUM_LOW = "3";
-    private static final String NOTESIMAGENUM_LOW = "30";
+    private static final String NOTESIMAGENUM_LOW = "60";
     private static final String USAGE_MIDIRAM_LOW = "5";
     private static final String USAGE_MIDI_ANA_LOW = "1";
     private static final String USAGE_MIDI_EXT_LOW = "1";
+    private static final String NOTESIMAGE_BITS_LOW = "rgb565";
 
     private static final String WORKNUM_MID = "5";
     private static final String NOTESIMAGENUM_MID = "60";
     private static final String USAGE_MIDIRAM_MID = "25";
     private static final String USAGE_MIDI_ANA_MID = "8";
     private static final String USAGE_MIDI_EXT_MID = "6";
+    private static final String NOTESIMAGE_BITS_MID = "rgb888";
 
     private static final String WORKNUM_HIG = "8";
     private static final String NOTESIMAGENUM_HIG = "120";
     private static final String USAGE_MIDIRAM_HIG = "25";
     private static final String USAGE_MIDI_ANA_HIG = "8";
     private static final String USAGE_MIDI_EXT_HIG = "6";
+    private static final String NOTESIMAGE_BITS_HIG = "rgb888";
     
     private static final String WORKNUM_MAX = "8";
     private static final String NOTESIMAGENUM_MAX = "300";
     private static final String USAGE_MIDIRAM_MAX = "100";
     private static final String USAGE_MIDI_ANA_MAX = "24";
     private static final String USAGE_MIDI_EXT_MAX = "24";
+    private static final String NOTESIMAGE_BITS_MAX = "rgb888";
     
     private static final String NOTES_SPEED_SLOW = "0.4";
     private static final String NOTES_SPEED_NORM = "1.0";
@@ -391,6 +395,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_LOW);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_LOW);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_LOW);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_LOW);
                     }
                 });
                 buttonGroup.add(rdbtnPerfLowButton);
@@ -406,6 +411,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_MID);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_MID);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_MID);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_MID);
                     }
                 });
                 buttonGroup.add(rdbtnPerfMidButton);
@@ -420,6 +426,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_HIG);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_HIG);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_HIG);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_HIG);
                     }
                 });
                 buttonGroup.add(rdbtnPerfHighButton);
@@ -434,6 +441,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF, USAGE_MIDIRAM_MAX);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_MAX);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_MAX);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_MAX);
                     }
                 });
                 buttonGroup.add(rdbtnPerfMaxButton);

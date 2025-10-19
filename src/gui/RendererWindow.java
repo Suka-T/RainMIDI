@@ -593,7 +593,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         /* ノーツ描画 */
         GraphicsConfiguration gc = getGraphicsConfiguration();
         if (orgScreenImage == null || orgScreenImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
-            orgScreenImage = LayoutManager.getInstance().createLayerImage(getOrgWidth(), getOrgHeight());
+            orgScreenImage = LayoutManager.getInstance().createDisplayImage(getOrgWidth(), getOrgHeight());
             orgScreenGraphic = orgScreenImage.createGraphics();
         }
 
