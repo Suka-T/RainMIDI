@@ -30,6 +30,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -54,6 +55,7 @@ import layout.parts.key.WhiteKeyParts;
 import layout.parts.monitor.MonitorData;
 import plg.AbstractRenderPlugin;
 import plg.SystemProperties;
+import plg.SystemProperties.OsBeanWrapper;
 import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspWinEffect;
@@ -61,11 +63,13 @@ import plg.Utility;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
 
+    private static final DecimalFormat DF = new DecimalFormat("0.0");
+
     private long delayNano = 0;
 
     // 次のページにフリップするpx数
     public static final int NEXT_FLIP_COUNT = 0;
-    
+
     public static final int HIT_EFFECT_STEPS = 16;
 
     protected Canvas canvas;
@@ -108,7 +112,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private Font msgFont = null;
     private Font msgFontS = null;
     private Font msgFontSS = null;
-    
+
     private long debugRenderTime = 0;
 
     public int getOrgWidth() {
@@ -207,7 +211,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
 
         isAvailableGpu = Utility.isGpuAvailable();
-        
+
         hitEffeSteps = new AlphaComposite[HIT_EFFECT_STEPS];
         for (int j = 0; j < 16; j++) {
             float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
@@ -446,7 +450,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (midiUnit.isValidSequence() == false || running == false || isVisible() == false) {
             return;
         }
-        
+
         debugRenderTime = 0;
 
         isFirstRendering = true;
@@ -686,7 +690,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int strY = (paneHeight - stringHeight) / 2;
             g.drawString(sb.toString(), strX, strY - 20);
             sb.setLength(0);
-            sb.append("Drag and Drop your MIDI or MIDI and AUDIO files here.");
+            sb.append("Drag and Drop your MIDI or MIDI & AUDIO files here.");
             stringWidth = fm.stringWidth(sb.toString());
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
@@ -752,15 +756,19 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 }
             }
 
+            OsBeanWrapper osBeasW = SystemProperties.getInstance().getOsBeanWrapper();
+
             g.setFont(msgFontSS);
             sb.setLength(0);
             int val1 = (int) midiUnit.getTempoInBPM();
             int val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
-            sb.append("FPS:").append(getFPS()).append(", BPM:").append(val1).append(".").append(val2)
-                    .append(", PPQ:").append(midiUnit.getResolution())
-                    .append(", TICK:").append(midiUnit.getTickPosition()).append("/").append(midiUnit.getTickLength())
-                    .append(", NOTES:").append(notesMonitor.getNotesCount()).append("/").append(notesMonitor.getNumOfNotes())
-                    .append(", PEEK_RENDER:").append(debugRenderTime).append("ms");
+            sb.append("CPU:").append(DF.format(osBeasW.usageCpu * 100.0)).append("%") //
+                    .append(", RAM:").append(DF.format(osBeasW.usageRam * 100.0)).append("%") //
+                    .append(", FPS:").append(getFPS()).append(", BPM:").append(val1).append(".").append(val2) //
+                    .append(", PPQ:").append(midiUnit.getResolution()) //
+                    .append(", TICK:").append(midiUnit.getTickPosition()).append("/").append(midiUnit.getTickLength()) //
+                    .append(", NOTES:").append(notesMonitor.getNotesCount()).append("/").append(notesMonitor.getNumOfNotes()) //
+                    .append(", RENDER:").append(debugRenderTime).append("ms"); //
             int strX = 10;
             int strY = paneHeight - 10;
             g.setColor(Color.BLACK);

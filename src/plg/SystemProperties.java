@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -162,6 +163,15 @@ public class SystemProperties {
     
     private String generalFontName = "";
     
+    private com.sun.management.OperatingSystemMXBean osBean;
+    public class OsBeanWrapper {
+        public double usageCpu = 0.0;
+        public double usageRam = 0.0;        
+    }
+    private OsBeanWrapper osState = new OsBeanWrapper();
+    
+    private final ScheduledExecutorService osStateScheduler = Executors.newSingleThreadScheduledExecutor();
+    
     private SystemProperties() {
         nodes = new ArrayList<>();
 
@@ -200,6 +210,19 @@ public class SystemProperties {
         else {
             generalFontName = Font.SANS_SERIF;
         }
+        
+        osBean = (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
+        
+        osStateScheduler.scheduleAtFixedRate(this::updateStats, 0, 1, TimeUnit.SECONDS);
+    }
+    
+    private void updateStats() {
+        osState.usageCpu = osBean.getSystemCpuLoad();
+        
+        long totalMem = osBean.getTotalPhysicalMemorySize();
+        long freeMem  = osBean.getFreePhysicalMemorySize();
+        long usedMem  = totalMem - freeMem;
+        osState.usageRam = (double)usedMem / (double)totalMem;
     }
     
     private static Map<SyspMonitorType, MonitorPainter> monitorPainters = new HashMap<SyspMonitorType, MonitorPainter>() {
@@ -359,6 +382,10 @@ public class SystemProperties {
             SystemProperties.getInstance().preloadAudioFiles();
         }, 400, TimeUnit.MILLISECONDS);
     }
+    
+    public void exit() {
+        osStateScheduler.shutdown();
+    }
 
     public void preloadAudioFiles() {
         if (preloadFiles.isEmpty() == false) {
@@ -486,5 +513,9 @@ public class SystemProperties {
 
     public String getGeneralFontName() {
         return generalFontName;
+    }
+    
+    public OsBeanWrapper getOsBeanWrapper() {
+        return osState;
     }
 }

@@ -34,6 +34,8 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     private RendererConfigDialog launchWindow = null;
     
     public void exitStdPlg() {
+        SystemProperties.getInstance().exit();
+        
         exitFlag = true;
     }
 

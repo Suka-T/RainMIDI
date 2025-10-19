@@ -3,19 +3,23 @@ package layout.parts.monitor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.text.DecimalFormat;
 
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import plg.SystemProperties;
+import plg.SystemProperties.OsBeanWrapper;
 import plg.Utility;
 
 public class AnalyzeMonitorPainter extends MonitorPainter {
-
+    private static final DecimalFormat DF = new DecimalFormat("0.0");
+    
     private Font info1Font = null;
     private StringBuilder sb = new StringBuilder();
-    private static final int FONT_SIZE = 32;
+    private static final int FONT_SIZE = 28;
     public AnalyzeMonitorPainter() {
         if (Utility.isWindows()) {
             info1Font = new Font("Calibri", Font.PLAIN, FONT_SIZE);
@@ -31,7 +35,7 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         
         int sx = 10;
-        int sy = 30;
+        int sy = FONT_SIZE + 2;
         int sh = FONT_SIZE;
         Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
         Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
@@ -132,7 +136,27 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.setColor(topStrColor);
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
+        
+        sy += (sh / 2);
+        
+        OsBeanWrapper osBeasW = SystemProperties.getInstance().getOsBeanWrapper();
 
+        sb.setLength(0);
+        sb.append("CPU: ").append(DF.format(osBeasW.usageCpu * 100.0)).append("%");
+        g.setColor(backStrColor);
+        g.drawString(sb.toString(), sx + 1, sy + 1);
+        g.setColor(topStrColor);
+        g.drawString(sb.toString(), sx, sy);
+        sy += sh;
+        
+        sb.setLength(0);
+        sb.append("RAM: ").append(DF.format(osBeasW.usageRam * 100.0)).append("%");
+        g.setColor(backStrColor);
+        g.drawString(sb.toString(), sx + 1, sy + 1);
+        g.setColor(topStrColor);
+        g.drawString(sb.toString(), sx, sy);
+        sy += sh;
+        
         sb.setLength(0);
         val1 = info.fps;
         sb.append("FPS: ").append(val1);
@@ -141,6 +165,7 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.setColor(topStrColor);
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
+        
     }
 
 }
