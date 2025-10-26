@@ -7,8 +7,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,7 @@ import javax.swing.JFileChooser;
 import jlib.core.JMPCoreAccessor;
 import plg.SystemProperties;
 
-public class UmbrellaUI implements MouseListener, MouseMotionListener {
+public class UmbrellaUI extends RainControl {
     
     public static enum UmbFunction {
         None,
@@ -304,6 +302,11 @@ public class UmbrellaUI implements MouseListener, MouseMotionListener {
             mouseX = -1;
             mouseY = -1;
         }
+    }
+
+    @Override
+    boolean onPress(MouseEvent e) {
+        return true;
     }
 
 }

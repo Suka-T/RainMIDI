@@ -101,7 +101,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected boolean isFirstRendering = false;
 
+    protected RainControl currentControl = null;
     protected UmbrellaUI umbrellaUI = null;
+    protected VolumeControl volumeControl = null;
 
     protected KeyboardPainter keyboardPainter = null;
     protected MonitorPainter monitorPainter = null;
@@ -203,6 +205,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         makeKeyboardRsrc();
 
         umbrellaUI = new UmbrellaUI();
+        volumeControl = new VolumeControl();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
         monitorPainter = SystemProperties.getInstance().getMonitorPainter();
 
@@ -588,9 +591,30 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         g2d.setStroke(new BasicStroke());
     }
+    
+    public void paintVolume(Graphics g) {
+        g.setFont(msgFontS);
+        g.setColor(LayoutManager.getInstance().getPlayerColor().getBgRevColor());
+        FontMetrics fm = g.getFontMetrics();
+        sb.setLength(0);
+        sb.append("Volume: ");
+        int paneWidth = getContentPane().getWidth();
+        int paneHeight = getContentPane().getHeight();
+        int volConWidth = 240;
+        int volConHeight = 16;
+        int volConX = (paneWidth - volConWidth) / 2;
+        int volConY = (paneHeight - volConHeight) / 2 + 125;
+        int stringWidth = fm.stringWidth(sb.toString());
+        int stringHeight = fm.getHeight();
+        int strX = volConX - stringWidth;
+        int strY = volConY + (stringHeight / 2);
+        g.drawString(sb.toString(), strX, strY);
+        volumeControl.setVisible(true);
+        volumeControl.setLocation(volConX, volConY, volConWidth, volConHeight);
+        volumeControl.paint(g);
+    }
 
     private MonitorData monitorInfo = new MonitorData();
-
     public void paintDisplay(Graphics g) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
 
@@ -677,6 +701,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 strY += fsize + 2;
             }
             drawSpinner(g2);
+            volumeControl.setVisible(false);
         }
         else if (midiUnit.isValidSequence() == false && isFirstRendering == false) {
             g.setFont(msgFont);
@@ -695,6 +720,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
             g.drawString(sb.toString(), strX, strY + 20);
+            
+            paintVolume(g);
         }
         else if (imageWorkerMgr.getNotesImage() == null || isFirstRendering == true) {
             // 描画が追いついていない
@@ -733,9 +760,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             strX = (paneWidth - stringWidth) / 2;
             strY = (paneHeight - stringHeight) / 2 + 38;
             g.drawString(sb.toString(), strX, strY + (fsize / 2));
+            
             drawSpinner((Graphics2D) g);
+            volumeControl.setVisible(false);
         }
         else {
+            volumeControl.setVisible(false);
         }
 
         if (SystemProperties.getInstance().isDebugMode() == true) {
@@ -1108,27 +1138,49 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        umbrellaUI.mouseClicked(e);
+        //umbrellaUI.mouseClicked(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        umbrellaUI.mousePressed(e);
+        if (volumeControl.onPress(e)) {
+            currentControl = volumeControl;
+        }
+        else {
+            currentControl = umbrellaUI;
+        }
+        
+        if (currentControl != null) {
+            currentControl.mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        umbrellaUI.mouseReleased(e);
+        if (currentControl != null) {
+            currentControl.mouseReleased(e);
+            currentControl = null;
+        }
+        else {
+            umbrellaUI.mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        umbrellaUI.mouseEntered(e);
+        if (currentControl != null) {
+            currentControl.mouseEntered(e);
+        }
+        else {
+            umbrellaUI.mouseEntered(e);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        umbrellaUI.mouseExited(e);
+        if (currentControl != null) {
+            currentControl.mouseExited(e);
+        }
     }
 
     public int getTopMidiNumber() {
@@ -1141,12 +1193,22 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        umbrellaUI.mouseDragged(e);
+        if (currentControl != null) {
+            currentControl.mouseDragged(e);
+        }
+        else {
+            umbrellaUI.mouseDragged(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        umbrellaUI.mouseMoved(e);
+        if (currentControl != null) {
+            currentControl.mouseMoved(e);
+        }
+        else {
+            umbrellaUI.mouseMoved(e);
+        }
     }
 
     @Override

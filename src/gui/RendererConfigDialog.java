@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -32,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -154,6 +157,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private final ButtonGroup buttonGroup_4 = new ButtonGroup();
     private JRadioButton rdbtnNotesSpeedFast;
     private JRadioButton rdbtnNotesSpeedVeryFast;
+    private JSlider sliderVolume;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -235,7 +239,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
         setModal(true);
-        setBounds(100, 100, 641, 603);
+        setBounds(100, 100, 641, 622);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -260,7 +264,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 JPanel audioSummaryPanel = new JPanel();
                 audioSummaryPanel.setLayout(null);
                 audioSummaryPanel.setBorder(new TitledBorder(null, "Audio", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-                audioSummaryPanel.setBounds(12, 10, 584, 138);
+                audioSummaryPanel.setBounds(12, 10, 584, 162);
                 panel.add(audioSummaryPanel);
 
                 comboBoxSynth = new JComboBox<String>();
@@ -274,7 +278,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         updateSynthDescription();
                     }
                 });
-                comboBoxSynth.setBounds(115, 17, 295, 21);
+                comboBoxSynth.setBounds(96, 17, 295, 21);
                 audioSummaryPanel.add(comboBoxSynth);
 
                 JLabel lblSynthLabel = new JLabel("MIDI Receiver");
@@ -282,32 +286,55 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 audioSummaryPanel.add(lblSynthLabel);
 
                 lblSynthDesc = new JLabel("");
-                lblSynthDesc.setBounds(152, 48, 379, 13);
+                lblSynthDesc.setBounds(106, 48, 379, 13);
                 audioSummaryPanel.add(lblSynthDesc);
 
                 chckbxIgnoreInBetween = new JCheckBox("Ignore audio in between two velocity values");
-                chckbxIgnoreInBetween.setBounds(115, 71, 303, 21);
+                chckbxIgnoreInBetween.setBounds(96, 71, 303, 21);
                 audioSummaryPanel.add(chckbxIgnoreInBetween);
 
                 spinnerIgnoreLow = new JSpinner();
-                spinnerIgnoreLow.setBounds(232, 98, 58, 20);
+                spinnerIgnoreLow.setBounds(213, 98, 58, 20);
                 audioSummaryPanel.add(spinnerIgnoreLow);
                 spinnerIgnoreLow.setModel(new SpinnerNumberModel(1, 1, 127, 1));
 
                 JLabel lblLow = new JLabel("Lowest");
-                lblLow.setBounds(178, 101, 50, 13);
+                lblLow.setBounds(159, 101, 50, 13);
                 audioSummaryPanel.add(lblLow);
                 lblLow.setHorizontalAlignment(SwingConstants.RIGHT);
 
                 JLabel lblHigh = new JLabel("Highest");
-                lblHigh.setBounds(334, 101, 50, 13);
+                lblHigh.setBounds(315, 101, 50, 13);
                 audioSummaryPanel.add(lblHigh);
                 lblHigh.setHorizontalAlignment(SwingConstants.RIGHT);
 
                 spinnerIgnoreHigh = new JSpinner();
-                spinnerIgnoreHigh.setBounds(389, 98, 58, 20);
+                spinnerIgnoreHigh.setBounds(370, 98, 58, 20);
                 audioSummaryPanel.add(spinnerIgnoreHigh);
                 spinnerIgnoreHigh.setModel(new SpinnerNumberModel(20, 1, 127, 1));
+                
+                JLabel lblVolumeLabel = new JLabel("Volume");
+                lblVolumeLabel.setBounds(12, 126, 72, 26);
+                audioSummaryPanel.add(lblVolumeLabel);
+                
+                sliderVolume = new JSlider();
+                sliderVolume.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent arg0) {
+                    }
+                });
+                sliderVolume.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent arg0) {
+                        if (!initialized.get())
+                            return; // 初期化中は無視
+                        
+                        float fPos = (float)sliderVolume.getValue() / (float)sliderVolume.getMaximum();
+                        JMPCoreAccessor.getSoundManager().setLineVolume(fPos);
+                    }
+                });
+                sliderVolume.setMaximum(1000);
+                sliderVolume.setBounds(96, 126, 435, 26);
+                audioSummaryPanel.add(sliderVolume);
                 spinnerIgnoreHigh.addChangeListener(new ChangeListener() {
                     public void stateChanged(ChangeEvent arg0) {
                         int value = (int) spinnerIgnoreHigh.getValue();
@@ -330,7 +357,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 layoutSummaryPanel.setLayout(null);
                 layoutSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "Design", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                layoutSummaryPanel.setBounds(12, 158, 584, 116);
+                layoutSummaryPanel.setBounds(12, 182, 584, 116);
                 panel.add(layoutSummaryPanel);
 
                 lblSelectedLayoutLabel = new JLabel("Default Design");
@@ -367,7 +394,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 284, 584, 195);
+                systemSummaryPanel.setBounds(12, 308, 584, 195);
                 panel.add(systemSummaryPanel);
 
                 JLabel lblWindowSizeLabel = new JLabel("Window Size");
@@ -953,6 +980,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     @Override
     public void setVisible(boolean b) {
         if (b) {
+            initialized.set(false);
             isCommitClose = false;
             if (SystemProperties.getInstance().isGpuAvailable() == false) {
                 SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT).setObject("true");
@@ -960,6 +988,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             updateItem();
             updateSynthItem();
             updateAbout();
+            
+            int cur = (int)(JMPCoreAccessor.getSoundManager().getLineVolume() * (float)sliderVolume.getMaximum());
+            sliderVolume.setValue(cur);
+            
+            initialized.set(true);
         }
         super.setVisible(b);
     }
