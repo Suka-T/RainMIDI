@@ -114,6 +114,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private Font msgFont = null;
     private Font msgFontS = null;
     private Font msgFontSS = null;
+    
+    protected FrameLimiter frameLimiter = null;
 
     private long debugRenderTime = 0;
 
@@ -220,6 +222,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
             hitEffeSteps[j] = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
         }
+        
+        frameLimiter = new FrameLimiter();
+        frameLimiter.setFps(SystemProperties.getInstance().getFixedFps());
     }
 
     public int getKeyboardWidth() {
@@ -487,12 +492,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private int topStrFlip = 0;
 
     protected String getTopString() {
-        if (topStrCnt > SystemProperties.getInstance().getFixedFps() / 2) {
-            // 500msに１回フリップ
+        if (topStrCnt > 30) {
             topStrFlip = (topStrFlip + 1) % topStrs.length;
             topStrCnt = 0;
         }
-        topStrCnt++;
+        
+        if (frameLimiter.isEventted30()) {
+            topStrCnt++;
+        }
         return topStrs[topStrFlip];
     }
 
@@ -508,7 +515,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int h = getContentPane().getHeight();
         int spinnerRadius = 120; // スピナーのサイズ半径
 
-        angle += 0.1;
+        if (frameLimiter.isEventted60()) {
+            angle += 0.1;
+        }
 
         Color armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
 
@@ -617,6 +626,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private MonitorData monitorInfo = new MonitorData();
     public void paintDisplay(Graphics g) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        
+        frameLimiter.frameEvent();
 
         /* ノーツ描画 */
         GraphicsConfiguration gc = getGraphicsConfiguration();
