@@ -9,11 +9,6 @@
 Copyright (c) 2025, Suka  
 All rights reserved.
 
-
-- [YouTube](https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd)
-- [X (Twitter)](https://x.com/Suka_XxO_OxX)
-- [GitHub](https://github.com/Suka-T)
-
 ## 🪪 使用許諾
 このソフトウェアは [MIT License](LICENSE) のもとで公開されています。
 
@@ -47,3 +42,8 @@ Azul にリクエストすることで入手可能です
 
 使用しているJDK/JREのバージョン：
 Zulu 21.42+19 (c2f88d00-0d1c-448f-8f72-27f1326b7e18)
+
+## リンク
+- [YouTube](https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd)
+- [X (Twitter)](https://x.com/Suka_XxO_OxX)
+- [GitHub](https://github.com/Suka-T)

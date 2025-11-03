@@ -12,12 +12,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -60,7 +56,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
-import javax.swing.text.html.HTMLEditorKit;
 
 import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
@@ -707,11 +702,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 public void hyperlinkUpdate(HyperlinkEvent e) {
                     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                         String desc = e.getDescription();
-                        if ("jpn".equals(desc)) {
-                            editorPane.setText(LicenseString.htmlJpn);
-                        }
-                        else if ("eng".equals(desc)) {
-                            editorPane.setText(LicenseString.htmlEng);
+                        if ("ja".equals(desc) || "en".equals(desc)) {
+                            updateAbout(desc);
                         }
                         else {
                             // それ以外のリンクはブラウザで開く
@@ -773,28 +765,22 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         }
         lblSynthDesc.setText(description);
     }
-
-    public void updateAbout() {
+    
+    public void updateAbout(String langCode) {
         // HTMLコンテンツの作成
         if (this.targetPlg != null) {
-            editorPane.setText(LicenseString.htmlEng);
-            
-            // 保存先のファイル
-            File file = new File("output.html");
-
-            // Writerを作成
-            try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file), "UTF-8"))) {
-
-                // HTMLEditorKitを使ってDocument内容を出力
-                HTMLEditorKit kit = (HTMLEditorKit) editorPane.getEditorKit();
-                kit.write(writer, editorPane.getDocument(), 0, editorPane.getDocument().getLength());
+            try {
+                AboutHtmlReader htmlReader = new AboutHtmlReader();
+                editorPane.setText(htmlReader.getContent(langCode));
             }
-            catch (Exception e1) {
-                // TODO 自動生成された catch ブロック
-                e1.printStackTrace();
+            catch (Exception e) {
+                editorPane.setText("Error");
             }
         }
+    }
+
+    public void updateAbout() {
+        updateAbout("en");
     }
 
     public void setSystemTableParam(String key, String value) {

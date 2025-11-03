@@ -1,12 +1,11 @@
 
 
-import gui.LicenseString;
 import plg.AbstractRenderPlugin;
 
 public class RainMIDI extends AbstractRenderPlugin {
 
     public static void main(String[] args) {
-        System.out.println(LicenseString.APP_NAME);
+        System.out.println(APP_NAME);
     }
 
     public RainMIDI() {
@@ -15,22 +14,22 @@ public class RainMIDI extends AbstractRenderPlugin {
     
     @Override
     public String getAppName() {
-        return LicenseString.APP_NAME;
+        return APP_NAME;
     }
     
     @Override
     public String getAppVersion() {
-        return LicenseString.APP_VERSION;
+        return APP_VERSION;
     }
     
     @Override
     public String getAppYear() {
-        return LicenseString.APP_YEAR;
+        return APP_YEAR;
     }
     
     @Override
     public String getAppCompany() {
-        return LicenseString.APP_COMPANY;
+        return APP_COMPANY;
     }
     
     @Override

@@ -23,6 +23,11 @@ import layout.LayoutManager;
 import plg.SystemProperties.SyspViewMode;
 
 public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener, ISupportExtensionConstraints {
+    
+    public static final String APP_NAME = "Rain MIDI";
+    public static final String APP_VERSION = "1.07";
+    public static final String APP_YEAR = "2025";
+    public static final String APP_COMPANY = "Suka";
 
     public static String Extensions = "";
     public static AbstractRenderPlugin PluginInstance = null;
