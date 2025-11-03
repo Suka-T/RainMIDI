@@ -638,7 +638,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 JButton btnShowExpertSettings = new JButton("Show Expert Settings");
                 btnShowExpertSettings.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        int index = tabbedPane.indexOfTab("About");
+                        int index = tabbedPane.indexOfTab("About Rain MIDI");
                         if (index > 2) {
 //                            tabbedPane.removeTabAt(2);
 //                            tabbedPane.removeTabAt(1);
@@ -690,7 +690,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             }
 
             aboutPanel = new JPanel();
-            tabbedPane.addTab("About", null, aboutPanel, null);
+            tabbedPane.addTab("About Rain MIDI", null, aboutPanel, null);
             aboutPanel.setLayout(new BorderLayout(0, 0));
 
             editorPane = new JEditorPane();
