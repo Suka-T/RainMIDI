@@ -1,0 +1,49 @@
+# Rain MIDI
+[日本語](README.ja.md) | [English](README.md)
+
+### **Rain MIDI**は軽量な黒MIDIプレイヤーです。
+
+![Capture](images/capture1.png)
+
+## 📜 著作権表示
+Copyright (c) 2025, Suka  
+All rights reserved.
+
+
+- [YouTube](https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd)
+- [X (Twitter)](https://x.com/Suka_XxO_OxX)
+- [GitHub](https://github.com/Suka-T)
+
+## 🪪 使用許諾
+このソフトウェアは [MIT License](LICENSE) のもとで公開されています。
+
+※以下の条件に従う限り、このソフトウェアを使用できます。
+
+1. このソフトウェアはフリーソフトウェアです。
+個人使用に関わらず自由に使用してかまいません。
+
+2. 複製、再配布を行う場合は、上記の著作権表示、
+配布物とともに提供される文書を必ず含めること。
+
+3. 動作環境や、プログラムの不具合などによって問題が生じる場合があります。
+それらを原因とした損害が発生しても、著作権者は一切の責任を取りません。
+
+## ☕ Zulu JDK/JREについて
+このアプリケーションには、Azul Systems, Inc. により提供される
+Zulu OpenJDK が含まれています。
+
+Zulu OpenJDK は、GNU General Public License version 2（GPLv2）
+および Classpath Exception のもとでライセンスされています。
+
+- [OpenJDK Project](https://openjdk.java.net/)
+- [GPLv2 + Classpath Exception](https://openjdk.java.net/legal/gplv2+ce.html)
+- [Azul Systems](https://www.azul.com/)
+
+本アプリケーションに含まれる Zulu JDK/JRE のソースコードは、
+Azul にリクエストすることで入手可能です
+（受領から3年間以内、実費のみ）。
+
+詳細は azul_openjdk@azul.com にお問い合わせください。
+
+使用しているJDK/JREのバージョン：
+Zulu 21.42+19 (c2f88d00-0d1c-448f-8f72-27f1326b7e18)

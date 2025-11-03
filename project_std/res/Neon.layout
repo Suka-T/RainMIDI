@@ -1,5 +1,4 @@
 player.bgcolor=000000
-keyboard.design=default
 notes.border.colorRGB=1.5
 notes.design=normal3d
 player.vborder.visible=false

@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,8 +12,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -47,10 +54,13 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.text.html.HTMLEditorKit;
 
 import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
@@ -114,6 +124,8 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
     List<String> systemItemKeys = new ArrayList<String>();
     List<String> designItemKeys = new ArrayList<String>();
+    
+    private Map<String, Component> tabMap = new HashMap<>();
 
     // ユーザー非公開キー
     private List<String> ignoreKeysSystem = Arrays.asList(SystemProperties.SYSP_RENDERER_DIMENSION);
@@ -158,6 +170,10 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JRadioButton rdbtnNotesSpeedFast;
     private JRadioButton rdbtnNotesSpeedVeryFast;
     private JSlider sliderVolume;
+    private JPanel summaryPanel;
+    private JPanel rendererPanel;
+    private JPanel layoutPanel;
+    private JPanel aboutPanel;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -239,7 +255,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
         setModal(true);
-        setBounds(100, 100, 641, 622);
+        setBounds(100, 100, 641, 653);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -248,9 +264,9 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             tabbedPane = new JTabbedPane(JTabbedPane.TOP);
             contentPanel.add(tabbedPane);
             {
-                JPanel summaryPanel = new JPanel();
+                summaryPanel = new JPanel();
                 summaryPanel.setBorder(null);
-                tabbedPane.addTab("Summary", null, summaryPanel, null);
+                tabbedPane.addTab("Settings", null, summaryPanel, null);
                 summaryPanel.setLayout(new BorderLayout(0, 0));
 
                 JScrollPane scrollPane = new JScrollPane();
@@ -623,10 +639,29 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 buttonGroup_4.add(rdbtnNotesSpeedVeryFast);
                 rdbtnNotesSpeedVeryFast.setBounds(447, 92, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedVeryFast);
+                
+                JButton btnShowExpertSettings = new JButton("Show Expert Settings");
+                btnShowExpertSettings.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        int index = tabbedPane.indexOfTab("About");
+                        if (index > 2) {
+//                            tabbedPane.removeTabAt(2);
+//                            tabbedPane.removeTabAt(1);
+//                            tabbedPane.setSelectedComponent(tabMap.get("Settings"));
+                        }
+                        else {
+                            tabbedPane.insertTab("Expert 1", null, tabMap.get("Expert 1"), null, 1);
+                            tabbedPane.insertTab("Expert 2", null, tabMap.get("Expert 2"), null, 2);
+                            tabbedPane.setSelectedComponent(tabMap.get("Expert 1"));
+                        }
+                    }
+                });
+                btnShowExpertSettings.setBounds(439, 513, 157, 21);
+                panel.add(btnShowExpertSettings);
             }
             {
-                JPanel rendererPanel = new JPanel();
-                tabbedPane.addTab("Detail 1", null, rendererPanel, null);
+                rendererPanel = new JPanel();
+                tabbedPane.addTab("Expert 1", null, rendererPanel, null);
                 rendererPanel.setLayout(new BorderLayout(0, 0));
                 {
                     // テーブルのデータとカラム名
@@ -642,9 +677,9 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 }
             }
             {
-                JPanel LayoutPanel = new JPanel();
-                tabbedPane.addTab("Detail 2", null, LayoutPanel, null);
-                LayoutPanel.setLayout(new BorderLayout(0, 0));
+                layoutPanel = new JPanel();
+                tabbedPane.addTab("Expert 2", null, layoutPanel, null);
+                layoutPanel.setLayout(new BorderLayout(0, 0));
                 {
                     // テーブルのデータとカラム名
                     String[] columnNames = { "Config", "Value" };
@@ -655,11 +690,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
                     designTable = new JTable(designModel);
                     JScrollPane scrollPane = new JScrollPane(designTable);
-                    LayoutPanel.add(scrollPane);
+                    layoutPanel.add(scrollPane);
                 }
             }
 
-            JPanel aboutPanel = new JPanel();
+            aboutPanel = new JPanel();
             tabbedPane.addTab("About", null, aboutPanel, null);
             aboutPanel.setLayout(new BorderLayout(0, 0));
 
@@ -667,7 +702,38 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             editorPane.setBackground(UIManager.getColor("TextField.background"));
             editorPane.setContentType("text/html");
             editorPane.setEditable(false);
-            aboutPanel.add(editorPane, BorderLayout.CENTER);
+            editorPane.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        String desc = e.getDescription();
+                        if ("jpn".equals(desc)) {
+                            editorPane.setText(LicenseString.htmlJpn);
+                        }
+                        else if ("eng".equals(desc)) {
+                            editorPane.setText(LicenseString.htmlEng);
+                        }
+                        else {
+                            // それ以外のリンクはブラウザで開く
+                            try {
+                                Desktop.getDesktop().browse(new URI(desc));
+                            }
+                            catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+                            catch (URISyntaxException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                        editorPane.setCaretPosition(0); // 上にスクロール
+                    }
+                }
+            });
+            
+            JScrollPane scrollPane = new JScrollPane(editorPane);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            aboutPanel.add(scrollPane, BorderLayout.CENTER);
         }
         {
             JPanel buttonPane = new JPanel();
@@ -688,6 +754,14 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         }
 
         initialized.set(true);
+        
+        tabMap.put("Settings", summaryPanel);
+        tabMap.put("Expert 1", rendererPanel);
+        tabMap.put("Expert 2", layoutPanel);
+        tabMap.put("About", aboutPanel);
+        tabbedPane.removeTabAt(2);
+        tabbedPane.removeTabAt(1);
+        tabbedPane.setSelectedComponent(tabMap.get("Settings"));
     }
 
     public void updateSynthDescription() {
@@ -702,37 +776,24 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
 
     public void updateAbout() {
         // HTMLコンテンツの作成
-        String appName = "AppName";
-        String appVersion = "XX.XX";
-        String currentYear = "2025";
-        String company = "Company";
         if (this.targetPlg != null) {
-            appName = this.targetPlg.getAppName();
-            appVersion = this.targetPlg.getAppVersion();
-            currentYear = this.targetPlg.getAppYear();
-            company = this.targetPlg.getAppCompany();
+            editorPane.setText(LicenseString.htmlEng);
+            
+            // 保存先のファイル
+            File file = new File("output.html");
 
-            // MITライセンスの全文
-            String licenseText = "MIT License" + "<br><br>" + "Permission is hereby granted, free of charge, to any person obtaining a copy "
-                    + "of this software and associated documentation files (the \"Software\"), to deal "
-                    + "in the Software without restriction, including without limitation the rights "
-                    + "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
-                    + "copies of the Software, and to permit persons to whom the Software is "
-                    + "furnished to do so, subject to the following conditions:<br><br>"
-                    + "The above copyright notice and this permission notice shall be included in all "
-                    + "copies or substantial portions of the Software.<br><br>"
-                    + "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR "
-                    + "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, "
-                    + "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE "
-                    + "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
-                    + "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, "
-                    + "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " + "SOFTWARE.";
+            // Writerを作成
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(file), "UTF-8"))) {
 
-            String htmlContent = "<html><body style='font-family: Arial, sans-serif; text-align: center; margin: 10px;'>" + "<h1>" + appName + "</h1>"
-                    + "<p>Version " + appVersion + "</p>" + "<hr style='width: 50%; margin: 5px auto;'>" + "<p>&copy; " + currentYear + " " + company
-                    + ". All Rights Reserved.</p>" + "<p style='font-size: 0.8em; color: gray; text-align: left;'>" + licenseText + "</p>" + "</body></html>";
-
-            editorPane.setText(htmlContent);
+                // HTMLEditorKitを使ってDocument内容を出力
+                HTMLEditorKit kit = (HTMLEditorKit) editorPane.getEditorKit();
+                kit.write(writer, editorPane.getDocument(), 0, editorPane.getDocument().getLength());
+            }
+            catch (Exception e1) {
+                // TODO 自動生成された catch ブロック
+                e1.printStackTrace();
+            }
         }
     }
 
