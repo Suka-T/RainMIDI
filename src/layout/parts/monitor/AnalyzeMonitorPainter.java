@@ -115,7 +115,11 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         if (midiUnit.isRenderingOnlyMode() == false) {
             sb.setLength(0);
             val1 = (long) notesMonitor.getPolyphony();
-            sb.append("POLY: ").append(val1);
+            sb.append("POLY: ");
+            formatWithCommas(val1, sb);
+            val1 = (long) notesMonitor.getMaxPolyphony();
+            sb.append(" / ");
+            formatWithCommas(val1, sb);
             g.setColor(backStrColor);
             g.drawString(sb.toString(), sx + 1, sy + 1);
             g.setColor(topStrColor);

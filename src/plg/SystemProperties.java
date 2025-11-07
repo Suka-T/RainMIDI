@@ -52,6 +52,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_WINEFFECT = "renderer.windowEffect";
     public static final String SYSP_RENDERER_INVALIDATE_EFFECT = "renderer.invalidateEffect";
     public static final String SYSP_RENDERER_INTERPOLATION = "renderer.interpolation";
+    public static final String SYSP_RENDERER_POLYPHONY_CALC = "renderer.polyphony.calc";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_VALID = "renderer.ignoreNotes.audio.valid";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST = "renderer.ignoreNotes.audio.lowestVel";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST = "renderer.ignoreNotes.audio.highestVel";
@@ -82,6 +83,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_WINEFFECT, "Window effect");
             put(SYSP_RENDERER_INVALIDATE_EFFECT, "Invalidate Effect");
             put(SYSP_RENDERER_INTERPOLATION, "Image interpolation");
+            put(SYSP_RENDERER_POLYPHONY_CALC, "Polyphony calculation method");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, "Ignore notes valid of AUDIO");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, "Ignore notes lowest velocity of AUDIO");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, "Ignore notes highest velocity of AUDIO");
@@ -123,6 +125,10 @@ public class SystemProperties {
         BILINEAR, BICUBIC, NEAREST_NEIGHBOR;
     }
     
+    public static enum SyspPolyCalc {
+        CHANNEL, TRACK;
+    }
+    
     public static enum SyspColorBitsDepth {
         RGB_888, RGB_565, GRAY;
     }
@@ -151,6 +157,9 @@ public class SystemProperties {
     
     private static Object[] ImgInterpolItemO = { SyspImgInterpol.BILINEAR, SyspImgInterpol.BICUBIC, SyspImgInterpol.NEAREST_NEIGHBOR };
     private static String[] ImgInterpolItemS = { "bilinear", "bicubic", "nearest" };
+    
+    private static Object[] PolyCalcItemO = { SyspPolyCalc.CHANNEL, SyspPolyCalc.TRACK };
+    private static String[] PolyCalcItemS = { "channel", "track" };
     
     private static Object[] colorBitsItemO = { SyspColorBitsDepth.RGB_888, SyspColorBitsDepth.RGB_565, SyspColorBitsDepth.GRAY };
     private static String[] colorBitsItemS = { "rgb888", "rgb565", "gray" };
@@ -208,6 +217,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINEFFECT, PropertiesNodeType.ITEM, SyspWinEffect.NONE, winEffeItemS, winEffeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_INVALIDATE_EFFECT, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_INTERPOLATION, PropertiesNodeType.ITEM, SyspImgInterpol.BILINEAR, ImgInterpolItemS, ImgInterpolItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_POLYPHONY_CALC, PropertiesNodeType.ITEM, SyspPolyCalc.TRACK, PolyCalcItemS, PolyCalcItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, PropertiesNodeType.INT, "20", "1", "128"));
@@ -417,6 +427,17 @@ public class SystemProperties {
         // MIDI抽出スレッド数を指定
         int usageThCountMidiEx = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageExtractThreadCount(usageThCountMidiEx);
+        
+        SyspPolyCalc polyCalc = (SyspPolyCalc) getData(SYSP_RENDERER_POLYPHONY_CALC);
+        switch (polyCalc) {
+            case CHANNEL:
+                JMPCoreAccessor.getSoundManager().getMidiUnit().setPolyphonyCalcMethod(IMidiUnit.POLY_CALC_METHOD_CHANNEL);
+                break;
+            case TRACK:
+            default:
+                JMPCoreAccessor.getSoundManager().getMidiUnit().setPolyphonyCalcMethod(IMidiUnit.POLY_CALC_METHOD_TRACK);
+                break;
+        }
         
         boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
         JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
