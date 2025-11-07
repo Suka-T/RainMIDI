@@ -172,9 +172,7 @@ public class RainFallRendererWindow extends RendererWindow {
         Graphics2D lotG2d = (Graphics2D) g.create();
 
         // 補間方法を設定
-        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR); // バイリニア補間
-        // g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-        // RenderingHints.VALUE_INTERPOLATION_BICUBIC); //高速
+        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
         lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
@@ -185,7 +183,7 @@ public class RainFallRendererWindow extends RendererWindow {
         int imgH = orgScreenImage.getHeight();
 
         // 回転後の画像サイズ（横768 × 縦1280）→これを1280×768に無理やり拡大
-        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
 
         // 回転の中心に移動（ウィンドウの中心）
         lotG2d.translate(panelW / 2.0, panelH / 2.0);

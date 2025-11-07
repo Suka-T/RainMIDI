@@ -30,7 +30,6 @@ import layout.parts.notes.Normal3dNotesPainter;
 import layout.parts.notes.NormalNotesPainter;
 import plg.PropertiesNode;
 import plg.SystemProperties;
-import plg.SystemProperties.SyspColorBitsDepth;
 import plg.SystemProperties.SyspViewMode;
 import plg.Utility;
 
@@ -61,6 +60,8 @@ public class LayoutManager {
     private ColorInfo pbColor = null;
 
     private Canvas rootCanvas = null;
+    
+    private int bmpFormat = BufferedImage.TYPE_INT_RGB;
 
     // 現在のレイアウト設定
     private LayoutConfig layout = new LayoutConfig();
@@ -84,22 +85,7 @@ public class LayoutManager {
     }
 
     public BufferedImage createBufferdImage(int width, int height) {
-        int bmpFormat = BufferedImage.TYPE_INT_RGB;
-        SyspColorBitsDepth depthType = (SyspColorBitsDepth) SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS).getData();
-        System.out.println(depthType);
-        switch (depthType) {
-            case GRAY:
-                bmpFormat = BufferedImage.TYPE_BYTE_GRAY;
-                break;
-            case RGB_565:
-                bmpFormat = BufferedImage.TYPE_USHORT_565_RGB;
-                break;
-            case RGB_888:
-            default:
-                bmpFormat = BufferedImage.TYPE_INT_RGB;
-                break;
-        }
-        return new BufferedImage(width, height, bmpFormat);
+        return new BufferedImage(width, height, getBmpFormat());
     }
 
     public void initialize(Canvas canvas) {
@@ -279,5 +265,13 @@ public class LayoutManager {
             }
         }
         return defaultColor;
+    }
+
+    public int getBmpFormat() {
+        return bmpFormat;
+    }
+
+    public void setBmpFormat(int bmpFormat) {
+        this.bmpFormat = bmpFormat;
     }
 }

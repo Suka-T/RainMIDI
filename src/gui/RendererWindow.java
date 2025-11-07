@@ -644,9 +644,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         Graphics2D g2 = (Graphics2D) g;
 
         // 補間方法を設定
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR); // バイリニア補間
-        // g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-        // RenderingHints.VALUE_INTERPOLATION_BICUBIC); //高速
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         copyFromNotesImage(g);

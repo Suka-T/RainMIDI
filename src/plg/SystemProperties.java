@@ -1,6 +1,8 @@
 package plg;
 
 import java.awt.Font;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,6 +51,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_MONITOR_TYPE = "renderer.monitorType";
     public static final String SYSP_RENDERER_WINEFFECT = "renderer.windowEffect";
     public static final String SYSP_RENDERER_INVALIDATE_EFFECT = "renderer.invalidateEffect";
+    public static final String SYSP_RENDERER_INTERPOLATION = "renderer.interpolation";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_VALID = "renderer.ignoreNotes.audio.valid";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST = "renderer.ignoreNotes.audio.lowestVel";
     public static final String SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST = "renderer.ignoreNotes.audio.highestVel";
@@ -78,6 +81,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_MONITOR_TYPE, "Monitor view type");
             put(SYSP_RENDERER_WINEFFECT, "Window effect");
             put(SYSP_RENDERER_INVALIDATE_EFFECT, "Invalidate Effect");
+            put(SYSP_RENDERER_INTERPOLATION, "Image interpolation");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, "Ignore notes valid of AUDIO");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, "Ignore notes lowest velocity of AUDIO");
             put(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, "Ignore notes highest velocity of AUDIO");
@@ -115,6 +119,10 @@ public class SystemProperties {
         NONE, CIRCLE_VIGNETTE, TOP_VIGNETTE;
     }
     
+    public static enum SyspImgInterpol {
+        BILINEAR, BICUBIC, NEAREST_NEIGHBOR;
+    }
+    
     public static enum SyspColorBitsDepth {
         RGB_888, RGB_565, GRAY;
     }
@@ -141,6 +149,9 @@ public class SystemProperties {
     private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE };
     private static String[] winEffeItemS = { "none", "circle_vignette" };
     
+    private static Object[] ImgInterpolItemO = { SyspImgInterpol.BILINEAR, SyspImgInterpol.BICUBIC, SyspImgInterpol.NEAREST_NEIGHBOR };
+    private static String[] ImgInterpolItemS = { "bilinear", "bicubic", "nearest" };
+    
     private static Object[] colorBitsItemO = { SyspColorBitsDepth.RGB_888, SyspColorBitsDepth.RGB_565, SyspColorBitsDepth.GRAY };
     private static String[] colorBitsItemS = { "rgb888", "rgb565", "gray" };
 
@@ -162,6 +173,8 @@ public class SystemProperties {
     private static SystemProperties instance = new SystemProperties();
     
     private String generalFontName = "";
+    
+    private Object imageInterpol = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
     
     private com.sun.management.OperatingSystemMXBean osBean;
     public class OsBeanWrapper {
@@ -194,6 +207,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_MONITOR_TYPE, PropertiesNodeType.ITEM, SyspMonitorType.TYPE1, monitorTypeItemS, monitorTypeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINEFFECT, PropertiesNodeType.ITEM, SyspWinEffect.NONE, winEffeItemS, winEffeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_INVALIDATE_EFFECT, PropertiesNodeType.BOOLEAN, "false"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_INTERPOLATION, PropertiesNodeType.ITEM, SyspImgInterpol.BILINEAR, ImgInterpolItemS, ImgInterpolItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_VALID, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST, PropertiesNodeType.INT, "20", "1", "128"));
@@ -330,9 +344,43 @@ public class SystemProperties {
         }
         keyWidth = (int) ((double) defKeyWidth * dimOffset);
         
+        SyspImgInterpol sImgInterpol = (SyspImgInterpol) getData(SYSP_RENDERER_INTERPOLATION);
+        switch (sImgInterpol) {
+            case BICUBIC:
+                imageInterpol = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+                break;
+            case NEAREST_NEIGHBOR:
+                imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
+                break;
+            case BILINEAR:
+            default:
+                imageInterpol = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+                break;
+            
+        }
+        
+        int bmpFormat = BufferedImage.TYPE_INT_RGB;
+        SyspColorBitsDepth depthType = (SyspColorBitsDepth) getData(SYSP_RENDERER_NOTES_COLOR_BITS);
+        switch (depthType) {
+            case GRAY:
+                bmpFormat = BufferedImage.TYPE_BYTE_GRAY;
+                break;
+            case RGB_565:
+                bmpFormat = BufferedImage.TYPE_USHORT_565_RGB;
+                break;
+            case RGB_888:
+            default:
+                bmpFormat = BufferedImage.TYPE_INT_RGB;
+                break;
+        }
+        LayoutManager.getInstance().setBmpFormat(bmpFormat);
+        
         boolean isInvalidateEffe = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
         if (isInvalidateEffe == true) {
             LayoutManager.getInstance().invalidateEffectConfig();
+            
+            imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; //軽量補完に差し替え
+            LayoutManager.getInstance().setBmpFormat(BufferedImage.TYPE_USHORT_565_RGB);
         }
         
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
@@ -517,5 +565,9 @@ public class SystemProperties {
     
     public OsBeanWrapper getOsBeanWrapper() {
         return osState;
+    }
+
+    public Object getImageInterpol() {
+        return imageInterpol;
     }
 }
