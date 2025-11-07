@@ -6,7 +6,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 import jlib.core.JMPCoreAccessor;
-import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
@@ -29,7 +28,7 @@ public class NotesCountMonitorPainter extends MonitorPainter {
     @Override
     public void paintMonitor(Graphics g, MonitorData info) {
         INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
-        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        //IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
 
         int sx = 0;
         int sy = 65;
@@ -41,21 +40,19 @@ public class NotesCountMonitorPainter extends MonitorPainter {
         sb.setLength(0);
 
         long val1 = 0;
-        if (midiUnit.isRenderingOnlyMode() == false) {
-            sb.setLength(0);
-            val1 = notesMonitor.getNotesCount();
-            formatWithCommas(val1, sb);
+        sb.setLength(0);
+        val1 = notesMonitor.getNotesCount();
+        formatWithCommas(val1, sb);
 
-            String text = sb.toString();
-            FontMetrics fm = g.getFontMetrics();
-            int width = fm.stringWidth(text);
+        String text = sb.toString();
+        FontMetrics fm = g.getFontMetrics();
+        int width = fm.stringWidth(text);
 
-            sx = (info.width - width) / 2;
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-        }
+        sx = (info.width - width) / 2;
+        g.setColor(backStrColor);
+        g.drawString(sb.toString(), sx + 1, sy + 1);
+        g.setColor(topStrColor);
+        g.drawString(sb.toString(), sx, sy);
     }
 
 }

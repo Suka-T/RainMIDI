@@ -79,17 +79,15 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
 
-        if (midiUnit.isRenderingOnlyMode() == false) {
-            sb.setLength(0);
-            sb.append("NOTES: ");
-            val1 = notesMonitor.getNotesCount();
-            formatWithCommas(val1, sb);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-        }
+        sb.setLength(0);
+        sb.append("NOTES: ");
+        val1 = notesMonitor.getNotesCount();
+        formatWithCommas(val1, sb);
+        g.setColor(backStrColor);
+        g.drawString(sb.toString(), sx + 1, sy + 1);
+        g.setColor(topStrColor);
+        g.drawString(sb.toString(), sx, sy);
+        sy += sh;
 
         sb.setLength(0);
         sb.append("MAX NT: ");
@@ -101,20 +99,18 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
 
-        if (midiUnit.isRenderingOnlyMode() == false) {
-            sb.setLength(0);
-            val1 = (long) notesMonitor.getNps();
-            sb.append("NPS: ");
-            formatWithCommas(val1, sb);
-            sb.append(" / ");
-            val1 = (long) notesMonitor.getMaxNps();
-            formatWithCommas(val1, sb);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
-            sy += sh;
-        }
+        sb.setLength(0);
+        val1 = (long) notesMonitor.getNps();
+        sb.append("NPS: ");
+        formatWithCommas(val1, sb);
+        sb.append(" / ");
+        val1 = (long) notesMonitor.getMaxNps();
+        formatWithCommas(val1, sb);
+        g.setColor(backStrColor);
+        g.drawString(sb.toString(), sx + 1, sy + 1);
+        g.setColor(topStrColor);
+        g.drawString(sb.toString(), sx, sy);
+        sy += sh;
 
         if (midiUnit.isRenderingOnlyMode() == false) {
             sb.setLength(0);

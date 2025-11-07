@@ -418,6 +418,9 @@ public class SystemProperties {
         int usageThCountMidiEx = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageExtractThreadCount(usageThCountMidiEx);
         
+        boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
+        JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
+        
         String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
         ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
         scheduler1.schedule(() -> {

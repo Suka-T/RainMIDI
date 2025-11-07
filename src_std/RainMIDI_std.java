@@ -13,6 +13,7 @@ public class RainMIDI_std {
         JMPFlags.UseUnsynchronizedMidiPacket = false;
         JMPFlags.DualFileLoadToSoundFunc = 2;
         JMPFlags.PreActivation = true;
+        JMPFlags.UseRenderedNotesCount = true;
 
         ConfigDatabaseWrapper cfg = new ConfigDatabaseWrapper();
         cfg.setConfigParamToBoolean(IDataManager.CFG_KEY_SHOW_STARTUP_DEVICE_SETUP, false);
