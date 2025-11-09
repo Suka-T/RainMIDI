@@ -117,6 +117,10 @@ public class PropertiesNode {
         this.data = getObject(null);
     }
     
+    public void reset() {
+        setObject(defaultSVal);
+    }
+    
     public String getKey() {
         return key;
     }

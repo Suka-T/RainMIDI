@@ -224,8 +224,9 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
-
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
+        
+        reset();
         
         isGPUAvailable = Utility.isGpuAvailable();
         if (Utility.isWindows()) {
@@ -238,6 +239,12 @@ public class SystemProperties {
         osBean = (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
         
         osStateScheduler.scheduleAtFixedRate(this::updateStats, 0, 1, TimeUnit.SECONDS);
+    }
+    
+    public void reset() {
+        for (PropertiesNode node : getNodes()) {
+            node.reset();
+        }
     }
     
     private void updateStats() {

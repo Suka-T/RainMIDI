@@ -34,6 +34,7 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -653,6 +654,32 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 });
                 btnShowExpertSettings.setBounds(439, 513, 157, 21);
                 panel.add(btnShowExpertSettings);
+                
+                JButton btnInitializeSettings = new JButton("Initialize Settings");
+                btnInitializeSettings.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        int result = JOptionPane.showConfirmDialog(
+                                RendererConfigDialog.this,
+                                "Are you sure to execute?",
+                                "Initialize Settings",
+                                JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.QUESTION_MESSAGE
+                            );
+                        if (result == JOptionPane.OK_OPTION) {
+                            // 編集を確定
+                            if (rendererTable.isEditing()) {
+                                rendererTable.getCellEditor().stopCellEditing();
+                            }
+                            if (designTable.isEditing()) {
+                                designTable.getCellEditor().stopCellEditing();
+                            }
+                            SystemProperties.getInstance().reset();
+                            initializeView();
+                        }
+                    }
+                });
+                btnInitializeSettings.setBounds(12, 513, 140, 21);
+                panel.add(btnInitializeSettings);
             }
             {
                 rendererPanel = new JPanel();
@@ -1027,21 +1054,25 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     @Override
     public void setVisible(boolean b) {
         if (b) {
-            initialized.set(false);
-            isCommitClose = false;
-            if (SystemProperties.getInstance().isGpuAvailable() == false) {
-                SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT).setObject("true");
-            }
-            updateItem();
-            updateSynthItem();
-            updateAbout();
-            
-            int cur = (int)(JMPCoreAccessor.getSoundManager().getLineVolume() * (float)sliderVolume.getMaximum());
-            sliderVolume.setValue(cur);
-            
-            initialized.set(true);
+            initializeView();
         }
         super.setVisible(b);
+    }
+    
+    public void initializeView() {
+        initialized.set(false);
+        isCommitClose = false;
+        if (SystemProperties.getInstance().isGpuAvailable() == false) {
+            SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT).setObject("true");
+        }
+        updateItem();
+        updateSynthItem();
+        updateAbout();
+        
+        int cur = (int)(JMPCoreAccessor.getSoundManager().getLineVolume() * (float)sliderVolume.getMaximum());
+        sliderVolume.setValue(cur);
+        
+        initialized.set(true);
     }
 
     private void commit() {
