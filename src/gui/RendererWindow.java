@@ -54,8 +54,8 @@ import layout.parts.key.BlackKeyParts;
 import layout.parts.key.WhiteKeyParts;
 import layout.parts.monitor.MonitorData;
 import plg.AbstractRenderPlugin;
+import plg.OsInfoWrapper;
 import plg.SystemProperties;
-import plg.SystemProperties.OsBeanWrapper;
 import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspWinEffect;
@@ -795,14 +795,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 }
             }
 
-            OsBeanWrapper osBeasW = SystemProperties.getInstance().getOsBeanWrapper();
+            OsInfoWrapper osInfo = SystemProperties.getInstance().getOsInfo();
 
             g.setFont(msgFontSS);
             sb.setLength(0);
             int val1 = (int) midiUnit.getTempoInBPM();
             int val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
-            sb.append("CPU:").append(DF.format(osBeasW.usageCpu * 100.0)).append("%") //
-                    .append(", RAM:").append(DF.format(osBeasW.usageRam * 100.0)).append("%") //
+            sb.append("CPU:").append(DF.format(osInfo.getUsageCpu() * 100.0)).append("%") //
+                    .append(", RAM:").append(DF.format(osInfo.getUsageRam() * 100.0)).append("%") //
                     .append(", FPS:").append(getFPS()).append(", BPM:").append(val1).append(".").append(val2) //
                     .append(", PPQ:").append(midiUnit.getResolution()) //
                     .append(", TICK:").append(midiUnit.getTickPosition()).append("/").append(midiUnit.getTickLength()) //

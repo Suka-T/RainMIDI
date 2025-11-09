@@ -10,8 +10,8 @@ import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import plg.OsInfoWrapper;
 import plg.SystemProperties;
-import plg.SystemProperties.OsBeanWrapper;
 import plg.Utility;
 
 public class AnalyzeMonitorPainter extends MonitorPainter {
@@ -139,10 +139,10 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         
         sy += (sh / 2);
         
-        OsBeanWrapper osBeasW = SystemProperties.getInstance().getOsBeanWrapper();
+        OsInfoWrapper osInfo = SystemProperties.getInstance().getOsInfo();
 
         sb.setLength(0);
-        sb.append("CPU: ").append(DF.format(osBeasW.usageCpu * 100.0)).append("%");
+        sb.append("CPU: ").append(DF.format(osInfo.getUsageCpu() * 100.0)).append("%");
         g.setColor(backStrColor);
         g.drawString(sb.toString(), sx + 1, sy + 1);
         g.setColor(topStrColor);
@@ -150,7 +150,7 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         sy += sh;
         
         sb.setLength(0);
-        sb.append("RAM: ").append(DF.format(osBeasW.usageRam * 100.0)).append("%");
+        sb.append("RAM: ").append(DF.format(osInfo.getUsageRam() * 100.0)).append("%");
         g.setColor(backStrColor);
         g.drawString(sb.toString(), sx + 1, sy + 1);
         g.setColor(topStrColor);
