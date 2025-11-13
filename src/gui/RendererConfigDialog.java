@@ -170,6 +170,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
     private JPanel rendererPanel;
     private JPanel layoutPanel;
     private JPanel aboutPanel;
+    private JCheckBox chckbxViewReverse;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -251,7 +252,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
         setModal(true);
-        setBounds(100, 100, 641, 653);
+        setBounds(100, 100, 643, 680);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -406,7 +407,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 308, 584, 195);
+                systemSummaryPanel.setBounds(12, 308, 584, 220);
                 panel.add(systemSummaryPanel);
 
                 JLabel lblWindowSizeLabel = new JLabel("Window Size");
@@ -423,7 +424,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.add(comboBoxWindowSize);
 
                 JLabel lblPerfRadioLabel = new JLabel("Use RAM");
-                lblPerfRadioLabel.setBounds(12, 73, 72, 13);
+                lblPerfRadioLabel.setBounds(12, 96, 72, 13);
                 systemSummaryPanel.add(lblPerfRadioLabel);
 
                 rdbtnPerfLowButton = new JRadioButton("Low");
@@ -438,7 +439,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfLowButton);
-                rdbtnPerfLowButton.setBounds(96, 69, 113, 21);
+                rdbtnPerfLowButton.setBounds(96, 92, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfLowButton);
 
                 rdbtnPerfMidButton = new JRadioButton("Middle");
@@ -454,7 +455,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfMidButton);
-                rdbtnPerfMidButton.setBounds(213, 69, 113, 21);
+                rdbtnPerfMidButton.setBounds(213, 92, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfMidButton);
 
                 rdbtnPerfHighButton = new JRadioButton("High");
@@ -469,7 +470,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfHighButton);
-                rdbtnPerfHighButton.setBounds(330, 69, 113, 21);
+                rdbtnPerfHighButton.setBounds(330, 92, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfHighButton);
                 
                 rdbtnPerfMaxButton = new JRadioButton("Max !!");
@@ -484,15 +485,15 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfMaxButton);
-                rdbtnPerfMaxButton.setBounds(447, 69, 113, 21);
+                rdbtnPerfMaxButton.setBounds(447, 92, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfMaxButton);
 
                 JLabel lblNotesSpeedLabel = new JLabel("Notes Speed");
-                lblNotesSpeedLabel.setBounds(12, 96, 72, 13);
+                lblNotesSpeedLabel.setBounds(12, 119, 72, 13);
                 systemSummaryPanel.add(lblNotesSpeedLabel);
 
                 JLabel lblNotesOrderLabel = new JLabel("Notes Layer");
-                lblNotesOrderLabel.setBounds(12, 119, 72, 13);
+                lblNotesOrderLabel.setBounds(12, 142, 72, 13);
                 systemSummaryPanel.add(lblNotesOrderLabel);
 
                 rdbtnRenderOrderAsc = new JRadioButton("Track1 is Back");
@@ -502,7 +503,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_1.add(rdbtnRenderOrderAsc);
-                rdbtnRenderOrderAsc.setBounds(96, 115, 113, 21);
+                rdbtnRenderOrderAsc.setBounds(96, 138, 113, 21);
                 systemSummaryPanel.add(rdbtnRenderOrderAsc);
 
                 rdbtnRenderOrderDesc = new JRadioButton("Track1 is Top");
@@ -512,7 +513,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_1.add(rdbtnRenderOrderDesc);
-                rdbtnRenderOrderDesc.setBounds(213, 115, 113, 21);
+                rdbtnRenderOrderDesc.setBounds(213, 138, 113, 21);
                 systemSummaryPanel.add(rdbtnRenderOrderDesc);
 
                 JLabel lblViewModeLabel = new JLabel("View Mode");
@@ -540,7 +541,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 systemSummaryPanel.add(rdbtnModeSideFlow);
 
                 JLabel lblMonitorTypeLabel = new JLabel("Monitor Type");
-                lblMonitorTypeLabel.setBounds(12, 142, 72, 13);
+                lblMonitorTypeLabel.setBounds(12, 165, 72, 13);
                 systemSummaryPanel.add(lblMonitorTypeLabel);
 
                 rdbtnMonitorNone = new JRadioButton("None");
@@ -550,7 +551,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "none");
                     }
                 });
-                rdbtnMonitorNone.setBounds(96, 138, 113, 21);
+                rdbtnMonitorNone.setBounds(96, 161, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorNone);
 
                 rdbtnMonitorType1 = new JRadioButton("Notes Analyzer");
@@ -560,7 +561,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type1");
                     }
                 });
-                rdbtnMonitorType1.setBounds(213, 138, 113, 21);
+                rdbtnMonitorType1.setBounds(213, 161, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType1);
 
                 rdbtnMonitorType2 = new JRadioButton("Counter");
@@ -570,7 +571,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type2");
                     }
                 });
-                rdbtnMonitorType2.setBounds(330, 138, 113, 21);
+                rdbtnMonitorType2.setBounds(330, 161, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType2);
 
                 rdbtnMonitorType3 = new JRadioButton("Classical");
@@ -580,11 +581,11 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type3");
                     }
                 });
-                rdbtnMonitorType3.setBounds(447, 138, 113, 21);
+                rdbtnMonitorType3.setBounds(447, 161, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType3);
 
                 JLabel lblIgnoreNotesLabel = new JLabel("Ignore Notes");
-                lblIgnoreNotesLabel.setBounds(12, 165, 72, 13);
+                lblIgnoreNotesLabel.setBounds(12, 188, 72, 13);
                 systemSummaryPanel.add(lblIgnoreNotesLabel);
 
                 chckbxIgnoreNotesValid = new JCheckBox("Invisible Ghost Notes");
@@ -593,7 +594,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID, "" + chckbxIgnoreNotesValid.isSelected());
                     }
                 });
-                chckbxIgnoreNotesValid.setBounds(96, 161, 149, 21);
+                chckbxIgnoreNotesValid.setBounds(96, 184, 149, 21);
                 systemSummaryPanel.add(chckbxIgnoreNotesValid);
                 
                 rdbtnNotesSpeedSlow = new JRadioButton("Slow");
@@ -603,7 +604,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedSlow);
-                rdbtnNotesSpeedSlow.setBounds(96, 92, 113, 21);
+                rdbtnNotesSpeedSlow.setBounds(96, 115, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedSlow);
                 
                 rdbtnNotesSpeedNormal = new JRadioButton("Normal");
@@ -613,7 +614,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedNormal);
-                rdbtnNotesSpeedNormal.setBounds(213, 92, 113, 21);
+                rdbtnNotesSpeedNormal.setBounds(213, 115, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedNormal);
                 
                 rdbtnNotesSpeedFast = new JRadioButton("Fast");
@@ -623,7 +624,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedFast);
-                rdbtnNotesSpeedFast.setBounds(330, 92, 113, 21);
+                rdbtnNotesSpeedFast.setBounds(330, 115, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedFast);
                 
                 rdbtnNotesSpeedVeryFast = new JRadioButton("Very Fast");
@@ -633,8 +634,17 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedVeryFast);
-                rdbtnNotesSpeedVeryFast.setBounds(447, 92, 113, 21);
+                rdbtnNotesSpeedVeryFast.setBounds(447, 115, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedVeryFast);
+                
+                chckbxViewReverse = new JCheckBox("View Reverse");
+                chckbxViewReverse.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_MODE_REVERSE, "" + chckbxViewReverse.isSelected());
+                    }
+                });
+                chckbxViewReverse.setBounds(96, 69, 103, 21);
+                systemSummaryPanel.add(chckbxViewReverse);
                 
                 JButton btnShowExpertSettings = new JButton("Show Expert Settings");
                 btnShowExpertSettings.addActionListener(new ActionListener() {
@@ -652,7 +662,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(439, 513, 157, 21);
+                btnShowExpertSettings.setBounds(439, 538, 157, 21);
                 panel.add(btnShowExpertSettings);
                 
                 JButton btnInitializeSettings = new JButton("Initialize Settings");
@@ -678,7 +688,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 513, 140, 21);
+                btnInitializeSettings.setBounds(12, 538, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -945,6 +955,9 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT)) {
                 chckbxInvalidateEffect.setSelected((boolean)node.getData());
+            }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_MODE_REVERSE)) {
+                chckbxViewReverse.setSelected((boolean) node.getData());
             }
 
             if (SystemProperties.SwapKeyName.containsKey(keyName)) {

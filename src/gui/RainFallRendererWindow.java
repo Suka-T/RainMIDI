@@ -187,7 +187,14 @@ public class RainFallRendererWindow extends RendererWindow {
 
         // 回転の中心に移動（ウィンドウの中心）
         lotG2d.translate(panelW / 2.0, panelH / 2.0);
-        lotG2d.rotate(Math.toRadians(-90)); // 反時計回り
+        
+        // 反転設定 
+        if (SystemProperties.getInstance().isViewReverse() == true) {
+            lotG2d.rotate(Math.toRadians(90));
+        }
+        else {
+            lotG2d.rotate(Math.toRadians(-90));
+        }
 
         // スケーリング（アスペクト比を無視してウィンドウ全体に引き伸ばす）
         double scaleX = (double) panelH / imgW; // 幅と高さが逆になることに注意

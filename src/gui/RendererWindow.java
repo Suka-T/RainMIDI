@@ -502,10 +502,82 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         return topStrs[topStrFlip];
     }
+    
+    protected void _copyFromNotesImage(Graphics g) {
+        Graphics2D lotG2d = (Graphics2D) g.create();
+
+        // 補間方法を設定
+        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
+        lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        int panelW = getContentPane().getWidth();
+        int panelH = getContentPane().getHeight();
+
+        int imgW = orgScreenImage.getWidth();
+        int imgH = orgScreenImage.getHeight();
+
+        // 回転後の画像サイズ（横768 × 縦1280）→これを1280×768に無理やり拡大
+        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
+
+        // 回転の中心に移動（ウィンドウの中心）
+        lotG2d.translate(panelW / 2.0, panelH / 2.0);
+        
+        // 反転設定 
+        if (SystemProperties.getInstance().isViewReverse() == true) {
+            lotG2d.rotate(Math.toRadians(90));
+        }
+        else {
+            lotG2d.rotate(Math.toRadians(0));
+        }
+
+        // スケーリング（アスペクト比を無視してウィンドウ全体に引き伸ばす）
+        double scaleX = (double) panelH / imgW; // 幅と高さが逆になることに注意
+        double scaleY = (double) panelW / imgH;
+        lotG2d.scale(scaleX, -scaleY);
+
+        // 画像中心を原点に合わせて描画
+        lotG2d.translate(-imgW / 2.0, -imgH / 2.0);
+        lotG2d.drawImage(orgScreenImage, 0, 0, null);
+
+        lotG2d.dispose();
+    }
 
     protected void copyFromNotesImage(Graphics g) {
         Dimension dim = this.getContentPane().getSize();
-        g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(), orgScreenImage.getHeight(), null);
+        
+        if (SystemProperties.getInstance().isViewReverse() == false) {
+            Graphics2D lotG2d = (Graphics2D) g.create();
+
+            // 補間方法を設定
+            lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
+            lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            
+            int panelW = getContentPane().getWidth();
+            int panelH = getContentPane().getHeight();
+
+            int imgW = orgScreenImage.getWidth();
+            int imgH = orgScreenImage.getHeight();
+            
+            // 回転の中心に移動（ウィンドウの中心）
+            lotG2d.translate(panelW / 2.0, panelH / 2.0);
+            lotG2d.rotate(Math.toRadians(180));
+            
+            // スケーリング（アスペクト比を無視してウィンドウ全体に引き伸ばす）
+            double scaleX = (double) panelW / imgW; // 幅と高さが逆になることに注意
+            double scaleY = (double) panelH / imgH;
+            lotG2d.scale(scaleX, -scaleY);
+            
+            // 画像中心を原点に合わせて描画
+            lotG2d.translate(-imgW / 2.0, -imgH / 2.0);
+            lotG2d.drawImage(orgScreenImage, 0, 0, null);
+
+            lotG2d.dispose();
+        }
+        else {
+            g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(), orgScreenImage.getHeight(), null);
+        }
     }
 
     private double angle = 0;
