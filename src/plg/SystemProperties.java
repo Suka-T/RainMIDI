@@ -38,6 +38,7 @@ public class SystemProperties {
     public static final String SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD = "audio.usageMidiAnalyThreadCnt";
     public static final String SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD = "audio.usageMidiExtractThreadCnt";
     public static final String SYSP_RENDERER_MODE = "renderer.mode";
+    public static final String SYSP_RENDERER_MODE_REVERSE = "renderer.mode.reverse";
     public static final String SYSP_RENDERER_NOTES_COLOR_BITS = "renderer.notesColorBits";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
@@ -69,6 +70,7 @@ public class SystemProperties {
             put(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, "Use MIDI Analyze Thread Count [1 - 24]");
             put(SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, "Use MIDI Extract Thread Count [1 - 24]");
             put(SYSP_RENDERER_MODE, "Renderer view mode");
+            put(SYSP_RENDERER_MODE_REVERSE, "Renderer view reverse");
             put(SYSP_RENDERER_NOTES_COLOR_BITS, "NotesImage color bit depth");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
@@ -196,6 +198,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, PropertiesNodeType.INT, "8", "1", "24"));
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, PropertiesNodeType.INT, "6", "1", "24"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MODE, PropertiesNodeType.ITEM, SyspViewMode.RAIN_FALL, viewModeItemS, viewModeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_MODE_REVERSE, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTES_COLOR_BITS, PropertiesNodeType.ITEM, SyspColorBitsDepth.RGB_888, colorBitsItemS, colorBitsItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "5", "2", "64"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
@@ -581,5 +584,9 @@ public class SystemProperties {
 
     public Object getImageInterpol() {
         return imageInterpol;
+    }
+    
+    public boolean isViewReverse() {
+        return (boolean) getPropNode(SYSP_RENDERER_MODE_REVERSE).getData();
     }
 }
