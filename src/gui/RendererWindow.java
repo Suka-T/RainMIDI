@@ -50,6 +50,7 @@ import layout.parts.KeyParts;
 import layout.parts.KeyboardPainter;
 import layout.parts.KeyboardPainter.KindOfKey;
 import layout.parts.MonitorPainter;
+import layout.parts.SpectrumPainter;
 import layout.parts.key.BlackKeyParts;
 import layout.parts.key.WhiteKeyParts;
 import layout.parts.monitor.MonitorData;
@@ -107,6 +108,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected KeyboardPainter keyboardPainter = null;
     protected MonitorPainter monitorPainter = null;
+    protected SpectrumPainter spectrumPainter = null;
 
     protected boolean isAvailableGpu = true;
     protected BufferedImage backBuffer = null;
@@ -118,6 +120,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected FrameLimiter frameLimiter = null;
 
     private long debugRenderTime = 0;
+    
+    private final int dummySpectSamples = 256;
+    private float[] dummySpectWave = new float[dummySpectSamples];
+    private float phase = 0f;
+    private float[] noiseBuf = new float[dummySpectSamples];
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -210,6 +217,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         volumeControl = new VolumeControl();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
         monitorPainter = SystemProperties.getInstance().getMonitorPainter();
+        spectrumPainter = SystemProperties.getInstance().getSpectrumPainter();
 
         msgFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 28);
         msgFontS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 18);
@@ -722,6 +730,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         copyFromNotesImage(g);
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        // スペクトラム表示
+        spectrumPainter.paintSpectram(g, paneWidth, paneHeight, dummySpectWave, noiseBuf, dummySpectSamples);
 
         if (JMPCoreAccessor.getSystemManager().getStatus(ISystemManager.SYSTEM_STATUS_ID_FILE_LOADING) == true && isFirstRendering == false) {
             int fsize = 28;

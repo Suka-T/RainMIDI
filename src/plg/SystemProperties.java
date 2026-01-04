@@ -24,10 +24,14 @@ import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import layout.parts.SpectrumPainter;
 import layout.parts.monitor.AnalyzeMonitorPainter;
 import layout.parts.monitor.ClassicalMonitorPainter;
 import layout.parts.monitor.NoneMonitorPainter;
 import layout.parts.monitor.NotesCountMonitorPainter;
+import layout.parts.spectrum.CurtainSpectrumPainter;
+import layout.parts.spectrum.LightningSpectrumPainter;
+import layout.parts.spectrum.NoneSpectrumPainter;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
@@ -59,6 +63,9 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_IGNORENOTES_RENDER_VALID = "renderer.ignoreNotes.render.valid";
     public static final String SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST = "renderer.ignoreNotes.render.lowestVel";
     public static final String SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST = "renderer.ignoreNotes.render.highestVel";
+    public static final String SYSP_RENDERER_SPECTRUM_TYPE = "renderer.spectrum.type";
+    public static final String SYSP_RENDERER_SPECTRUM_POS = "renderer.spectrum.position";
+    public static final String SYSP_RENDERER_SPECTRUM_AMP = "renderer.spectrum.amp";
     public static final String SYSP_DEBUGMODE = "debugMode";
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
@@ -91,6 +98,9 @@ public class SystemProperties {
             put(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, "Ghost notes invisible");
             put(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, "Ghost notes lowest velocity");
             put(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, "Ghost notes highest velocity");
+            put(SYSP_RENDERER_SPECTRUM_TYPE, "Dummy Spectrum mode");
+            put(SYSP_RENDERER_SPECTRUM_POS, "Dummy Spectrum position");
+            put(SYSP_RENDERER_SPECTRUM_AMP, "Dummy Spectrum amp [1 - 100]");
             put(SYSP_DEBUGMODE, "Debug mode enable");
         }
     };
@@ -133,6 +143,14 @@ public class SystemProperties {
     public static enum SyspColorBitsDepth {
         RGB_888, RGB_565, GRAY;
     }
+    
+    public static enum SyspSpectrumType {
+        NONE, LIGHTNING, CURTAIN;
+    }
+    
+    public static enum SyspSpectrumPosition {
+        TOP, CENTER, BOTTOM;
+    }
 
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
@@ -164,6 +182,12 @@ public class SystemProperties {
     
     private static Object[] colorBitsItemO = { SyspColorBitsDepth.RGB_888, SyspColorBitsDepth.RGB_565, SyspColorBitsDepth.GRAY };
     private static String[] colorBitsItemS = { "rgb888", "rgb565", "gray" };
+    
+    private static Object[] spectrumTypeItemO = { SyspSpectrumType.NONE, SyspSpectrumType.LIGHTNING, SyspSpectrumType.CURTAIN };
+    private static String[] spectrumTypeItemS = { "none", "lightning", "curtain" };
+    
+    private static Object[] spectrumPosItemO = { SyspSpectrumPosition.TOP, SyspSpectrumPosition.CENTER, SyspSpectrumPosition.BOTTOM };
+    private static String[] spectrumPosItemS = { "top", "center", "bottom" };
 
     private List<PropertiesNode> nodes;
     private int keyWidth = 50;
@@ -187,6 +211,8 @@ public class SystemProperties {
     private Object imageInterpol = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
     
     private OsInfoWrapper osInfo;
+    
+    private double spectAmp = 0.0;
     
     private SystemProperties() {
         nodes = new ArrayList<>();
@@ -219,6 +245,9 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_VALID, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_TYPE, PropertiesNodeType.ITEM, SyspSpectrumType.NONE, spectrumTypeItemS, spectrumTypeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_POS, PropertiesNodeType.ITEM, SyspSpectrumPosition.BOTTOM, spectrumPosItemS, spectrumPosItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_AMP, PropertiesNodeType.INT, "15", "1", "100"));
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
         
         reset();
@@ -246,6 +275,14 @@ public class SystemProperties {
             put(SyspMonitorType.TYPE1, new AnalyzeMonitorPainter());
             put(SyspMonitorType.TYPE2, new NotesCountMonitorPainter());
             put(SyspMonitorType.TYPE3, new ClassicalMonitorPainter());
+        }
+    };
+    
+    private static Map<SyspSpectrumType, SpectrumPainter> spectrumPainters = new HashMap<SyspSpectrumType, SpectrumPainter>() {
+        {
+            put(SyspSpectrumType.NONE, new NoneSpectrumPainter()); 
+            put(SyspSpectrumType.LIGHTNING, new LightningSpectrumPainter());
+            put(SyspSpectrumType.CURTAIN, new CurtainSpectrumPainter());
         }
     };
 
@@ -430,6 +467,9 @@ public class SystemProperties {
                 break;
         }
         
+        int iSpectAmp = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_SPECTRUM_AMP);
+        spectAmp = (double)iSpectAmp / 100.0;
+        
         boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
         JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
         
@@ -588,5 +628,17 @@ public class SystemProperties {
     
     public boolean isViewReverse() {
         return (boolean) getPropNode(SYSP_RENDERER_MODE_REVERSE).getData();
+    }
+    
+    public SpectrumPainter getSpectrumPainter() {
+        return spectrumPainters.get((SyspSpectrumType)getPropNode(SYSP_RENDERER_SPECTRUM_TYPE).getData());
+    }
+    
+    public SyspSpectrumPosition getSpectrumPosition() {
+        return (SyspSpectrumPosition)getPropNode(SYSP_RENDERER_SPECTRUM_POS).getData();
+    }
+    
+    public double getSpectrumAmp() {
+        return spectAmp;
     }
 }
