@@ -206,7 +206,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         makeKeyboardRsrc();
 
-        umbrellaUI = new UmbrellaUI();
+        umbrellaUI = new UmbrellaUI(this);
         volumeControl = new VolumeControl();
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
         monitorPainter = SystemProperties.getInstance().getMonitorPainter();
@@ -460,7 +460,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
 
         debugRenderTime = 0;
-
+        
         isFirstRendering = true;
 
         setLeftMeas(0);
@@ -1164,6 +1164,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else if (newCellWidth > SystemProperties.MAX_NOTES_WIDTH) {
             newCellWidth = SystemProperties.MAX_NOTES_WIDTH;
         }
+        
+        // 半端に動作しているワーカーを終了させる 
+        imageWorkerMgr.forcedEnd();
+        
         setMeasCellWidth(newCellWidth);
 
         calcDispMeasCount();

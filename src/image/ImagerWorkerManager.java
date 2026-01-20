@@ -45,18 +45,7 @@ public class ImagerWorkerManager {
         return null;
     }
     
-    public void firstRender(int leftMeas, int dispMeas, int flipCount) {
-        int offsetLeftMeas = Math.abs(leftMeas);
-        int flipMergin = -(flipCount);
-        for (int i = 0; i < workers.length; i++) {
-            int flipLine = offsetLeftMeas + ((dispMeas + flipMergin) * i);
-            workers[i].reset();
-            workers[i].setLeftMeasTh(-(flipLine));
-            workers[i].disposeImage();
-            workers[i].makeImage();
-        }
-        currentWorkerIndex = 0;
-        
+    public void waitForRenderingFin() {
         try {
             // 全てのワーカーのレンダリングが終わるまで待つ
             int workerCnt;
@@ -71,6 +60,22 @@ public class ImagerWorkerManager {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public void firstRender(int leftMeas, int dispMeas, int flipCount) {
+        int offsetLeftMeas = Math.abs(leftMeas);
+        int flipMergin = -(flipCount);
+        for (int i = 0; i < workers.length; i++) {
+            int flipLine = offsetLeftMeas + ((dispMeas + flipMergin) * i);
+            workers[i].reset();
+            workers[i].setLeftMeasTh(-(flipLine));
+            workers[i].disposeImage();
+            workers[i].makeImage();
+        }
+        currentWorkerIndex = 0;
+        
+        // 全てのワーカーのレンダリングが終わるまで待つ
+        waitForRenderingFin();
     }
     
     public void reset(int leftMeas, int dispMeas, int flipCount) {
@@ -115,6 +120,19 @@ public class ImagerWorkerManager {
     public void dispose() {
         for (int i = 0; i < workers.length; i++) {
             workers[i].dispose();
+        }
+    }
+    
+    public void forcedEnd() {
+        for (int i = 0; i < workers.length; i++) {
+            workers[i].forcedEnd();
+        }
+        
+        // 全てのワーカーのレンダリングが終わるまで待つ
+        waitForRenderingFin();
+        
+        for (int i = 0; i < workers.length; i++) {
+            workers[i].clearForcedEnd();
         }
     }
 }
