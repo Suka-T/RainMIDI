@@ -50,13 +50,18 @@ public class UmbrellaUI extends RainControl {
     // 半径
     private final int radius = 100;
     private final int inradius = 20;
+    
+    private RendererWindow parent = null;
 
-    public UmbrellaUI() {
+    public UmbrellaUI(RendererWindow win) {
+        this.parent = win;
         umbDivMap = new ArrayList<UmbDiv>();
-        umbDivMap.add(new UmbDiv(0, UmbFunction.InitPlay, "Init Pos"));
+        umbDivMap.add(new UmbDiv(0, UmbFunction.InitPlay, "Init Play"));
         umbDivMap.add(new UmbDiv(1, UmbFunction.PlayStop, "Play/Stop"));
         umbDivMap.add(new UmbDiv(2, UmbFunction.FileLoad, "Load"));
-        umbDivMap.add(new UmbDiv(3, UmbFunction.OpenControl, "Control"));
+        if (SystemProperties.getInstance().isDebugMode()) {
+            umbDivMap.add(new UmbDiv(3, UmbFunction.OpenControl, "Control"));
+        }
     }
     
     public void execUmb(UmbDiv div) {
@@ -65,7 +70,7 @@ public class UmbrellaUI extends RainControl {
         switch (div.func) {
             case InitPlay: {
                 JMPCoreAccessor.getSoundManager().stop();
-                JMPCoreAccessor.getSoundManager().initPosition();
+                JMPCoreAccessor.getFileManager().reloadToPlay();
                 break;
             }
             case OpenControl: {

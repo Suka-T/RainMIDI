@@ -20,6 +20,7 @@ public class ImageWorker implements Runnable {
     private int height = 0;
     private ExecutorService service = null;
     protected RendererWindow window = null;
+    private boolean isForcedEnd = false;
     
     private long debugRenderTime = 0;
 
@@ -89,6 +90,7 @@ public class ImageWorker implements Runnable {
                     // イメージオブジェクトのメモリを解放
                     disposeImage();
                 }
+                isForcedEnd = false;
                 isExec = false;
                 return;
             }
@@ -100,6 +102,7 @@ public class ImageWorker implements Runnable {
                     // イメージオブジェクトのメモリを解放
                     disposeImage();
                 }
+                isForcedEnd = false;
                 isExec = false;
                 return;
             }
@@ -123,6 +126,7 @@ public class ImageWorker implements Runnable {
             long end = System.currentTimeMillis();
             debugRenderTime = end - start;
             
+            isForcedEnd = false;
             isExec = false;
         }
         catch (Throwable e) {
@@ -162,4 +166,15 @@ public class ImageWorker implements Runnable {
         return debugRenderTime;
     }
 
+    public void forcedEnd() {
+        this.isForcedEnd = true;
+    }
+    
+    public void clearForcedEnd() {
+        this.isForcedEnd = false;
+    }
+
+    protected boolean doForcedEnd() {
+        return this.isForcedEnd;
+    }
 }

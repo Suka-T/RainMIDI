@@ -171,7 +171,7 @@ public class NotesImageWorker extends ImageWorker {
         
         @Override
         public boolean interrupt() {
-            return isExec() == false;
+            return isExec() == false || doForcedEnd() == true;
         }
     };
     
@@ -272,6 +272,10 @@ public class NotesImageWorker extends ImageWorker {
             }
             catch (Exception e) {
                 e.printStackTrace();
+            }
+            
+            if (doForcedEnd()) {
+                break;
             }
         }
     }
