@@ -1164,7 +1164,21 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     public void resetPage() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        double fbpm = midiUnit.getFirstTempoInBPM();
+        
+        double fbpm = 120.0;
+        switch (SystemProperties.getInstance().getNotesSpeedBase()) {
+            case AVERAGE:
+                fbpm = midiUnit.getAverageTempoInBPM();
+                break;
+            case MEDIAN:
+                fbpm = midiUnit.getMedianTempoInBPM();
+                break;
+            case FIRST:
+            default:
+                fbpm = midiUnit.getFirstTempoInBPM();
+                break;
+            
+        }
         double baseBpm = 140.0 * SystemProperties.getInstance().getNotesSpeed(); // NotesSpeed
                                                                                  // =
                                                                                  // baseとの乖離ってことにする

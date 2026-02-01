@@ -49,6 +49,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_KEY_FOCUS_FUNC = "renderer.keyFocusFunc";
     public static final String SYSP_RENDERER_LAYERORDER = "renderer.layerOrder";
     public static final String SYSP_RENDERER_NOTESSPEED = "renderer.notesSpeed";
+    public static final String SYSP_RENDERER_NOTESSPEEDBASE = "renderer.notesSpeedBase";
     public static final String SYSP_RENDERER_NOTESIMAGENUM = "renderer.notesImageNum";
     public static final String SYSP_RENDERER_DIMENSION = "renderer.dimension";
     public static final String SYSP_RENDERER_WINSIZE = "renderer.windowSize";
@@ -84,6 +85,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
             put(SYSP_RENDERER_NOTESSPEED, "Notes Speed [0.1 - 5.0]");
+            put(SYSP_RENDERER_NOTESSPEEDBASE, "Notes Speed Base BPM Calc");
             put(SYSP_RENDERER_NOTESIMAGENUM, "Rendering notes image size [3 - 300]");
             put(SYSP_RENDERER_DIMENSION, "Renderer dimension");
             put(SYSP_RENDERER_WINSIZE, "Window size");
@@ -151,6 +153,10 @@ public class SystemProperties {
     public static enum SyspSpectrumPosition {
         TOP, CENTER, BOTTOM;
     }
+    
+    public static enum SyspNotesSpeedBase {
+        FIRST, AVERAGE, MEDIAN;
+    }
 
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
@@ -188,6 +194,9 @@ public class SystemProperties {
     
     private static Object[] spectrumPosItemO = { SyspSpectrumPosition.TOP, SyspSpectrumPosition.CENTER, SyspSpectrumPosition.BOTTOM };
     private static String[] spectrumPosItemS = { "top", "center", "bottom" };
+    
+    private static Object[] notesSpeedBaseItemO = { SyspNotesSpeedBase.FIRST, SyspNotesSpeedBase.AVERAGE, SyspNotesSpeedBase.MEDIAN };
+    private static String[] notesSpeedBaseItemS = { "first", "average", "median" };
 
     private List<PropertiesNode> nodes;
     private int keyWidth = 50;
@@ -231,6 +240,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.DOUBLE, "1.0", "0.1", "5.0"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEEDBASE, PropertiesNodeType.ITEM, SyspNotesSpeedBase.FIRST, notesSpeedBaseItemS, notesSpeedBaseItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "60", "3", "1000", NotesCountItemS, NotesCountItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
@@ -640,5 +650,9 @@ public class SystemProperties {
     
     public double getSpectrumAmp() {
         return spectAmp;
+    }
+    
+    public SyspNotesSpeedBase getNotesSpeedBase() {
+        return (SyspNotesSpeedBase)getPropNode(SYSP_RENDERER_NOTESSPEEDBASE).getData();
     }
 }
