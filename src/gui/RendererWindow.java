@@ -12,6 +12,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.LinearGradientPaint;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
@@ -31,6 +33,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -645,7 +648,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         g2d.setStroke(new BasicStroke());
 
     }
-
+/*
     private void drawGlowingLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
 
         // ======= 調整用パラメータ =======
@@ -680,6 +683,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         g2d.setStroke(new BasicStroke());
     }
+*/
     
     public void paintVolume(Graphics g) {
         g.setFont(msgFontS);
@@ -910,7 +914,93 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
+    
+    private List<BasicStroke> ousStrokes = null;
+    private List<Color> ousColors = null;
+    private BasicStroke mainStroke = null;
+    private Color mainColor = null;
+    private List<BasicStroke> mergeStrokes = null;
+    private List<Color> mergeColors = null;
+    private BasicStroke coreStroke = null;
+    private Color coreColor = null;
+    protected void paintGrawLine(Graphics g, int x1, int y1, int x2, int y2, Color saberColor) {
+        Graphics2D g2 = (Graphics2D) g;
+    
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+    
+        //Color saberColor = new Color(0, 200, 255); // 青
+        
+        if (mainColor == null) {
+            ousStrokes = new ArrayList<BasicStroke>();
+            ousColors = new ArrayList<Color>();
+            
+            // ごく薄い外側の光（控えめ）
+            for (int i = 8; i >= 1; i--) {
+                float alpha = 0.01f * i;   // ← かなり薄い
+                ousStrokes.add(new BasicStroke(12f + i * 2f,
+                        BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND));
+                
+                ousColors.add(new Color(
+                        saberColor.getRed(),
+                        saberColor.getGreen(),
+                        saberColor.getBlue(),
+                        (int)(255 * alpha)));
+            }
+            
+            // メインの色（白との境界用）
+            mainStroke = new BasicStroke(9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            mainColor = new Color(saberColor.getRed(), saberColor.getGreen(), saberColor.getBlue(), 140);
+            
+            // 白→色のぼかしゾーン（最重要）
+            mergeStrokes = new ArrayList<BasicStroke>();
+            mergeColors = new ArrayList<Color>();
+            for (int i = 3; i >= 1; i--) {
+                float t = i / 3f; // 1.0 → 0.33
+                int r = (int)(255 * (1 - t) + saberColor.getRed()   * t);
+                int gC= (int)(255 * (1 - t) + saberColor.getGreen()* t);
+                int b = (int)(255 * (1 - t) + saberColor.getBlue() * t);
+        
+                mergeStrokes.add(new BasicStroke(6f + i * 1.2f,
+                        BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND));
+                mergeColors.add(new Color(r, gC, b, 160));
+            }
+            
+            // 中心の白い芯（太め）
+            coreStroke = new BasicStroke(5.5f,
+                    BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND);
+            coreColor = new Color(245, 250, 255);
+        }
+    
+        // ごく薄い外側の光（控えめ）
+        for (int j = 0; j < ousStrokes.size(); j++) {
+            g2.setStroke(ousStrokes.get(j));
+            g2.setColor(ousColors.get(j));
+            g2.drawLine(x1, y1, x2, y2);
+        }
+    
+        // メインの色（白との境界用）
+        g2.setStroke(mainStroke);
+        g2.setColor(mainColor);
+        g2.drawLine(x1, y1, x2, y2);
+    
+        // 白→色のぼかしゾーン（最重要）
+        for (int j = 0; j < mergeStrokes.size(); j++) {
+            g2.setStroke(mergeStrokes.get(j));
+            g2.setColor(mergeColors.get(j));
+            g2.drawLine(x1, y1, x2, y2);
+        }
+    
+        // 中心の白い芯（太め）
+        g2.setStroke(coreStroke);
+        g2.setColor(coreColor);
+        g2.drawLine(x1, y1, x2, y2);
+    }
 
+    private LinearGradientPaint topVigPaint = null;
     protected void paintWindowEffect(Graphics g) {
         int w = getContentPane().getWidth();
         int h = getContentPane().getHeight();
@@ -933,6 +1023,27 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             // 確認用は円形で塗る
             effeG2.fillOval(w / 2 - (int) radius, h / 2 - (int) radius, (int) (radius * 2), (int) (radius * 2));
             effeG2.dispose();
+        }
+        else if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.TOP_VIGNETTE) {
+            float darkHeight = h * 0.4f; // 上40%を暗く
+
+            if (topVigPaint == null) {
+                topVigPaint = new LinearGradientPaint(
+                    0, 0,
+                    0, darkHeight,
+                    new float[]{0f, 1f},
+                    new Color[]{
+                        new Color(0, 0, 0, 180), // 上：かなり暗い
+                        new Color(0, 0, 0, 0)    // 下：透明
+                    }
+                );
+            }
+
+            Graphics2D effeG2 = (Graphics2D) g.create();
+            Paint old = effeG2.getPaint();
+            effeG2.setPaint(topVigPaint);
+            effeG2.fillRect(0, 0, w, (int) darkHeight);
+            effeG2.setPaint(old);
         }
     }
 
@@ -1121,10 +1232,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         /* Tickbar描画 */
         Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
         drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
-        /* Tickbarグローエフェクト描画 */
-        if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {
-            drawGlowingLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
-        }
 
         rgb = -1;
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
@@ -1159,6 +1266,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.BLACK);
                 keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
             }
+        }
+        
+        /* Tickbarグローエフェクト描画 */
+        if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {
+            //drawGlowingLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
+            paintGrawLine(g, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
         }
     }
 

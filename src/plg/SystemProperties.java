@@ -177,8 +177,8 @@ public class SystemProperties {
     private static Object[] WinSizeItemD = { /* "2560*1408", "1920*1024", */"1280*768", "896*512", "640*384" };
     private static String[] WinSizeItemS = { /* "1440p", "1080p", */"720p", "480p", "360p", };
     
-    private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE };
-    private static String[] winEffeItemS = { "none", "circle_vignette" };
+    private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE, SyspWinEffect.TOP_VIGNETTE };
+    private static String[] winEffeItemS = { "none", "circle_vignette", "top_vignette" };
     
     private static Object[] ImgInterpolItemO = { SyspImgInterpol.BILINEAR, SyspImgInterpol.BICUBIC, SyspImgInterpol.NEAREST_NEIGHBOR };
     private static String[] ImgInterpolItemS = { "bilinear", "bicubic", "nearest" };
@@ -257,7 +257,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST, PropertiesNodeType.INT, "1", "1", "128"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_TYPE, PropertiesNodeType.ITEM, SyspSpectrumType.NONE, spectrumTypeItemS, spectrumTypeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_POS, PropertiesNodeType.ITEM, SyspSpectrumPosition.BOTTOM, spectrumPosItemS, spectrumPosItemO));
-        nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_AMP, PropertiesNodeType.INT, "15", "1", "100"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_AMP, PropertiesNodeType.INT, "5", "1", "100"));
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
         
         reset();
