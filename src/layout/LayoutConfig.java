@@ -110,8 +110,8 @@ public class LayoutConfig {
 
     public LayoutConfig() {
         nodes = new ArrayList<>();
-        nodes.add(new PropertiesNode(LC_PLAYER_BGCOLOR, PropertiesNodeType.COLOR, "#1b1b1b"));
-        nodes.add(new PropertiesNode(LC_PLAYER_BDCOLOR, PropertiesNodeType.COLOR, "#030303"));
+        nodes.add(new PropertiesNode(LC_PLAYER_BGCOLOR, PropertiesNodeType.COLOR, "#030303"));
+        nodes.add(new PropertiesNode(LC_PLAYER_BDCOLOR, PropertiesNodeType.COLOR, "#1b1b1b"));
         nodes.add(new PropertiesNode(LC_PLAYER_COLOR_RULE, PropertiesNodeType.ITEM, EColorRule.Track, EColorRuleS, EColorRuleO));
         nodes.add(new PropertiesNode(LC_PLAYER_BORDER_VERTICAL_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(LC_PLAYER_BORDER_HORIZON_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));

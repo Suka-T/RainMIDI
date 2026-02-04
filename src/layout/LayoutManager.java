@@ -62,6 +62,8 @@ public class LayoutManager {
     private Canvas rootCanvas = null;
     
     private int bmpFormat = BufferedImage.TYPE_INT_RGB;
+    
+    private long volumeVisibleTime = -1;
 
     // 現在のレイアウト設定
     private LayoutConfig layout = new LayoutConfig();
@@ -273,5 +275,17 @@ public class LayoutManager {
 
     public void setBmpFormat(int bmpFormat) {
         this.bmpFormat = bmpFormat;
+    }
+    
+    public void setVolumeVisibleTime() {
+        volumeVisibleTime = System.currentTimeMillis();
+    }
+    
+    public void clearVolumeVisibleTime() {
+        volumeVisibleTime = -1;
+    }
+    
+    public long getVolumeVisibleTime() {
+        return volumeVisibleTime;
     }
 }

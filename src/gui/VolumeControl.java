@@ -9,6 +9,7 @@ import java.awt.Paint;
 import java.awt.event.MouseEvent;
 
 import jlib.core.JMPCoreAccessor;
+import layout.LayoutManager;
 
 public class VolumeControl extends RainControl {
     private Paint volGrad = null;
@@ -60,6 +61,10 @@ public class VolumeControl extends RainControl {
         isVisible = b;
     }
     
+    public boolean isVisible() {
+        return isVisible;
+    }
+    
     private void updateVolume() {
         int cur = mouseX - this.x;
         if (cur < 0) {
@@ -70,6 +75,8 @@ public class VolumeControl extends RainControl {
         }
         float volume = (float)cur / (float)(this.width);
         JMPCoreAccessor.getSoundManager().setLineVolume(volume);
+        
+        LayoutManager.getInstance().setVolumeVisibleTime();
     }
     
     public boolean onPress(MouseEvent e) {

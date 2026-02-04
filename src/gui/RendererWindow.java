@@ -126,7 +126,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     
     private final int dummySpectSamples = 256;
     private float[] dummySpectWave = new float[dummySpectSamples];
-    private float phase = 0f;
+    //private float phase = 0f;
     private float[] noiseBuf = new float[dummySpectSamples];
 
     public int getOrgWidth() {
@@ -701,8 +701,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int stringHeight = fm.getHeight();
         int strX = volConX - stringWidth;
         int strY = volConY + (stringHeight / 2);
-        g.drawString(sb.toString(), strX, strY);
-        volumeControl.setVisible(true);
+        if (volumeControl.isVisible()) {
+            g.drawString(sb.toString(), strX, strY);
+        }
         volumeControl.setLocation(volConX, volConY, volConWidth, volConHeight);
         volumeControl.paint(g);
     }
@@ -817,7 +818,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             strX = (paneWidth - stringWidth) / 2;
             g.drawString(sb.toString(), strX, strY + 20);
             
-            paintVolume(g);
+            volumeControl.setVisible(true);
         }
         else if (imageWorkerMgr.getNotesImage() == null || isFirstRendering == true) {
             // 描画が追いついていない
@@ -902,6 +903,19 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             g.setColor(Color.GREEN);
             g.drawString(sb.toString(), strX, strY);
         }
+        
+        if (LayoutManager.getInstance().getVolumeVisibleTime() != -1) {
+            long current = System.currentTimeMillis();
+            long elapsed = current - LayoutManager.getInstance().getVolumeVisibleTime();
+            if (elapsed > 3000) {
+                LayoutManager.getInstance().clearVolumeVisibleTime();
+                volumeControl.setVisible(false);
+            }
+            else {
+                volumeControl.setVisible(true);
+            }
+        }
+        paintVolume(g);
 
         paintWindowEffect(g);
 

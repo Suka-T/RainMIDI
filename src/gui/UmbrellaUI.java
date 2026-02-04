@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 import jlib.core.JMPCoreAccessor;
+import layout.LayoutManager;
 import plg.SystemProperties;
 
 public class UmbrellaUI extends RainControl {
@@ -24,6 +25,7 @@ public class UmbrellaUI extends RainControl {
         InitPlay,
         FileLoad,
         OpenControl,
+        Volume,
     }
     
     public class UmbDiv {
@@ -62,6 +64,9 @@ public class UmbrellaUI extends RainControl {
         if (SystemProperties.getInstance().isDebugMode()) {
             umbDivMap.add(new UmbDiv(3, UmbFunction.OpenControl, "Control"));
         }
+        else {
+            umbDivMap.add(new UmbDiv(3, UmbFunction.Volume, "Volume"));
+        }
     }
     
     public void execUmb(UmbDiv div) {
@@ -75,6 +80,10 @@ public class UmbrellaUI extends RainControl {
             }
             case OpenControl: {
                 JMPCoreAccessor.getWindowManager().getMainWindow().showWindow();
+                break;
+            }
+            case Volume: {
+                LayoutManager.getInstance().setVolumeVisibleTime();
                 break;
             }
             case PlayStop: {
