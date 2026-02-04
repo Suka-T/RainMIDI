@@ -42,18 +42,18 @@ public class SmartKeyboardPainter2 extends KeyboardPainter {
         }
         g2d.setComposite(AlphaComposite.SrcOver);
         
-        if (isPush) {
-            i = 0;
-            effeX = trimedX + trimedWidth - 1;
-            effeW = (int)((double)keyWidth * 0.2);
-            g.setColor(bgColor);
-            for (; i < effeW; i++) {
-                alpha = 1.0f - ((float)(i + 1) / (float)effeW);
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-                g2d.drawLine(effeX - i, effeY1, effeX - i, effeY2);
-            }
-            g2d.setComposite(AlphaComposite.SrcOver);
-        }
+//        if (isPush) {
+//            i = 0;
+//            effeX = trimedX + trimedWidth - 1;
+//            effeW = (int)((double)keyWidth * 0.2);
+//            g.setColor(bgColor);
+//            for (; i < effeW; i++) {
+//                alpha = 1.0f - ((float)(i + 1) / (float)effeW);
+//                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+//                g2d.drawLine(effeX - i, effeY1, effeX - i, effeY2);
+//            }
+//            g2d.setComposite(AlphaComposite.SrcOver);
+//        }
     }
     
     private void drawBlackKeyImpl(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
@@ -77,18 +77,18 @@ public class SmartKeyboardPainter2 extends KeyboardPainter {
         }
         g2d.setComposite(AlphaComposite.SrcOver);
         
-        if (isPush) {
-            i = 0;
-            effeX = trimedX + trimedWidth - 1;
-            effeW = (int)((double)keyWidth * 0.2);
-            g.setColor(bgColor);
-            for (; i < effeW; i++) {
-                alpha = 1.0f - ((float)(i + 1) / (float)effeW);
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-                g2d.drawLine(effeX - i, effeY1, effeX - i, effeY2);
-            }
-            g2d.setComposite(AlphaComposite.SrcOver);
-        }
+//        if (isPush) {
+//            i = 0;
+//            effeX = trimedX + trimedWidth - 1;
+//            effeW = (int)((double)keyWidth * 0.2);
+//            g.setColor(bgColor);
+//            for (; i < effeW; i++) {
+//                alpha = 1.0f - ((float)(i + 1) / (float)effeW);
+//                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+//                g2d.drawLine(effeX - i, effeY1, effeX - i, effeY2);
+//            }
+//            g2d.setComposite(AlphaComposite.SrcOver);
+//        }
     }
 
     @Override

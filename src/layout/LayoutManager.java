@@ -15,11 +15,16 @@ import java.util.Map;
 
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
+import layout.LayoutConfig.EColEffect;
 import layout.LayoutConfig.EColorAsign;
 import layout.LayoutConfig.EKeyboardDesign;
 import layout.LayoutConfig.ENotesDesign;
+import layout.parts.CollisionEffectPainter;
 import layout.parts.KeyboardPainter;
 import layout.parts.NotesPainter;
+import layout.parts.collisionEffect.ColorCollisionEffectPainter;
+import layout.parts.collisionEffect.NoneCollisionEffectPainter;
+import layout.parts.collisionEffect.SimpleCollisionEffectPainter;
 import layout.parts.keyboard.DefaultKeyboardPainter;
 import layout.parts.keyboard.SimpleKeyboardPainter;
 import layout.parts.keyboard.SmartKeyboardPainter2;
@@ -51,6 +56,14 @@ public class LayoutManager {
             put(EKeyboardDesign.Default, new DefaultKeyboardPainter());
             put(EKeyboardDesign.Simple, new SimpleKeyboardPainter());
             put(EKeyboardDesign.Smart, new SmartKeyboardPainter2());
+        }
+    };
+    
+    private static Map<LayoutConfig.EColEffect, CollisionEffectPainter> cePainters = new HashMap<LayoutConfig.EColEffect, CollisionEffectPainter>() {
+        {
+            put(EColEffect.None, new NoneCollisionEffectPainter());
+            put(EColEffect.Simple, new SimpleCollisionEffectPainter());
+            put(EColEffect.Color, new ColorCollisionEffectPainter());
         }
     };
 
@@ -199,14 +212,6 @@ public class LayoutManager {
         return (boolean) layout.getData(LayoutConfig.LC_CURSOR_EFFE_VISIBLE);
     }
 
-    public boolean isVisibleNotesInEffect() {
-        return (boolean) layout.getData(LayoutConfig.LC_NOTES_HITEFFE_IN);
-    }
-
-    public boolean isVisibleNotesOutEffect() {
-        return (boolean) layout.getData(LayoutConfig.LC_NOTES_HITEFFE_OUT);
-    }
-
     public LayoutConfig.ENotesDesign getNotesDesign() {
         return (LayoutConfig.ENotesDesign) layout.getData(LayoutConfig.LC_NOTES_DESIGN);
     }
@@ -287,5 +292,15 @@ public class LayoutManager {
     
     public long getVolumeVisibleTime() {
         return volumeVisibleTime;
+    }
+    
+    public CollisionEffectPainter getCollisionEffectPainterIn() {
+        LayoutConfig.EColEffect effe = (LayoutConfig.EColEffect) layout.getData(LayoutConfig.LC_COLLISION_EFFECT_IN);
+        return cePainters.get(effe);
+    }
+    
+    public CollisionEffectPainter getCollisionEffectPainterOut() {
+        LayoutConfig.EColEffect effe = (LayoutConfig.EColEffect) layout.getData(LayoutConfig.LC_COLLISION_EFFECT_OUT);
+        return cePainters.get(effe);
     }
 }

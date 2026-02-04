@@ -23,3 +23,5 @@ player.colorrule=track
 player.hborder.visible=true
 player.vborder.visible=true
 keyboard.design=simple
+collision.effect.in=simple
+collision.effect.out=none

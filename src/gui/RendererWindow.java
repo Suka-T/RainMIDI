@@ -49,6 +49,7 @@ import jlib.midi.INotesMonitor;
 import layout.LayoutConfig;
 import layout.LayoutConfig.EColorRule;
 import layout.LayoutManager;
+import layout.parts.CollisionEffectPainter;
 import layout.parts.KeyParts;
 import layout.parts.KeyboardPainter;
 import layout.parts.KeyboardPainter.KindOfKey;
@@ -1198,54 +1199,16 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int tickX = (int) ((double) relPosTick * (double) getMeasCellWidth() / (double) midiUnit.getResolution());
             g.drawImage(notesImg, -tickX, 0, null);
         }
-
-        /* 衝突エフェクト描画 */
+        
         int rgb = -1;
-        int tickBarPosition = LayoutManager.getInstance().getTickBarPosition();
-        if (tickBarPosition > 0 && validNotesImg == true) {
-            boolean isVisibleNotesIn = LayoutManager.getInstance().isVisibleNotesInEffect();
-            boolean isVisibleNotesOut = LayoutManager.getInstance().isVisibleNotesOutEffect();
-            if (isVisibleNotesIn || isVisibleNotesOut) {
-                Color hitEffectColor = LayoutManager.getInstance().getCursorColor().getEffeColor();
-                g.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
-                int keyHeight = getMeasCellHeight();
-                int inEffWidth = getEffectWidth(1);
-                int outEffWidth = getEffectWidth(-1);
-                int effx = 0;
-                g.setColor(hitEffectColor);
-                for (int i = 0; i < 128; i++) {
-                    boolean isFocus = false;
-                    rgb = getKeyColor(127 - i);
-                    if (rgb != 0) {
-                        isFocus = true;
-                    }
-                    else {
-                        isFocus = false;
-                    }
-
-                    if (isFocus == true) {
-                        effx = tickBarPosition;
-                        for (int j = 0; j < HIT_EFFECT_STEPS; j++) {
-                            g2d.setComposite(hitEffeSteps[j]);
-                            if (isVisibleNotesIn)
-                                g2d.fillRect(effx + (inEffWidth * j), hitEffectPosY[i], inEffWidth, keyHeight);
-                            if (isVisibleNotesOut)
-                                g2d.fillRect(effx - (outEffWidth * j) - outEffWidth, hitEffectPosY[i], outEffWidth, keyHeight);
-                        }
-                        g2d.setComposite(AlphaComposite.SrcOver);
-                    }
-                }
-            }
-        }
+        
+        // ストロークを戻す（任意）
+        g2d.setStroke(new BasicStroke());
 
         int tickBarPositionOffs = 0;
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
             tickBarPositionOffs = 3;
         }
-
-        /* Tickbar描画 */
-        Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
-        drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
 
         rgb = -1;
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
@@ -1281,6 +1244,40 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
             }
         }
+        
+        /* 衝突エフェクト描画 */
+        CollisionEffectPainter colEffePainterIn = LayoutManager.getInstance().getCollisionEffectPainterIn();
+        CollisionEffectPainter colEffePainterOut = LayoutManager.getInstance().getCollisionEffectPainterOut();
+        
+        int tickBarPosition = LayoutManager.getInstance().getTickBarPosition();
+        if (tickBarPosition > 0 && validNotesImg == true) {
+            Color hitEffectColor = LayoutManager.getInstance().getCursorColor().getEffeColor();
+            g.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
+            int keyHeight = getMeasCellHeight();
+            int effx = tickBarPosition;
+            Color keyBgColor;
+            for (int i = 0; i < 128; i++) {
+                boolean isFocus = false;
+                rgb = getKeyColor(127 - i);
+                if (rgb != 0) {
+                    isFocus = true;
+                }
+                else {
+                    isFocus = false;
+                }
+
+                if (isFocus == true) {
+                    keyBgColor = LayoutManager.getInstance().rgbToNotesColor(rgb, Color.WHITE);
+                    colEffePainterIn.paintIn(g2d, effx, hitEffectPosY[i], keyHeight, keyBgColor, hitEffectColor);
+                    colEffePainterOut.paintOut(g2d, effx, hitEffectPosY[i], keyHeight, keyBgColor, hitEffectColor);
+                    g2d.setComposite(AlphaComposite.SrcOver);
+                }
+            }
+        }
+        
+        /* Tickbar描画 */
+        Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
+        drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
         
         /* Tickbarグローエフェクト描画 */
         if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {

@@ -1,4 +1,4 @@
 player.bgcolor=dcdcdc
 player.bdcolor=c0c0c0
-notes.effect.in.visible=false
-notes.effect.out.visible=false
+collision.effect.in=none
+collision.effect.out=none
