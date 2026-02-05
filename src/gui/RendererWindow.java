@@ -12,6 +12,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.Point;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
@@ -163,6 +165,15 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
      */
     public RendererWindow(int winW, int winH) {
         this.setTitle("Rain MIDI");
+        List<Image> icons = List.of(
+                new ImageIcon(RendererWindow.class.getResource("/icon/app16.png")).getImage(),
+                new ImageIcon(RendererWindow.class.getResource("/icon/app32.png")).getImage(),
+                new ImageIcon(RendererWindow.class.getResource("/icon/app48.png")).getImage(),
+                new ImageIcon(RendererWindow.class.getResource("/icon/app256.png")).getImage()
+            );
+
+        this.setIconImages(icons);
+        
         this.setTransferHandler(new DropFileHandler());
         addWindowListener(new WindowAdapter() {
             @Override
