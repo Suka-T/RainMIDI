@@ -27,7 +27,7 @@ import layout.parts.collisionEffect.NoneCollisionEffectPainter;
 import layout.parts.collisionEffect.SimpleCollisionEffectPainter;
 import layout.parts.keyboard.DefaultKeyboardPainter;
 import layout.parts.keyboard.SimpleKeyboardPainter;
-import layout.parts.keyboard.SmartKeyboardPainter2;
+import layout.parts.keyboard.SmartKeyboardPainter;
 import layout.parts.notes.ArcNotesPainter;
 import layout.parts.notes.FlatNotesPainter;
 import layout.parts.notes.FrameNotesPainter;
@@ -55,7 +55,7 @@ public class LayoutManager {
         {
             put(EKeyboardDesign.Default, new DefaultKeyboardPainter());
             put(EKeyboardDesign.Simple, new SimpleKeyboardPainter());
-            put(EKeyboardDesign.Smart, new SmartKeyboardPainter2());
+            put(EKeyboardDesign.Smart, new SmartKeyboardPainter());
         }
     };
     

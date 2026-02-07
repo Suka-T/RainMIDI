@@ -18,6 +18,7 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ComponentEvent;
@@ -69,6 +70,7 @@ import plg.SystemProperties.SyspWinEffect;
 import plg.Utility;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
+    private static final Stroke DEFAULT_STROKE = new BasicStroke();
 
     private static final DecimalFormat DF = new DecimalFormat("0.0");
 
@@ -637,28 +639,30 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         g2d.rotate(-angle);
         g2d.translate(-w / 2, -h / 2);
     }
+    
+    private static final float NO_EFFE_LINE_CORE_STROKE_VAL = 8.0f;     // 中心の線の太さ
+    private static final float NO_EFFE_LINE_BORDER_WIDTH = 0.5f;        // 白ボーダーの幅
+    private static final BasicStroke NO_EFFE_LINE_BORDER_STROKE = new BasicStroke(
+            NO_EFFE_LINE_CORE_STROKE_VAL + NO_EFFE_LINE_BORDER_WIDTH * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private static final BasicStroke NO_EFFE_LINE_CORE_STROKE = new BasicStroke(
+            NO_EFFE_LINE_CORE_STROKE_VAL, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
     private void drawNoEffeLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
-        // ======= 調整用パラメータ =======
-        float coreStroke = 8.0f; // 中心の線の太さ
-        float borderWidth = 0.5f; // 白ボーダーの幅
-
         if (LayoutManager.getInstance().isVisibleCursorEffect() == false) {
             // ======= ボーダー線 =======
-            g2d.setStroke(new BasicStroke(coreStroke + borderWidth * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2d.setStroke(NO_EFFE_LINE_BORDER_STROKE);
 
             g2d.setColor(Color.BLACK);
             g2d.drawLine(x1, y1, x2, y2);
         }
 
         // ======= 中心線（コア線） =======
-        g2d.setStroke(new BasicStroke(coreStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2d.setStroke(NO_EFFE_LINE_CORE_STROKE);
         g2d.setColor(baseColor);
         g2d.drawLine(x1, y1, x2, y2);
 
-        // ストロークを戻す（任意）
-        g2d.setStroke(new BasicStroke());
-
+        // ストロークを戻す
+        g2d.setStroke(DEFAULT_STROKE);
     }
 /*
     private void drawGlowingLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
@@ -1213,8 +1217,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         
         int rgb = -1;
         
-        // ストロークを戻す（任意）
-        g2d.setStroke(new BasicStroke());
+        // ストロークを戻す
+        g2d.setStroke(DEFAULT_STROKE);
 
         int tickBarPositionOffs = 0;
         if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {

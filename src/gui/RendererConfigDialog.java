@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -239,6 +240,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
      * Create the dialog.
      */
     public RendererConfigDialog(AbstractRenderPlugin plg) {
+        super((Frame) null);
         List<Image> icons = List.of(
                 new ImageIcon(RendererConfigDialog.class.getResource("/icon/app16.png")).getImage(),
                 new ImageIcon(RendererConfigDialog.class.getResource("/icon/app32.png")).getImage(),
