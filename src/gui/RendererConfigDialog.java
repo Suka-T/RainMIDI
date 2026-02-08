@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +35,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -72,7 +72,7 @@ import plg.PropertiesNode.PropertiesNodeType;
 import plg.SystemProperties;
 import plg.Utility;
 
-public class RendererConfigDialog extends JDialog implements ActionListener {
+public class RendererConfigDialog extends JFrame implements ActionListener {
 
     private static final String WORKNUM_LOW = "3";
     private static final String NOTESIMAGENUM_LOW = "60";
@@ -240,7 +240,7 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
      * Create the dialog.
      */
     public RendererConfigDialog(AbstractRenderPlugin plg) {
-        super((Frame) null);
+        setResizable(false);
         List<Image> icons = List.of(
                 new ImageIcon(RendererConfigDialog.class.getResource("/icon/app16.png")).getImage(),
                 new ImageIcon(RendererConfigDialog.class.getResource("/icon/app32.png")).getImage(),
@@ -264,7 +264,6 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
-        setModal(true);
         setBounds(100, 100, 643, 680);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -1212,6 +1211,10 @@ public class RendererConfigDialog extends JDialog implements ActionListener {
                 isCommitClose = false;
                 setVisible(false);
                 break;
+        }
+        
+        if (isCommitClose) {
+            targetPlg.startRendererWindow();
         }
     }
 

@@ -82,19 +82,38 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     
     public void launch() {
         try {
+            if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+                if (SwingUtilities.isEventDispatchThread()) {
+                    launchWindow = new RendererConfigDialog(this);
+                    launchWindow.setVisible(true);
+                }
+                else {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        
+                        @Override
+                        public void run() {
+                            launchWindow = new RendererConfigDialog(AbstractRenderPlugin.this);
+                            launchWindow.setVisible(true);
+                        }
+                    });
+                }
+            }
+            else {
+                startRendererWindow();
+            }
+        }
+        catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
+    
+    public void startRendererWindow() {
+        try {
             Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
             Path fullPath = folder.resolve(PROP_FILE_NAME);
             File propFile = new File(fullPath.toString());
             
-            if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                launchWindow = new RendererConfigDialog(this);
-                launchWindow.setVisible(true);
-                if (launchWindow.isCommitClose() == false) {
-                    return;
-                }
-            }
-            
-            SystemProperties.getInstance().iniialize();
+            SystemProperties.getInstance().initialize();
             
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
                 // SystemPropertiesの保存 
@@ -114,7 +133,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             }
             else {
                 SwingUtilities.invokeAndWait(new Runnable() {
-
+    
                     @Override
                     public void run() {
                         RendererWindow win = createMainWindow();
@@ -126,8 +145,8 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
                 });
             }
         }
-        catch (Exception e1) {
-            e1.printStackTrace();
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

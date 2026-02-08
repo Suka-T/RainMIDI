@@ -345,7 +345,7 @@ public class SystemProperties {
         props.store(new FileOutputStream(file), "");
     }
 
-    public void iniialize() {
+    public void initialize() {
         // TODO Dimはバグるため720p固定とする
         PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
         dimNode.setObject("1280*768");
