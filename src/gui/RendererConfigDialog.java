@@ -174,6 +174,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JPanel layoutPanel;
     private JPanel aboutPanel;
     private JCheckBox chckbxViewReverse;
+    private JCheckBox chckbxRsrcMonitorVisible;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -264,7 +265,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher");
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 680);
+        setBounds(100, 100, 643, 707);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -419,7 +420,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 308, 584, 220);
+                systemSummaryPanel.setBounds(12, 308, 584, 248);
                 panel.add(systemSummaryPanel);
 
                 JLabel lblWindowSizeLabel = new JLabel("Window Size");
@@ -597,7 +598,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.add(rdbtnMonitorType3);
 
                 JLabel lblIgnoreNotesLabel = new JLabel("Ignore Notes");
-                lblIgnoreNotesLabel.setBounds(12, 188, 72, 13);
+                lblIgnoreNotesLabel.setBounds(12, 211, 72, 13);
                 systemSummaryPanel.add(lblIgnoreNotesLabel);
 
                 chckbxIgnoreNotesValid = new JCheckBox("Invisible Ghost Notes");
@@ -606,7 +607,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID, "" + chckbxIgnoreNotesValid.isSelected());
                     }
                 });
-                chckbxIgnoreNotesValid.setBounds(96, 184, 149, 21);
+                chckbxIgnoreNotesValid.setBounds(96, 207, 149, 21);
                 systemSummaryPanel.add(chckbxIgnoreNotesValid);
                 
                 rdbtnNotesSpeedSlow = new JRadioButton("Slow");
@@ -658,6 +659,15 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 chckbxViewReverse.setBounds(96, 69, 103, 21);
                 systemSummaryPanel.add(chckbxViewReverse);
                 
+                chckbxRsrcMonitorVisible = new JCheckBox("Show CPU/RAM Graph");
+                chckbxRsrcMonitorVisible.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_RSRCMONITOR_VISIBLE, "" + chckbxRsrcMonitorVisible.isSelected());
+                    }
+                });
+                chckbxRsrcMonitorVisible.setBounds(96, 184, 166, 21);
+                systemSummaryPanel.add(chckbxRsrcMonitorVisible);
+                
                 JButton btnShowExpertSettings = new JButton("Show Expert Settings");
                 btnShowExpertSettings.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -674,7 +684,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(439, 538, 157, 21);
+                btnShowExpertSettings.setBounds(439, 566, 157, 21);
                 panel.add(btnShowExpertSettings);
                 
                 JButton btnInitializeSettings = new JButton("Initialize Settings");
@@ -700,7 +710,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 538, 140, 21);
+                btnInitializeSettings.setBounds(12, 566, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -970,6 +980,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_MODE_REVERSE)) {
                 chckbxViewReverse.setSelected((boolean) node.getData());
+            }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_RSRCMONITOR_VISIBLE)) {
+                chckbxRsrcMonitorVisible.setSelected((boolean) node.getData());
             }
 
             if (SystemProperties.SwapKeyName.containsKey(keyName)) {

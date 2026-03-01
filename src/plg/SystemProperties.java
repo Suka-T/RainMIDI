@@ -54,6 +54,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_DIMENSION = "renderer.dimension";
     public static final String SYSP_RENDERER_WINSIZE = "renderer.windowSize";
     public static final String SYSP_RENDERER_MONITOR_TYPE = "renderer.monitorType";
+    public static final String SYSP_RENDERER_RSRCMONITOR_VISIBLE = "renderer.rsrcMonitor.visible";
     public static final String SYSP_RENDERER_WINEFFECT = "renderer.windowEffect";
     public static final String SYSP_RENDERER_INVALIDATE_EFFECT = "renderer.invalidateEffect";
     public static final String SYSP_RENDERER_INTERPOLATION = "renderer.interpolation";
@@ -90,6 +91,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_DIMENSION, "Renderer dimension");
             put(SYSP_RENDERER_WINSIZE, "Window size");
             put(SYSP_RENDERER_MONITOR_TYPE, "Monitor view type");
+            put(SYSP_RENDERER_RSRCMONITOR_VISIBLE, "Resource monitor visible");
             put(SYSP_RENDERER_WINEFFECT, "Window effect");
             put(SYSP_RENDERER_INVALIDATE_EFFECT, "Invalidate Effect");
             put(SYSP_RENDERER_INTERPOLATION, "Image interpolation");
@@ -245,6 +247,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_MONITOR_TYPE, PropertiesNodeType.ITEM, SyspMonitorType.TYPE1, monitorTypeItemS, monitorTypeItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_RSRCMONITOR_VISIBLE, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINEFFECT, PropertiesNodeType.ITEM, SyspWinEffect.NONE, winEffeItemS, winEffeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_INVALIDATE_EFFECT, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_INTERPOLATION, PropertiesNodeType.ITEM, SyspImgInterpol.BILINEAR, ImgInterpolItemS, ImgInterpolItemO));
@@ -618,6 +621,10 @@ public class SystemProperties {
     
     public MonitorPainter getMonitorPainter() {
         return monitorPainters.get((SyspMonitorType)getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData());
+    }
+    
+    public boolean isVisibleRsrcMonitor() {
+        return (boolean)getPropNode(SYSP_RENDERER_RSRCMONITOR_VISIBLE).getData();
     }
     
     public double getNotesSpeed() {

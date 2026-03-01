@@ -80,6 +80,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public static final int NEXT_FLIP_COUNT = 0;
 
     public static final int HIT_EFFECT_STEPS = 16;
+    
+    private static final BasicStroke GRAPH_BORDER_STROKE = new BasicStroke(
+            1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private static final BasicStroke GRAPH_FRAMEBORDER_STROKE = new BasicStroke(2.0f);
+    private static Color GRAPH_BG_COLOR = new Color(0, 0, 0, 100);
 
     protected Canvas canvas;
     protected BufferStrategy strategy;
@@ -124,6 +129,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private Font msgFont = null;
     private Font msgFontS = null;
     private Font msgFontSS = null;
+    private  Font graphFont = null;
     
     protected FrameLimiter frameLimiter = null;
 
@@ -239,6 +245,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         msgFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 28);
         msgFontS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 18);
         msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
+        graphFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 12);
 
         isAvailableGpu = Utility.isGpuAvailable();
 
@@ -931,9 +938,62 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 volumeControl.setVisible(true);
             }
         }
+        
         paintVolume(g);
 
         paintWindowEffect(g);
+        
+        if (SystemProperties.getInstance().isVisibleRsrcMonitor()) {
+            OsInfoWrapper osInfo = SystemProperties.getInstance().getOsInfo();
+            
+            Graphics2D gGrap = (Graphics2D) g.create();
+            gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+
+            int w = 100;
+            int h = 60;
+            int grapX = this.getWidth() - w - 30;
+            int grapY = 10;
+
+            gGrap.setStroke(GRAPH_BORDER_STROKE);
+            
+            // データの点と点を線で結ぶ
+            float[] data = osInfo.getUsageCpuBuffer();
+            int gwRes = data.length - 1;
+            gGrap.setColor(Color.GREEN);
+            for (int i = 0; i < data.length - 1; i++) {
+                int x1 = grapX + (i * w / gwRes);
+                int y1 = grapY + (h - (int) (data[i] * h/* / 100*/)); // 0-100の範囲と仮定
+                int x2 = grapX + ((i + 1) * w / gwRes);
+                int y2 = grapY + (h - (int) (data[i + 1] * h/* / 100*/));
+                gGrap.drawLine(x1, y1, x2, y2);
+            }
+            sb.setLength(0);
+            sb.append("CPU: ").append(DF.format(osInfo.getUsageCpu() * 100.0)).append("%");
+            gGrap.setFont(graphFont);
+            gGrap.drawString(sb.toString(), grapX, grapY + h + 13);
+            
+            data = osInfo.getUsageRamBuffer();
+            gGrap.setColor(Color.ORANGE);
+            for (int i = 0; i < data.length - 1; i++) {
+                int x1 = grapX + (i * w / gwRes);
+                int y1 = grapY + (h - (int) (data[i] * h/* / 100*/)); // 0-100の範囲と仮定
+                int x2 = grapX + ((i + 1) * w / gwRes);
+                int y2 = grapY + (h - (int) (data[i + 1] * h/* / 100*/));
+                gGrap.drawLine(x1, y1, x2, y2);
+            }
+            sb.setLength(0);
+            sb.append("RAM: ").append(DF.format(osInfo.getUsageRam() * 100.0)).append("%");
+            gGrap.setFont(graphFont);
+            gGrap.drawString(sb.toString(), grapX, grapY + h + 26);
+            
+            gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
+            gGrap.setColor(GRAPH_BG_COLOR);
+            gGrap.fillRect(grapX, grapY, w, h);
+            gGrap.setColor(Color.WHITE);
+            gGrap.drawRect(grapX, grapY, w, h);
+            gGrap.dispose();
+        }
 
         monitorInfo.fps = getFPS();
         monitorInfo.width = paneWidth;

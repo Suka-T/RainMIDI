@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 public class OsInfoWrapper {
     
-    private double usageCpu = 0.0;
-    private double usageRam = 0.0;
+    private FloatRingBuffer usageCpu = new FloatRingBuffer(16);
+    private FloatRingBuffer usageRam = new FloatRingBuffer(16);
     private com.sun.management.OperatingSystemMXBean osBean;
     private final ScheduledExecutorService osStateScheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -22,20 +22,31 @@ public class OsInfoWrapper {
     }
     
     private void updateStats() {
-        usageCpu = osBean.getSystemCpuLoad();
+        double cpuVal = osBean.getSystemCpuLoad();
+        usageCpu.add((float)cpuVal);
+        usageCpu.updateSnapshot();
         
         long totalMem = osBean.getTotalPhysicalMemorySize();
         long freeMem  = osBean.getFreePhysicalMemorySize();
         long usedMem  = totalMem - freeMem;
-        usageRam = (double)usedMem / (double)totalMem;
+        double ramVal = (double)usedMem / (double)totalMem;
+        usageRam.add((float)ramVal);
+        usageRam.updateSnapshot();
     }
 
-    public double getUsageCpu() {
-        return usageCpu;
+    public float getUsageCpu() {
+        return usageCpu.getCurentValue();
+    }
+    
+    public float[] getUsageCpuBuffer() {
+        return usageCpu.getSnapshot();
     }
 
-    public double getUsageRam() {
-        return usageRam;
+    public float getUsageRam() {
+        return usageRam.getCurentValue();
     }
-
+    
+    public float[] getUsageRamBuffer() {
+        return usageRam.getSnapshot();
+    }
 }
