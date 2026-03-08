@@ -26,6 +26,12 @@ public class FloatRingBuffer {
             displaySnapshot[i] = buffer[(head + i) % size];
         }
     }
+    
+    public synchronized void clear() {
+        for (int i = 0; i < size; i++) {
+            buffer[i] = 0.0f;
+        }
+    }
 
     public float[] getSnapshot() {
         return displaySnapshot;

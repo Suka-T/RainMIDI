@@ -18,6 +18,7 @@ public class RainMIDI_std {
 
         ConfigDatabaseWrapper cfg = new ConfigDatabaseWrapper();
         cfg.setConfigParamToBoolean(IDataManager.CFG_KEY_SHOW_STARTUP_DEVICE_SETUP, false);
+        cfg.setConfigParamToBoolean(IDataManager.CFG_KEY_USE_VIDEO_PLAYER, false);
         StandAlonePluginInvoker.exec(args, cfg, new RainMIDI());
     }
 }

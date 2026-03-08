@@ -25,8 +25,8 @@ import jlib.midi.IMidiUnit;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import layout.parts.SpectrumPainter;
-import layout.parts.monitor.AnalyzeMonitorPainter;
 import layout.parts.monitor.ClassicalMonitorPainter;
+import layout.parts.monitor.GraphMonitorPainter;
 import layout.parts.monitor.NoneMonitorPainter;
 import layout.parts.monitor.NotesCountMonitorPainter;
 import layout.parts.spectrum.CurtainSpectrumPainter;
@@ -129,7 +129,7 @@ public class SystemProperties {
     }
 
     public static enum SyspMonitorType {
-        NONE, TYPE1, TYPE2, TYPE3;
+        NONE, TYPE1, TYPE2, TYPE3, GRAPH;
     }
     
     public static enum SyspWinEffect {
@@ -225,6 +225,9 @@ public class SystemProperties {
     
     private double spectAmp = 0.0;
     
+    private LongRingBuffer npsBuffer = new LongRingBuffer(360);
+    private LongRingBuffer polyBuffer = new LongRingBuffer(360);
+    
     private SystemProperties() {
         nodes = new ArrayList<>();
 
@@ -285,9 +288,11 @@ public class SystemProperties {
     private static Map<SyspMonitorType, MonitorPainter> monitorPainters = new HashMap<SyspMonitorType, MonitorPainter>() {
         {
             put(SyspMonitorType.NONE, new NoneMonitorPainter());
-            put(SyspMonitorType.TYPE1, new AnalyzeMonitorPainter());
+            //put(SyspMonitorType.TYPE1, new AnalyzeMonitorPainter());
+            put(SyspMonitorType.TYPE1, new GraphMonitorPainter());
             put(SyspMonitorType.TYPE2, new NotesCountMonitorPainter());
             put(SyspMonitorType.TYPE3, new ClassicalMonitorPainter());
+            //put(SyspMonitorType.GRAPH, new GraphMonitorPainter());
         }
     };
     
@@ -352,6 +357,8 @@ public class SystemProperties {
         // TODO Dimはバグるため720p固定とする
         PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
         dimNode.setObject("1280*768");
+        
+        clearRingBuffer();
         
         String sDimSize = (String) getData(SYSP_RENDERER_DIMENSION);
         if (sDimSize != null && sDimSize.isBlank() == false) {
@@ -661,5 +668,18 @@ public class SystemProperties {
     
     public SyspNotesSpeedBase getNotesSpeedBase() {
         return (SyspNotesSpeedBase)getPropNode(SYSP_RENDERER_NOTESSPEEDBASE).getData();
+    }
+
+    public void clearRingBuffer() {
+        npsBuffer.clear();
+        polyBuffer.clear();
+    }
+    
+    public LongRingBuffer getNpsBuffer() {
+        return npsBuffer;
+    }
+
+    public LongRingBuffer getPolyBuffer() {
+        return polyBuffer;
     }
 }

@@ -26,6 +26,12 @@ public class LongRingBuffer {
             displaySnapshot[i] = buffer[(head + i) % size];
         }
     }
+    
+    public synchronized void clear() {
+        for (int i = 0; i < size; i++) {
+            buffer[i] = 0;
+        }
+    }
 
     public long[] getSnapshot() {
         return displaySnapshot;

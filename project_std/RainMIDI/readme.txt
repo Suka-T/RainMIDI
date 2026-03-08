@@ -16,8 +16,6 @@ _/_/_/_/_/_/_/_/_/
 3. 動作環境や、プログラムの不具合などによって問題が生じる場合があります。
    それらを原因とした損害が発生しても、著作権者は一切の責任を取りません。
 
-=##= Zulu JDK/JREについて =##=
-
 _/_/_/_/_/_/_/_/_/_/_/_/_/
 _/ Zulu JDK/JREについて _/
 _/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -34,3 +32,18 @@ Zulu OpenJDK は、GNU General Public License version 2（GPLv2）および Clas
 
 使用しているJDK/JREのバージョン：
 Zulu 21.42+19 (c2f88d00-0d1c-448f-8f72-27f1326b7e18)
+
+_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+_/ FFmpeg、FFprobeについて  _/
+_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+このソフトウェアは FFmpeg および FFprobe を使用しています。
+FFmpeg は GNU Lesser General Public License（LGPL）バージョン 2.1 以降のもとでライセンスされています。
+
+FFmpeg プロジェクトのウェブサイト：
+https://ffmpeg.org/
+
+FFmpeg のソースコードは以下から入手できます：
+https://ffmpeg.org/download.html
+
+
+
