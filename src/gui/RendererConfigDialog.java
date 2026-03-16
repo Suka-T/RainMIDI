@@ -1122,7 +1122,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         initialized.set(false);
         isCommitClose = false;
         if (Utility.isGpuAvailable() == false) {
-            SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT).setObject("true");
             SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_USE_GPU).setObject("false");
         }
         updateItem();
