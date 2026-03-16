@@ -74,12 +74,13 @@ import plg.Utility;
 
 public class RendererConfigDialog extends JFrame implements ActionListener {
 
-    private static final String WORKNUM_LOW = "3";
-    private static final String NOTESIMAGENUM_LOW = "60";
-    private static final String USAGE_MIDIRAM_LOW = "5";
+    private static final String WORKNUM_LOW = "2";
+    private static final String NOTESIMAGENUM_LOW = "30";
+    private static final String USAGE_MIDIRAM_LOW = "2";
     private static final String USAGE_MIDI_ANA_LOW = "1";
     private static final String USAGE_MIDI_EXT_LOW = "1";
     private static final String NOTESIMAGE_BITS_LOW = "rgb565";
+    private static final String FIXED_FPS_LOW = "30";
 
     private static final String WORKNUM_MID = "5";
     private static final String NOTESIMAGENUM_MID = "60";
@@ -87,6 +88,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private static final String USAGE_MIDI_ANA_MID = "8";
     private static final String USAGE_MIDI_EXT_MID = "6";
     private static final String NOTESIMAGE_BITS_MID = "rgb888";
+    private static final String FIXED_FPS_MID = "60";
 
     private static final String WORKNUM_HIG = "8";
     private static final String NOTESIMAGENUM_HIG = "120";
@@ -94,6 +96,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private static final String USAGE_MIDI_ANA_HIG = "8";
     private static final String USAGE_MIDI_EXT_HIG = "6";
     private static final String NOTESIMAGE_BITS_HIG = "rgb888";
+    private static final String FIXED_FPS_HIG = "60";
     
     private static final String WORKNUM_MAX = "8";
     private static final String NOTESIMAGENUM_MAX = "300";
@@ -101,6 +104,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private static final String USAGE_MIDI_ANA_MAX = "24";
     private static final String USAGE_MIDI_EXT_MAX = "24";
     private static final String NOTESIMAGE_BITS_MAX = "rgb888";
+    private static final String FIXED_FPS_MAX = "60";
     
     private static final String NOTES_SPEED_SLOW = "0.4";
     private static final String NOTES_SPEED_NORM = "1.0";
@@ -175,6 +179,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JPanel aboutPanel;
     private JCheckBox chckbxViewReverse;
     private JCheckBox chckbxRsrcMonitorVisible;
+    private JCheckBox chckbxNoUseVRAM;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -388,19 +393,19 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
                 lblSelectedLayoutLabel = new JLabel("Default Design");
                 lblSelectedLayoutLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-                lblSelectedLayoutLabel.setBounds(24, 20, 507, 31);
+                lblSelectedLayoutLabel.setBounds(23, 25, 262, 31);
                 layoutSummaryPanel.add(lblSelectedLayoutLabel);
 
                 JButton btnLoadLayoutButton = new JButton("Load Design");
                 btnLoadLayoutButton.setActionCommand("LOAD_LAYOUT");
                 btnLoadLayoutButton.addActionListener(this);
-                btnLoadLayoutButton.setBounds(318, 80, 121, 26);
+                btnLoadLayoutButton.setBounds(451, 82, 121, 26);
                 layoutSummaryPanel.add(btnLoadLayoutButton);
 
                 JButton btnDefaultButton = new JButton("Default");
                 btnDefaultButton.setActionCommand("DEF_LAYOUT");
                 btnDefaultButton.addActionListener(this);
-                btnDefaultButton.setBounds(451, 80, 121, 26);
+                btnDefaultButton.setBounds(451, 46, 121, 26);
                 layoutSummaryPanel.add(btnDefaultButton);
                 
                 chckbxInvalidateEffect = new JCheckBox("Invalidate Effect");
@@ -409,12 +414,21 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT, chckbxInvalidateEffect.isSelected() ? "true" : "false");
                     }
                 });
-                chckbxInvalidateEffect.setBounds(24, 57, 169, 21);
+                chckbxInvalidateEffect.setBounds(23, 85, 136, 21);
                 layoutSummaryPanel.add(chckbxInvalidateEffect);
                 
                 JLabel lblInvalidateEffectDesc = new JLabel("<html>If your PC does not have a GPU,<br>we recommend turning this on.</html>");
-                lblInvalidateEffectDesc.setBounds(56, 80, 215, 26);
+                lblInvalidateEffectDesc.setBounds(171, 70, 215, 26);
                 layoutSummaryPanel.add(lblInvalidateEffectDesc);
+                
+                chckbxNoUseVRAM = new JCheckBox("No use VRAM");
+                chckbxNoUseVRAM.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_USE_GPU, chckbxNoUseVRAM.isSelected() ? "false" : "true");
+                    }
+                });
+                chckbxNoUseVRAM.setBounds(23, 62, 136, 21);
+                layoutSummaryPanel.add(chckbxNoUseVRAM);
 
                 JPanel systemSummaryPanel = new JPanel();
                 systemSummaryPanel.setLayout(null);
@@ -449,6 +463,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_LOW);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_LOW);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_LOW);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_FPS, FIXED_FPS_LOW);
                     }
                 });
                 buttonGroup.add(rdbtnPerfLowButton);
@@ -465,6 +480,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_MID);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_MID);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_MID);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_FPS, FIXED_FPS_MID);
                     }
                 });
                 buttonGroup.add(rdbtnPerfMidButton);
@@ -480,6 +496,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_HIG);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_HIG);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_HIG);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_FPS, FIXED_FPS_HIG);
                     }
                 });
                 buttonGroup.add(rdbtnPerfHighButton);
@@ -495,6 +512,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, USAGE_MIDI_ANA_MAX);
                         setSystemTableParam(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD, USAGE_MIDI_EXT_MAX);
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_NOTES_COLOR_BITS, NOTESIMAGE_BITS_MAX);
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_FPS, FIXED_FPS_MAX);
                     }
                 });
                 buttonGroup.add(rdbtnPerfMaxButton);
@@ -978,6 +996,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT)) {
                 chckbxInvalidateEffect.setSelected((boolean)node.getData());
             }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_USE_GPU)) {
+                chckbxNoUseVRAM.setSelected(!((boolean)node.getData()));
+            }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_MODE_REVERSE)) {
                 chckbxViewReverse.setSelected((boolean) node.getData());
             }
@@ -1100,8 +1121,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     public void initializeView() {
         initialized.set(false);
         isCommitClose = false;
-        if (SystemProperties.getInstance().isGpuAvailable() == false) {
+        if (Utility.isGpuAvailable() == false) {
             SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT).setObject("true");
+            SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_USE_GPU).setObject("false");
         }
         updateItem();
         updateSynthItem();

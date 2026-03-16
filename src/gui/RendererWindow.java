@@ -30,6 +30,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
@@ -66,8 +67,8 @@ import plg.OsInfoWrapper;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
+import plg.SystemProperties.SyspMonitorType;
 import plg.SystemProperties.SyspWinEffect;
-import plg.Utility;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
     private static final Stroke DEFAULT_STROKE = new BasicStroke();
@@ -125,6 +126,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected boolean isAvailableGpu = true;
     protected BufferedImage backBuffer = null;
+    protected Graphics backBufferGrapics = null;
+    protected Graphics backBufferCanvasGrapics = null;
 
     private Font msgFont = null;
     private Font msgFontS = null;
@@ -249,7 +252,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         graphFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 12);
         graphTitleFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
 
-        isAvailableGpu = Utility.isGpuAvailable();
+        isAvailableGpu = SystemProperties.getInstance().isAvailavleGpu();
+        System.out.println("isAvailavleGpu = " + isAvailableGpu);
 
         hitEffeSteps = new AlphaComposite[HIT_EFFECT_STEPS];
         for (int j = 0; j < 16; j++) {
@@ -361,9 +365,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (b) {
             if (oldVisible == false) {
-                canvas.requestFocusInWindow();
-                canvas.createBufferStrategy(2); // ダブルバッファリング
-                strategy = canvas.getBufferStrategy();
+                if (isAvailableGpu) {
+                    canvas.requestFocusInWindow();
+                    canvas.createBufferStrategy(2); // ダブルバッファリング
+                    strategy = canvas.getBufferStrategy();
+                }
 
                 running = true;
                 renderThread = new Thread(this::run, "RenderThread");
@@ -457,25 +463,25 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected void renderSoft() {
         // CPU上オフスクリーン描画用のバックバッファーを用意
-        if (backBuffer == null) {
+        if (backBuffer == null || backBufferGrapics == null || backBufferCanvasGrapics == null) {
             backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            backBufferGrapics = backBuffer.createGraphics();
+            backBufferCanvasGrapics = canvas.getGraphics();
         }
 
-        Graphics2D g = backBuffer.createGraphics();
+        Graphics2D g = (Graphics2D)backBufferGrapics;
         try {
             paintDisplay(g);
         }
         finally {
-            g.dispose();
         }
 
         // バッファを画面に転送
-        Graphics2D screen = (Graphics2D) canvas.getGraphics();
+        Graphics2D screen = (Graphics2D) backBufferCanvasGrapics;
         try {
             screen.drawImage(backBuffer, 0, 0, null);
         }
         finally {
-            screen.dispose();
         }
 
         if (backBuffer.getWidth() != getWidth() || backBuffer.getHeight() != getHeight()) {
@@ -517,7 +523,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private StringBuilder sb = new StringBuilder(64); // 初期容量を指定
-    protected volatile VolatileImage orgScreenImage = null;
+    //protected volatile VolatileImage orgScreenImage = null;
+    protected volatile Image orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
 
     private static final String[] topStrs = { //
@@ -538,52 +545,18 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         return topStrs[topStrFlip];
     }
-    
-    protected void _copyFromNotesImage(Graphics g) {
-        Graphics2D lotG2d = (Graphics2D) g.create();
-
-        // 補間方法を設定
-        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
-        lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-        int panelW = getContentPane().getWidth();
-        int panelH = getContentPane().getHeight();
-
-        int imgW = orgScreenImage.getWidth();
-        int imgH = orgScreenImage.getHeight();
-
-        // 回転後の画像サイズ（横768 × 縦1280）→これを1280×768に無理やり拡大
-        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
-
-        // 回転の中心に移動（ウィンドウの中心）
-        lotG2d.translate(panelW / 2.0, panelH / 2.0);
-        
-        // 反転設定 
-        if (SystemProperties.getInstance().isViewReverse() == true) {
-            lotG2d.rotate(Math.toRadians(90));
-        }
-        else {
-            lotG2d.rotate(Math.toRadians(0));
-        }
-
-        // スケーリング（アスペクト比を無視してウィンドウ全体に引き伸ばす）
-        double scaleX = (double) panelH / imgW; // 幅と高さが逆になることに注意
-        double scaleY = (double) panelW / imgH;
-        lotG2d.scale(scaleX, -scaleY);
-
-        // 画像中心を原点に合わせて描画
-        lotG2d.translate(-imgW / 2.0, -imgH / 2.0);
-        lotG2d.drawImage(orgScreenImage, 0, 0, null);
-
-        lotG2d.dispose();
-    }
 
     protected void copyFromNotesImage(Graphics g) {
         Dimension dim = this.getContentPane().getSize();
         
         if (SystemProperties.getInstance().isViewReverse() == false) {
-            Graphics2D lotG2d = (Graphics2D) g.create();
+            Graphics2D lotG2d = (Graphics2D) g;
+            
+            // 元状態を保存
+            AffineTransform oldTransform = lotG2d.getTransform();
+            Object oldInterpolation = lotG2d.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+            Object oldAA = lotG2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            Object oldRendering = lotG2d.getRenderingHint(RenderingHints.KEY_RENDERING);
 
             // 補間方法を設定
             lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
@@ -593,8 +566,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int panelW = getContentPane().getWidth();
             int panelH = getContentPane().getHeight();
 
-            int imgW = orgScreenImage.getWidth();
-            int imgH = orgScreenImage.getHeight();
+            int imgW = orgScreenImage.getWidth(null);
+            int imgH = orgScreenImage.getHeight(null);
+            
             
             // 回転の中心に移動（ウィンドウの中心）
             lotG2d.translate(panelW / 2.0, panelH / 2.0);
@@ -609,10 +583,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             lotG2d.translate(-imgW / 2.0, -imgH / 2.0);
             lotG2d.drawImage(orgScreenImage, 0, 0, null);
 
-            lotG2d.dispose();
+            // 元状態に戻す
+            lotG2d.setTransform(oldTransform);
+            lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, oldInterpolation);
+            lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, oldRendering);
         }
         else {
-            g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(), orgScreenImage.getHeight(), null);
+            g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(null), orgScreenImage.getHeight(null), null);
         }
     }
 
@@ -743,9 +721,19 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         /* ノーツ描画 */
         GraphicsConfiguration gc = getGraphicsConfiguration();
-        if (orgScreenImage == null || orgScreenImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
-            orgScreenImage = LayoutManager.getInstance().createDisplayImage(getOrgWidth(), getOrgHeight());
-            orgScreenGraphic = orgScreenImage.createGraphics();
+        if (isAvailableGpu) {
+            VolatileImage vi = (VolatileImage)orgScreenImage;
+            if (vi == null || vi.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
+                orgScreenImage = LayoutManager.getInstance().createDisplayImage(getOrgWidth(), getOrgHeight());
+                orgScreenGraphic = ((VolatileImage)orgScreenImage).createGraphics();
+            }
+        }
+        else {
+            BufferedImage bi = (BufferedImage)orgScreenImage;
+            if (bi == null) {
+                orgScreenImage = LayoutManager.getInstance().createBufferdImage(getOrgWidth(), getOrgHeight());
+                orgScreenGraphic = ((BufferedImage)orgScreenImage).createGraphics();
+            }
         }
 
         int paneWidth = getContentPane().getWidth();
@@ -959,6 +947,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int grapY = 10;
             int gwRes = 0;
             float[] data;
+            
+            if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
+                grapX = 120;
+                grapY = 160;
+            }
 
             // CPU
             sb.setLength(0);
@@ -993,7 +986,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             gGrap.setColor(Color.WHITE);
             gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
             
-            grapY += grapH + 25;
+            grapY += grapH + 28;
             
             // RAM
             sb.setLength(0);

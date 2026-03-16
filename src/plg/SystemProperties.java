@@ -25,6 +25,7 @@ import jlib.midi.IMidiUnit;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import layout.parts.SpectrumPainter;
+import layout.parts.monitor.AnalyzeMonitorPainter;
 import layout.parts.monitor.ClassicalMonitorPainter;
 import layout.parts.monitor.GraphMonitorPainter;
 import layout.parts.monitor.NoneMonitorPainter;
@@ -45,6 +46,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_MODE_REVERSE = "renderer.mode.reverse";
     public static final String SYSP_RENDERER_NOTES_COLOR_BITS = "renderer.notesColorBits";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
+    public static final String SYSP_RENDERER_USE_GPU = "renderer.useGpu";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
     public static final String SYSP_RENDERER_KEY_FOCUS_FUNC = "renderer.keyFocusFunc";
     public static final String SYSP_RENDERER_LAYERORDER = "renderer.layerOrder";
@@ -82,6 +84,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_MODE_REVERSE, "Renderer view reverse");
             put(SYSP_RENDERER_NOTES_COLOR_BITS, "NotesImage color bit depth");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
+            put(SYSP_RENDERER_USE_GPU, "use GPU");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
             put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
@@ -213,7 +216,7 @@ public class SystemProperties {
 
     private List<File> preloadFiles = new ArrayList<File>();
     
-    private boolean isGPUAvailable = false;
+    private boolean isGPUAvailable = true;
 
     private static SystemProperties instance = new SystemProperties();
     
@@ -228,6 +231,9 @@ public class SystemProperties {
     private LongRingBuffer npsBuffer = new LongRingBuffer(360);
     private LongRingBuffer polyBuffer = new LongRingBuffer(360);
     
+    private MonitorPainter monitorPainter;
+    private boolean isVisibleRsrcMonitor = false;
+    
     private SystemProperties() {
         nodes = new ArrayList<>();
 
@@ -241,6 +247,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_MODE_REVERSE, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTES_COLOR_BITS, PropertiesNodeType.ITEM, SyspColorBitsDepth.RGB_888, colorBitsItemS, colorBitsItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "5", "2", "64"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_USE_GPU, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
@@ -268,7 +275,6 @@ public class SystemProperties {
         
         reset();
         
-        isGPUAvailable = Utility.isGpuAvailable();
         if (Utility.isWindows()) {
             generalFontName = "Meiryo";
         }
@@ -285,6 +291,7 @@ public class SystemProperties {
         }
     }
     
+    private static MonitorPainter lightAnalyMonitor = new AnalyzeMonitorPainter();
     private static Map<SyspMonitorType, MonitorPainter> monitorPainters = new HashMap<SyspMonitorType, MonitorPainter>() {
         {
             put(SyspMonitorType.NONE, new NoneMonitorPainter());
@@ -292,7 +299,6 @@ public class SystemProperties {
             put(SyspMonitorType.TYPE1, new GraphMonitorPainter());
             put(SyspMonitorType.TYPE2, new NotesCountMonitorPainter());
             put(SyspMonitorType.TYPE3, new ClassicalMonitorPainter());
-            //put(SyspMonitorType.GRAPH, new GraphMonitorPainter());
         }
     };
     
@@ -433,13 +439,26 @@ public class SystemProperties {
         }
         LayoutManager.getInstance().setBmpFormat(bmpFormat);
         
+        isVisibleRsrcMonitor = (boolean)getPropNode(SYSP_RENDERER_RSRCMONITOR_VISIBLE).getData();
+        
+        SyspMonitorType monType = (SyspMonitorType)getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData();
+        monitorPainter = monitorPainters.get(monType);
+        
         boolean isInvalidateEffe = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
         if (isInvalidateEffe == true) {
             LayoutManager.getInstance().invalidateEffectConfig();
             
             imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; //軽量補完に差し替え
             LayoutManager.getInstance().setBmpFormat(BufferedImage.TYPE_USHORT_565_RGB);
+            
+            isVisibleRsrcMonitor = false;
+            
+            if (monType == SyspMonitorType.TYPE1) {
+                monitorPainter = lightAnalyMonitor;
+            }
         }
+        
+        isGPUAvailable = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_GPU);
         
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
         int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
@@ -627,11 +646,11 @@ public class SystemProperties {
     }
     
     public MonitorPainter getMonitorPainter() {
-        return monitorPainters.get((SyspMonitorType)getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData());
+        return monitorPainter;
     }
     
     public boolean isVisibleRsrcMonitor() {
-        return (boolean)getPropNode(SYSP_RENDERER_RSRCMONITOR_VISIBLE).getData();
+        return isVisibleRsrcMonitor;
     }
     
     public double getNotesSpeed() {
@@ -681,5 +700,9 @@ public class SystemProperties {
 
     public LongRingBuffer getPolyBuffer() {
         return polyBuffer;
+    }
+    
+    public boolean isAvailavleGpu() {
+        return isGPUAvailable;
     }
 }

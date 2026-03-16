@@ -61,7 +61,7 @@ public class GraphMonitorPainter extends MonitorPainter {
         npsBuffer.updateSnapshot();
         polyBuffer.updateSnapshot();
         
-        Graphics2D gGrap = (Graphics2D) g.create();
+        Graphics2D gGrap = (Graphics2D) g;
         gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();

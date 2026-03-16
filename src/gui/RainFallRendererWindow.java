@@ -3,6 +3,7 @@ package gui;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 
 import layout.LayoutManager;
 import layout.parts.KeyParts;
@@ -169,7 +170,13 @@ public class RainFallRendererWindow extends RendererWindow {
 
     @Override
     protected void copyFromNotesImage(Graphics g) {
-        Graphics2D lotG2d = (Graphics2D) g.create();
+        Graphics2D lotG2d = (Graphics2D) g;
+
+        // 元状態を保存
+        AffineTransform oldTransform = lotG2d.getTransform();
+        Object oldInterpolation = lotG2d.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+        Object oldAA = lotG2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        Object oldRendering = lotG2d.getRenderingHint(RenderingHints.KEY_RENDERING);
 
         // 補間方法を設定
         lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
@@ -179,8 +186,8 @@ public class RainFallRendererWindow extends RendererWindow {
         int panelW = getContentPane().getWidth();
         int panelH = getContentPane().getHeight();
 
-        int imgW = orgScreenImage.getWidth();
-        int imgH = orgScreenImage.getHeight();
+        int imgW = orgScreenImage.getWidth(null);
+        int imgH = orgScreenImage.getHeight(null);
 
         // 回転後の画像サイズ（横768 × 縦1280）→これを1280×768に無理やり拡大
         lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
@@ -205,7 +212,11 @@ public class RainFallRendererWindow extends RendererWindow {
         lotG2d.translate(-imgW / 2.0, -imgH / 2.0);
         lotG2d.drawImage(orgScreenImage, 0, 0, null);
 
-        lotG2d.dispose();
+        // 元状態に戻す
+        lotG2d.setTransform(oldTransform);
+        lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, oldInterpolation);
+        lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+        lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, oldRendering);
     }
 
     @Override
