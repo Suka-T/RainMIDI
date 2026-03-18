@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>RainMIDI ユーザーマニュアル</title>
+    <style>
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background: #f5f5f5;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+        }
+        nav {
+            background: #34495e;
+            padding: 10px;
+        }
+        nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        main {
+            padding: 20px;
+            background: white;
+            max-width: 900px;
+            margin: auto;
+        }
+        h1, h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+        code {
+            background: #eee;
+            padding: 2px 5px;
+        }
+        .box {
+            background: #eef;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 5px solid #66f;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #777;
+        }
+		.settings-table {
+		    width: 100%;
+		    border-collapse: collapse;
+		    margin-top: 10px;
+		}
+
+		.settings-table th {
+		    background: #2c3e50;
+		    color: white;
+		}
+
+		.settings-table th,
+		.settings-table td {
+		    border: 1px solid #ccc;
+		    padding: 8px;
+		    text-align: left;
+		}
+
+		.settings-table tr:nth-child(even) {
+		    background: #f9f9f9;
+		}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>RainMIDI ユーザーマニュアル</h1>
+</header>
+
+<nav>
+    <a href="#overview">概要</a>
+    <a href="#install">起動方法</a>
+    <a href="#usage">使い方</a>
+    <a href="#settings">設定項目</a>
+    <a href="#faq">FAQ</a>
+    <a href="#links">連絡先</a>
+</nav>
+
+<main>
+
+<section id="overview">
+    <h2>概要</h2>
+    <p>
+        RainMIDIはMIDIファイルを再生、ピアノロール風に表示するためのフリーソフトです。<br>
+        重たいMIDIファイル(通称：黒MIDI)をスムーズに再生することを目指して開発されました。<br>
+    </p>
+</section>
+
+<section id="notes">
+    <h2>使用許諾</h2>
+    <p>
+        このソフトウェアは MIT License のもとで公開されています。<br>
+        ※以下の条件に従う限り、このソフトウェアを使用できます。
+    </p>
+    <ol>
+        <li>このソフトウェアはフリーソフトウェアです。個人使用に関わらず自由に使用してかまいません。</li>
+        <li>複製、再配布を行う場合は、著作権表示、配布物とともに提供される文書を必ず含めること。</li>
+        <li>動作環境や、プログラムの不具合などによって問題が生じる場合があります。それらを原因とした損害が発生しても、著作権者は一切の責任を取りません。</li>
+    </ol>
+</section>
+
+<section id="environment">
+    <h2>動作環境</h2>
+    <p>
+        快適に使用するためにはこれらのスペック以上を推奨します。
+    </p>
+    <ul>
+        <li>OS: Windows 11</li>
+        <li>CPU: Intel第10世代Core以上</li>
+        <li>RAM: 16GB以上</li>
+        <li>GPU: Geforce GTX 1060以上</li>
+    </ul>
+    <p>
+        なお、PCのスペックを満たしていない場合でも、設定項目の値を調整することで、動作が軽くなる可能性があります。<br>
+        詳細はFAQをご覧ください。<br>
+    </p>
+
+    <p>
+        MacやLinuxで動作させる場合は、別途JREをインストールする必要があります。<br>
+        ※WindowsはJREを同梱しているため、ユーザーが別途インストールする必要はありません。<br>
+    </p>
+</section>
+
+<section id="install">
+    <h2>起動方法・アンインストール方法</h2>
+    <p>
+        フォルダ内の<code>RainMIDI.exe</code>を実行することで起動できます。<br>
+        アンインストールする場合は、exeを含むフォルダごと削除するだけで完了します。<br>
+        ※「プログラムの追加と削除」等の操作は必要ありません。<br>
+    </p>
+</section>
+
+<section id="usage">
+    <h2>使い方</h2>
+    <p>
+        以下の操作を行うだけでMIDIファイルを再生できます。<br>
+        特別な初期設定を必要としません。<br>
+        ※音が出ない場合は、FAQを参照してください。
+    </p>
+
+    <h3>基本操作</h3>
+    <ul>
+        <li><code>RainMIDI.exe</code>を起動する</li>
+        <li>「Launch」ボタンを押す</li>
+        <li>MIDIファイルを画面内にドラッグアンドドロップする</li>
+    </ul>
+</section>
+
+<section id="settings">
+    <h2>設定項目</h2>
+
+    <p>各設定の説明です。<br>音声やレンダラーの動作・見た目をカスタマイズできます。</p>
+
+    <table class="settings-table">
+        <tr>
+            <th>項目</th>
+            <th>説明</th>
+            <th>デフォルト</th>
+            <th>範囲 / 備考</th>
+        </tr>
+
+        <tr>
+            <td>MIDI Receiver</td>
+            <td>
+                音声を出力するMIDIデバイスを指定します。<br>
+                Autoにすると、利用可能なMIDIデバイスの中から最適なものが自動で選択されます。
+            </td>
+            <td>Auto</td>
+            <td>利用可能なMIDIデバイス</td>
+        </tr>
+
+        <tr>
+            <td>Ignore audio in between two velocity</td>
+            <td>
+                MIDIファイル内の小さな音を無視して再生します。<br>
+                値を大きくすると、より多くの音が無視され動作が軽くなります。
+            </td>
+            <td>1 ～ 20</td>
+            <td>1 ～ 127</td>
+        </tr>
+
+        <tr>
+            <td>Volume</td>
+            <td>出力音量を調整します。</td>
+            <td>システムの音量</td>
+            <td>1 ～ 100%</td>
+        </tr>
+
+        <tr>
+            <td>Design Default</td>
+            <td>デフォルトのデザインを設定します。</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>Load Design</td>
+            <td>カスタムデザインを読み込みます。</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>No use VRAM</td>
+            <td>描画時にVRAMを使用しない。<br>※画面がカクつく場合はONにしてください。</td>
+            <td>OFF</td>
+            <td>ON / OFF</td>
+        </tr>
+
+        <tr>
+            <td>Invalidate Effect</td>
+            <td>描画効果を無効化します。<br>※画面がカクつく場合はONにしてください。</td>
+            <td>OFF</td>
+            <td>ON / OFF</td>
+        </tr>
+
+        <tr>
+            <td>Window Size</td>
+            <td>ウィンドウのサイズを指定します。</td>
+            <td>720p</td>
+            <td>720p / 480p / 360p</td>
+        </tr>
+
+        <tr>
+            <td>View Mode</td>
+            <td>
+                表示モードを指定します。<br>
+                Rain Fallは、ノートが上から下に流れるモードです。<br>
+                Size Flowは、ノートが左から右に流れるモードです。<br>
+            </td>
+            <td>Rain Fall</td>
+            <td>Rain Fall / Size Flow</td>
+        </tr>
+
+        <tr>
+            <td>Use RAM</td>
+            <td>使用するRAMの量を指定します。</td>
+            <td>Middle</td>
+            <td>Low / Middle / High / Max</td>
+        </tr>
+
+        <tr>
+            <td>Notes Speed</td>
+            <td>ノートの移動速度を指定します。</td>
+            <td>Normal</td>
+            <td>Slow / Normal / Fast / Very Fast</td>
+        </tr>
+
+        <tr>
+            <td>Notes Layer</td>
+            <td>MIDIトラックのノート描画順序を指定します。</td>
+            <td>Track1 is Back</td>
+            <td>Track1 is Back / Track1 is Top</td>
+        </tr>
+
+        <tr>
+            <td>Monitor Type</td>
+            <td>MIDI情報表示の種類を指定します。</td>
+            <td>Notes Analyzer</td>
+            <td>None / Notes Analyzer / Counter / Classical</td>
+        </tr>
+
+        <tr>
+            <td>Invisible Ghost Notes</td>
+            <td>
+                ゴーストノートを隠すかどうかを指定します。<br>
+                ※ゴーストノートとは、MIDIファイル内のノートイベントのうち、再生されないもの(表示専用のノート)を指します。</td>
+            </td>
+            <td>OFF</td>
+            <td>ON / OFF</td>
+        </tr>
+
+        <tr>
+            <td>Initialize Settings</td>
+            <td>すべての設定項目をデフォルトに初期化します。</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</section>
+
+<section id="faq">
+    <h2>FAQ</h2>
+
+    <p><strong>Q. 音が出ない。楽器が鳴らない。</strong></p>
+    <p>
+        「MIDI Receiver」を確認してください。<br>
+        選択肢の中に「Gervil」か「Microsoft GS Wavetable SW Synth」があるはずなので選択してください。<br>
+    </p>
+
+    <p><strong>Q. 音が途切れる。</strong></p>
+    <p>
+        内蔵シンセ「Gervil」や「Microsoft GS Wavetable SW Synth」は、スペックの高いPCでも重たいMIDIファイルを再生すると音が途切れることがあります。
+        別途性能の高いシンセをインストールして、「MIDI Receiver」から選択してください。<br>
+        以下のシンセは無料で使用でき、性能も高いためおすすめです。<br>
+    </p>
+    <ul>
+      <li>
+        OmniMIDI: <a href="https://github.com/KeppySoftware/OmniMIDI/releases">https://github.com/KeppySoftware/OmniMIDI/releases</a>
+      </li>
+      <li>
+        VirtualMIDISynth: <a href="https://coolsoft.altervista.org/en/virtualmidisynth">https://coolsoft.altervista.org/en/virtualmidisynth</a>
+      </li>
+    </ul>
+
+
+    <p><strong>Q. 画面がカクカクする。重たい。</strong></p>
+    <p>
+        「No use VRAM」をONにしてください。<br>
+        ※それでもダメなら、「Use RAM」をLowにしてください。<br>
+        ※それでもダメなら、「Invalidate Effect」をONにしてください。(デザインは軽量なものになってしまいます)<br>
+        ※それでもダメなら、PCのスペックが足りていない可能性があります。orz
+    </p>
+
+    <p><strong>Q. 再生中にエラーになった。ソフトが落ちた。</strong></p>
+    <p>
+        Javaが確保できるRAM上限を超えた可能性があります。<br>
+        PCスペックが十分であれば、ソフトを終了した後「RainMIDI-Ram8G.exe」または「RainMIDI-Ram16G.exe」を起動して再度お試しください。<br>
+    </p>
+</section>
+
+<section id="jdk">
+    <h2>Zulu JDK/JREについて</h2>
+    <p>
+        本アプリケーションには、Azul Systems, Inc. により提供されるZulu OpenJDK が含まれています。<br>
+        Zulu OpenJDK は、GNU General Public License version 2（GPLv2）および Classpath Exception のもとでライセンスされています。
+    </p>
+    <ul>
+      <li>
+        OpenJDK Project: <a href="https://openjdk.java.net/">https://openjdk.java.net/</a>
+      </li>
+      <li>
+        GPLv2 + Classpath Exception: <a href="https://openjdk.java.net/legal/gplv2+ce.html">https://openjdk.java.net/legal/gplv2+ce.html</a>
+      </li>
+      <li>
+        Azul Systems: <a href="https://www.azul.com/">https://www.azul.com/</a>
+      </li>
+    </ul>
+    <p>
+        Zulu JDK/JRE のソースコードは、Azul にリクエストすることで入手可能です（受領から3年間以内、実費のみ）。<br>
+        詳細は azul_openjdk@azul.com にお問い合わせください。<br>
+        使用しているJDK/JREのバージョン：Zulu 25.0.2+10
+    </p>
+</section>
+
+<section id="ffmpeg">
+    <h2>FFmpeg、FFprobeについて</h2>
+    <p>
+        本アプリケーションは FFmpeg および FFprobe を使用しています。<br>
+        FFmpeg は GNU Lesser General Public License（LGPL）バージョン 2.1 以降のもとでライセンスされています。
+    </p>
+    <ul>
+      <li>
+        FFmpeg プロジェクト：<a href="https://ffmpeg.org/">https://ffmpeg.org/</a>
+      </li>
+      <li>
+        FFmpeg のソースコード: <a href="https://ffmpeg.org/download.html">https://ffmpeg.org/download.html</a>
+      </li>
+    </ul>
+</section>
+
+<section id="links">
+    <h2>連絡先・リンク</h2>
+    <p>
+        ご質問やご要望がある場合は、以下の連絡先からお気軽にお問い合わせください。<br>
+        不具合の報告も歓迎します！<br>
+    </p>
+    <ul>
+        <li>作者メールアドレス: suka.dev6626@gmail.com</li>
+        <li>
+            <a href="https://github.com/Suka-T/RainMIDI">GitHub</a>
+        </li>
+        <li>
+        <a href="https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd">Youtube</a>
+      </li>
+      <li>
+        <a href="https://x.com/Suka_XxO_OxX">X(Twitter)</a>
+      </li>
+    </ul>
+</section>
+
+</main>
+
+<footer>
+    Copyright (c) 2025, Suka All rights reserved.
+</footer>
+
+</body>
+</html>
