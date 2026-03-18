@@ -158,6 +158,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         Path fullPath = folder.resolve(PROP_FILE_NAME);
         File propFile = new File(fullPath.toString());
         try {
+            SystemProperties.getInstance().reset();
             SystemProperties.getInstance().read(propFile);
         }
         catch (IOException e1) {
@@ -178,7 +179,12 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             e1.printStackTrace();
         }
         
-        launch();
+        if (SystemProperties.getInstance().getPreloadFiles().isEmpty() == true) {
+            launch();
+        }
+        else {
+            startRendererWindow();
+        }
     }
 
     private void createExtensions() {

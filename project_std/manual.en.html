@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RainMIDI User Manual</title>
+    <style>
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background: #f5f5f5;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+        }
+        nav {
+            background: #34495e;
+            padding: 10px;
+        }
+        nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        main {
+            padding: 20px;
+            background: white;
+            max-width: 900px;
+            margin: auto;
+        }
+        h1, h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+        code {
+            background: #eee;
+            padding: 2px 5px;
+        }
+        .box {
+            background: #eef;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 5px solid #66f;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #777;
+        }
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .settings-table th {
+            background: #2c3e50;
+            color: white;
+        }
+        .settings-table th,
+        .settings-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .settings-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>RainMIDI User Manual</h1>
+</header>
+
+<nav>
+    <a href="#overview">Overview</a>
+    <a href="#install">Launch</a>
+    <a href="#usage">Usage</a>
+    <a href="#settings">Settings</a>
+    <a href="#faq">FAQ</a>
+    <a href="#links">Contact</a>
+</nav>
+
+<main>
+
+<section id="overview">
+    <h2>Overview</h2>
+    <p>
+        This software is a free MIDI file player.<br>
+        It is designed to smoothly play very heavy MIDI files (commonly called "Black MIDI").<br>
+    </p>
+
+    <div class="box">
+        💡 Key Features: Lightweight and High Performance!
+    </div>
+</section>
+
+<section id="notes">
+    <h2>License</h2>
+    <p>
+        This software is released under the MIT License.<br>
+        You may use this software under the following conditions:
+    </p>
+    <ol>
+        <li>This software is free to use for both personal and commercial purposes.</li>
+        <li>If you redistribute it, you must include the copyright notice and accompanying documentation.</li>
+        <li>The author is not responsible for any damages caused by the use of this software.</li>
+    </ol>
+</section>
+
+<section id="install">
+    <h2>Launch & Uninstall</h2>
+    <p>
+        Run <code>RainMIDI.exe</code> to start the application.<br>
+        To uninstall, simply delete the folder containing the executable.<br>
+    </p>
+</section>
+
+<section id="usage">
+    <h2>Usage</h2>
+    <p>
+        RainMIDI requires no special configuration.<br>
+        Just follow the steps below to play a MIDI file:
+    </p>
+
+    <h3>Basic Steps</h3>
+    <ul>
+        <li>Run <code>RainMIDI.exe</code></li>
+        <li>Click the "Launch" button</li>
+        <li>Drag and drop a MIDI file into the window</li>
+    </ul>
+</section>
+
+<section id="settings">
+    <h2>Settings</h2>
+
+    <p>Customize audio and rendering behavior.</p>
+
+    <table class="settings-table">
+        <tr>
+            <th>Option</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Range / Notes</th>
+        </tr>
+
+        <tr>
+            <td>MIDI Receiver</td>
+            <td>Select the MIDI output device. "Auto" selects the best available device.</td>
+            <td>Auto</td>
+            <td>Available MIDI devices</td>
+        </tr>
+
+        <tr>
+            <td>Ignore audio in between two velocity</td>
+            <td>Skips low-velocity notes. Higher values improve performance.</td>
+            <td>1–20</td>
+            <td>1–127</td>
+        </tr>
+
+        <tr>
+            <td>Volume</td>
+            <td>Adjust output volume.</td>
+            <td>System volume</td>
+            <td>1–100%</td>
+        </tr>
+
+        <tr>
+            <td>Design Default</td>
+            <td>Set default visual design.</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>Load Design</td>
+            <td>Load custom design.</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>No use VRAM</td>
+            <td>Disable VRAM usage for rendering. Enable if the screen stutters.</td>
+            <td>OFF</td>
+            <td>ON / OFF</td>
+        </tr>
+
+        <tr>
+            <td>Invalidate Effect</td>
+            <td>Disable visual effects for better performance.</td>
+            <td>OFF</td>
+            <td>ON / OFF</td>
+        </tr>
+
+        <tr>
+            <td>Window Size</td>
+            <td>Set window resolution.</td>
+            <td>720p</td>
+            <td>720p / 480p / 360p</td>
+        </tr>
+
+        <tr>
+            <td>View Mode</td>
+            <td>
+                Select display mode.<br>
+                Rain Fall: Notes fall from top to bottom.<br>
+                Size Flow: Notes move left to right.
+            </td>
+            <td>Rain Fall</td>
+            <td>Rain Fall / Size Flow</td>
+        </tr>
+
+        <tr>
+            <td>Use RAM</td>
+            <td>Set memory usage level.</td>
+            <td>Middle</td>
+            <td>Low / Middle / High / Max</td>
+        </tr>
+
+        <tr>
+            <td>Notes Speed</td>
+            <td>Adjust note movement speed.</td>
+            <td>Normal</td>
+            <td>Slow / Normal / Fast / Very Fast</td>
+        </tr>
+
+        <tr>
+            <td>Notes Layer</td>
+            <td>Set note rendering order.</td>
+            <td>Track1 is Back</td>
+            <td>Track1 is Back / Track1 is Top</td>
+        </tr>
+
+        <tr>
+            <td>Monitor Type</td>
+            <td>Select MIDI info display type.</td>
+            <td>Notes Analyzer</td>
+            <td>None / Notes Analyzer / Counter / Classical</td>
+        </tr>
+
+        <tr>
+            <td>Invisible Ghost Notes</td>
+            <td>Hide ghost notes (non-played visual notes).</td>
+            <td>OFF</td>
+            <td>ON / OFF</td>
+        </tr>
+
+        <tr>
+            <td>Initialize Settings</td>
+            <td>Reset all settings to default.</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</section>
+
+<section id="faq">
+    <h2>FAQ</h2>
+
+    <p><strong>Q. No sound or strange sound.</strong></p>
+    <p>
+        Check the "MIDI Receiver" setting.<br>
+        Default devices include "Gervill" or "Microsoft GS Wavetable SW Synth".<br>
+        If not available, install a MIDI device.
+    </p>
+
+    <p><strong>Q. The app is laggy.</strong></p>
+    <p>
+        Turn ON "No use VRAM".<br>
+        If still slow, set "Use RAM" to Low.<br>
+        If still slow, enable "Invalidate Effect".<br>
+        Otherwise, your PC may not meet requirements.
+    </p>
+
+    <p><strong>Q. App crashes during playback.</strong></p>
+    <p>
+        It may have exceeded available RAM.<br>
+        Try launching "RainMIDI-Ram8G.exe" or "RainMIDI-Ram16G.exe".
+    </p>
+</section>
+
+<section id="links">
+    <h2>Links</h2>
+    <ul>
+      <li><a href="https://github.com/Suka-T/RainMIDI">GitHub</a></li>
+      <li><a href="https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd">YouTube</a></li>
+      <li><a href="https://x.com/Suka_XxO_OxX">X (Twitter)</a></li>
+    </ul>
+</section>
+
+</main>
+
+<footer>
+    Copyright (c) 2025, Suka All rights reserved.
+</footer>
+
+</body>
+</html>

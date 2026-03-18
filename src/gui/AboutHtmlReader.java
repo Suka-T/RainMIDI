@@ -26,10 +26,12 @@ public class AboutHtmlReader {
 
     public AboutHtmlReader() {
         Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_CURRENT_DIR, AbstractRenderPlugin.PluginInstance));
-        Path fullPath = folder.resolve("about").resolve("index.html");
+        //Path fullPath = folder.resolve("about").resolve("index.html");
+        Path fullPath = folder.resolve("manual.en.html");
         htmlFileEn = new File(fullPath.toString());
         
-        fullPath = folder.resolve("about").resolve("index.ja.html");
+        //fullPath = folder.resolve("about").resolve("index.ja.html");
+        fullPath = folder.resolve("manual.html");
         htmlFileja = new File(fullPath.toString());
     }
     
@@ -51,9 +53,6 @@ public class AboutHtmlReader {
         StringWriter writer = new StringWriter();
         kit.write(writer, doc, 0, doc.getLength());
         String html = writer.toString();
-
-        html = html.replace("@@APP_NAME@@", AbstractRenderPlugin.APP_NAME);
-        html = html.replace("@@APP_VER@@", "v" + AbstractRenderPlugin.APP_VERSION);
         return html;
     }
 }

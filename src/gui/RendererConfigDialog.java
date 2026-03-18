@@ -849,6 +849,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             try {
                 AboutHtmlReader htmlReader = new AboutHtmlReader();
                 editorPane.setText(htmlReader.getContent(langCode));
+                editorPane.setCaretPosition(0); // 上にスクロール
             }
             catch (Exception e) {
                 editorPane.setText("Error");
