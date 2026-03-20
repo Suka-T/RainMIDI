@@ -36,6 +36,7 @@ import layout.parts.spectrum.NoneSpectrumPainter;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
+    public static final String SYSP_MISC_LANGUAGE = "misc.language";
     public static final String SYSP_FILE_LAYOUT = "file.layout";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
@@ -74,6 +75,7 @@ public class SystemProperties {
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
+            put(SYSP_MISC_LANGUAGE, "Language");
             put(SYSP_FILE_LAYOUT, "Preload Layout file name");
             put(SYSP_FILE_DEFAULT_PATH, "Default folder");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
@@ -119,6 +121,10 @@ public class SystemProperties {
     public static int DEFAULT_DIM_W = 1280;
     public static int DEFAULT_DIM_H = 768;
 
+    public static enum SyspLanguage {
+        AUTO, ENGLISH, JAPANESE;
+    }
+    
     public static enum SyspViewMode {
         RAIN_FALL, SIDE_FLOW;
     }
@@ -163,6 +169,9 @@ public class SystemProperties {
         FIRST, AVERAGE, MEDIAN;
     }
 
+    private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE };
+    private static String[] langItemS = { "auto", "english", "japanese" };
+    
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
 
@@ -237,6 +246,7 @@ public class SystemProperties {
     private SystemProperties() {
         nodes = new ArrayList<>();
 
+        nodes.add(new PropertiesNode(SYSP_MISC_LANGUAGE, PropertiesNodeType.ITEM, SyspLanguage.AUTO, langItemS, langItemO));
         nodes.add(new PropertiesNode(SYSP_FILE_LAYOUT, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_FILE_DEFAULT_PATH, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
