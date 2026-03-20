@@ -108,7 +108,7 @@ public class PropertiesNode {
         this.map.clear();
         this.v2kmap.clear();
         for (int i = 0; i < itemName.length; i++) {
-            this.map.put(itemName[i], itemObjs[i]);
+            this.map.put(itemName[i].toLowerCase(), itemObjs[i]);
             if (this.v2kmap.containsKey(itemObjs[i]) == false) {
                 this.v2kmap.put(itemObjs[i], itemName[i].toLowerCase());
             }

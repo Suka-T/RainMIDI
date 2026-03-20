@@ -170,7 +170,7 @@ public class SystemProperties {
     }
 
     private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE };
-    private static String[] langItemS = { "auto", "english", "japanese" };
+    private static String[] langItemS = { "Auto", "English", "Japanese" };
     
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
