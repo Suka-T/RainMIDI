@@ -5,6 +5,8 @@
 
 ![Capture](images/capture1.png)
 
+[ユーザーマニュアル](https://suka-t.github.io/RainMIDI/)
+
 ## 📜 Copyright
 Copyright (c) 2025, Suka  
 All rights reserved.
