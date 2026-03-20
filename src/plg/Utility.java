@@ -231,15 +231,15 @@ public class Utility {
         return OS.contains("nux") || OS.contains("nix");
     }
     
-    private static boolean gpus_cache_av = false;
-    private static List<String> gpus_cache = new ArrayList<>();
+    private static List<String> gpus_cache = null;
     
     // GPU一覧取得
     public static List<String> getGpuList() {
-        if (gpus_cache_av == true) {
+        
+        if (gpus_cache != null) {
             return gpus_cache;
         }
-        gpus_cache_av = true;
+        gpus_cache = new ArrayList<>();
         
         if (!isWindows()) {
             // Windows以外非対応 
