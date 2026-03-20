@@ -1,6 +1,7 @@
 package plg;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -107,17 +108,22 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         }
     }
     
+    public void writeSystemProp() throws FileNotFoundException, IOException {
+        Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        Path fullPath = folder.resolve(PROP_FILE_NAME);
+        File propFile = new File(fullPath.toString());
+        
+        SystemProperties.getInstance().write(propFile);
+    }
+    
     public void startRendererWindow() {
         try {
-            Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
-            Path fullPath = folder.resolve(PROP_FILE_NAME);
-            File propFile = new File(fullPath.toString());
             
             SystemProperties.getInstance().initialize();
             
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
                 // SystemPropertiesの保存 
-                SystemProperties.getInstance().write(propFile);
+                writeSystemProp();
                 
                 if (JMPCoreAccessor.getSoundManager().getMidiUnit().isValidSequence()) {
                     JMPCoreAccessor.getSoundManager().initPosition();

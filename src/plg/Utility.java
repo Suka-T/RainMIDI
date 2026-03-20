@@ -5,7 +5,11 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.VolatileImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utility {
 
@@ -225,5 +229,70 @@ public class Utility {
 
     public static boolean isLinux() {
         return OS.contains("nux") || OS.contains("nix");
+    }
+    
+    private static boolean gpus_cache_av = false;
+    private static List<String> gpus_cache = new ArrayList<>();
+    
+    // GPU一覧取得
+    public static List<String> getGpuList() {
+        if (gpus_cache_av == true) {
+            return gpus_cache;
+        }
+        gpus_cache_av = true;
+        
+        if (!isWindows()) {
+            // Windows以外非対応 
+            return gpus_cache;
+        }
+
+        try {
+            Process process = new ProcessBuilder(
+                    "powershell",
+                    "-Command",
+                    "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name"
+            ).start();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream())
+            );
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    gpus_cache.add(line);
+                }
+            }
+
+            process.waitFor();
+
+        } catch (Exception e) {
+            gpus_cache.clear();
+            e.printStackTrace();
+        }
+
+        return gpus_cache;
+    }
+    
+    // 内蔵GPUか判定
+    public static boolean isIntegratedGPU(String gpuName) {
+        if (gpuName == null) return false;
+
+        gpuName = gpuName.toLowerCase();
+
+        return gpuName.contains("intel")
+            || gpuName.contains("uhd")
+            || gpuName.contains("iris");
+    }
+
+    // 内蔵GPUのみか 
+    public static boolean hasIntegratedGPUOnry(List<String> gpus) {
+        for (String gpu : gpus) {
+            if (!isIntegratedGPU(gpu)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

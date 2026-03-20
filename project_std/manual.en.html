@@ -89,13 +89,9 @@
 <section id="overview">
     <h2>Overview</h2>
     <p>
-        This software is a free MIDI file player.<br>
-        It is designed to smoothly play very heavy MIDI files (commonly called "Black MIDI").<br>
+        RainMIDI is a free software for playing MIDI files and displaying them in a piano-roll style.<br>
+        It is designed to smoothly play heavy MIDI files (commonly called "black MIDI").<br>
     </p>
-
-    <div class="box">
-        💡 Key Features: Lightweight and High Performance!
-    </div>
 </section>
 
 <section id="notes">
@@ -111,24 +107,48 @@
     </ol>
 </section>
 
+<section id="environment">
+    <h2>System Requirements</h2>
+    <p>
+        The following specifications are recommended for comfortable use:
+    </p>
+    <ul>
+        <li>OS: Windows 11</li>
+        <li>CPU: Intel 10th Gen Core or higher</li>
+        <li>RAM: 16GB or more</li>
+        <li>GPU: GeForce GTX 1060 or higher</li>
+    </ul>
+    <p>
+        Even if your PC does not meet these requirements, adjusting the settings may improve performance.<br>
+        See the FAQ for details.<br>
+    </p>
+
+    <p>
+        For Mac or Linux, a separate JRE installation is required.<br>
+        ※ Windows version includes JRE, so no installation is needed.<br>
+    </p>
+</section>
+
 <section id="install">
     <h2>Launch & Uninstall</h2>
     <p>
         Run <code>RainMIDI.exe</code> to start the application.<br>
-        To uninstall, simply delete the folder containing the executable.<br>
+        To uninstall, simply delete the entire folder containing the executable.<br>
+        ※ No need to use "Add or Remove Programs".<br>
     </p>
 </section>
 
 <section id="usage">
     <h2>Usage</h2>
     <p>
-        RainMIDI requires no special configuration.<br>
-        Just follow the steps below to play a MIDI file:
+        You can play MIDI files with the following simple steps.<br>
+        No initial setup is required.<br>
+        ※ If there is no sound, refer to the FAQ.
     </p>
 
-    <h3>Basic Steps</h3>
+    <h3>Basic Operation</h3>
     <ul>
-        <li>Run <code>RainMIDI.exe</code></li>
+        <li>Launch <code>RainMIDI.exe</code></li>
         <li>Click the "Launch" button</li>
         <li>Drag and drop a MIDI file into the window</li>
     </ul>
@@ -137,11 +157,11 @@
 <section id="settings">
     <h2>Settings</h2>
 
-    <p>Customize audio and rendering behavior.</p>
+    <p>Customize audio, rendering, and appearance settings.</p>
 
     <table class="settings-table">
         <tr>
-            <th>Option</th>
+            <th>Item</th>
             <th>Description</th>
             <th>Default</th>
             <th>Range / Notes</th>
@@ -149,14 +169,14 @@
 
         <tr>
             <td>MIDI Receiver</td>
-            <td>Select the MIDI output device. "Auto" selects the best available device.</td>
+            <td>Select the MIDI device for audio output.<br>Auto selects the best available device.</td>
             <td>Auto</td>
             <td>Available MIDI devices</td>
         </tr>
 
         <tr>
             <td>Ignore audio in between two velocity</td>
-            <td>Skips low-velocity notes. Higher values improve performance.</td>
+            <td>Ignores small-volume notes.<br>Higher values improve performance.</td>
             <td>1–20</td>
             <td>1–127</td>
         </tr>
@@ -169,29 +189,15 @@
         </tr>
 
         <tr>
-            <td>Design Default</td>
-            <td>Set default visual design.</td>
-            <td></td>
-            <td></td>
-        </tr>
-
-        <tr>
-            <td>Load Design</td>
-            <td>Load custom design.</td>
-            <td></td>
-            <td></td>
-        </tr>
-
-        <tr>
             <td>No use VRAM</td>
-            <td>Disable VRAM usage for rendering. Enable if the screen stutters.</td>
+            <td>Disable VRAM usage.<br>Enable if the screen stutters.</td>
             <td>OFF</td>
             <td>ON / OFF</td>
         </tr>
 
         <tr>
             <td>Invalidate Effect</td>
-            <td>Disable visual effects for better performance.</td>
+            <td>Disable visual effects.<br>Improves performance.</td>
             <td>OFF</td>
             <td>ON / OFF</td>
         </tr>
@@ -206,9 +212,9 @@
         <tr>
             <td>View Mode</td>
             <td>
-                Select display mode.<br>
-                Rain Fall: Notes fall from top to bottom.<br>
-                Size Flow: Notes move left to right.
+                Display mode.<br>
+                Rain Fall: notes fall vertically.<br>
+                Size Flow: notes flow horizontally.
             </td>
             <td>Rain Fall</td>
             <td>Rain Fall / Size Flow</td>
@@ -216,21 +222,21 @@
 
         <tr>
             <td>Use RAM</td>
-            <td>Set memory usage level.</td>
+            <td>Set RAM usage level.</td>
             <td>Middle</td>
             <td>Low / Middle / High / Max</td>
         </tr>
 
         <tr>
             <td>Notes Speed</td>
-            <td>Adjust note movement speed.</td>
+            <td>Adjust note speed.</td>
             <td>Normal</td>
             <td>Slow / Normal / Fast / Very Fast</td>
         </tr>
 
         <tr>
             <td>Notes Layer</td>
-            <td>Set note rendering order.</td>
+            <td>Set drawing order of tracks.</td>
             <td>Track1 is Back</td>
             <td>Track1 is Back / Track1 is Top</td>
         </tr>
@@ -244,14 +250,14 @@
 
         <tr>
             <td>Invisible Ghost Notes</td>
-            <td>Hide ghost notes (non-played visual notes).</td>
+            <td>Hide ghost notes (non-played notes).</td>
             <td>OFF</td>
             <td>ON / OFF</td>
         </tr>
 
         <tr>
             <td>Initialize Settings</td>
-            <td>Reset all settings to default.</td>
+            <td>Reset all settings to their defaults.</td>
             <td></td>
             <td></td>
         </tr>
@@ -261,34 +267,87 @@
 <section id="faq">
     <h2>FAQ</h2>
 
-    <p><strong>Q. No sound or strange sound.</strong></p>
+    <p><strong>Q. No sound.</strong></p>
     <p>
-        Check the "MIDI Receiver" setting.<br>
-        Default devices include "Gervill" or "Microsoft GS Wavetable SW Synth".<br>
-        If not available, install a MIDI device.
+        Check "MIDI Receiver".<br>
+        Select "Gervil" or "Microsoft GS Wavetable SW Synth".
     </p>
 
-    <p><strong>Q. The app is laggy.</strong></p>
+    <p><strong>Q. Audio stutters.</strong></p>
     <p>
-        Turn ON "No use VRAM".<br>
-        If still slow, set "Use RAM" to Low.<br>
-        If still slow, enable "Invalidate Effect".<br>
-        Otherwise, your PC may not meet requirements.
+        Built-in synths may struggle with heavy MIDI files.<br>
+        Use external synths like:
+    </p>
+    <ul>
+        <li>OmniMIDI</li>
+        <li>VirtualMIDISynth</li>
+    </ul>
+
+    <p><strong>Q. Screen is laggy.</strong></p>
+    <p>
+        Enable "No use VRAM".<br>
+        Then try lowering RAM or disabling effects.
     </p>
 
-    <p><strong>Q. App crashes during playback.</strong></p>
+    <p><strong>Q. The app crashes or throws an error during playback.</strong></p>
     <p>
-        It may have exceeded available RAM.<br>
-        Try launching "RainMIDI-Ram8G.exe" or "RainMIDI-Ram16G.exe".
+        It may have exceeded the maximum RAM available to Java.<br>
+        If your PC has sufficient memory, close the application and try launching 
+        "RainMIDI-Ram8G.exe" or "RainMIDI-Ram16G.exe" instead.<br>
     </p>
 </section>
 
-<section id="links">
-    <h2>Links</h2>
+<section id="jdk">
+    <h2>About Zulu JDK/JRE</h2>
+    <p>
+        This application includes Zulu OpenJDK provided by Azul Systems, Inc.<br>
+        Zulu OpenJDK is licensed under the GNU General Public License version 2 (GPLv2) with the Classpath Exception.
+    </p>
     <ul>
-      <li><a href="https://github.com/Suka-T/RainMIDI">GitHub</a></li>
-      <li><a href="https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd">YouTube</a></li>
-      <li><a href="https://x.com/Suka_XxO_OxX">X (Twitter)</a></li>
+      <li>
+        OpenJDK Project: <a href="https://openjdk.java.net/">https://openjdk.java.net/</a>
+      </li>
+      <li>
+        GPLv2 + Classpath Exception: <a href="https://openjdk.java.net/legal/gplv2+ce.html">https://openjdk.java.net/legal/gplv2+ce.html</a>
+      </li>
+      <li>
+        Azul Systems: <a href="https://www.azul.com/">https://www.azul.com/</a>
+      </li>
+    </ul>
+    <p>
+        The source code for Zulu JDK/JRE can be obtained by requesting it from Azul within three years of receipt (for a reasonable cost of distribution).<br>
+        For more details, please contact: azul_openjdk@azul.com<br>
+        JDK/JRE version used: Zulu 25.0.2+10
+    </p>
+</section>
+
+<section id="ffmpeg">
+    <h2>About FFmpeg and FFprobe</h2>
+    <p>
+        This application uses FFmpeg and FFprobe.<br>
+        FFmpeg is licensed under the GNU Lesser General Public License (LGPL) version 2.1 or later.
+    </p>
+    <ul>
+      <li>
+        FFmpeg Project: <a href="https://ffmpeg.org/">https://ffmpeg.org/</a>
+      </li>
+      <li>
+        FFmpeg Source Code: <a href="https://ffmpeg.org/download.html">https://ffmpeg.org/download.html</a>
+      </li>
+    </ul>
+</section>
+
+<section id="links">
+    <h2>Contact</h2>
+    <p>
+        If you have any questions or requests, please feel free to contact us using the information below.<br>
+        Bug reports are also welcome!
+    </p>
+    <ul>
+        <li>Email: suka.dev6626@gmail.com</li>
+        <li><a href="https://github.com/Suka-T/RainMIDI">GitHub</a></li>
+        <li><a href="https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd">Youtube</a></li>
+        <li><a href="https://x.com/Suka_XxO_OxX">X(Twitter)</a></li>
     </ul>
 </section>
 

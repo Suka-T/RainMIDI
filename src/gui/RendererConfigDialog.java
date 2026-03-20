@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -287,6 +288,18 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                commit();
+                
+                try {
+                    targetPlg.writeSystemProp();
+                }
+                catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                
                 setVisible(false);
                 if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
                     AbstractRenderPlugin.PluginInstance.exitStdPlg();

@@ -299,6 +299,19 @@ public class SystemProperties {
         for (PropertiesNode node : getNodes()) {
             node.reset();
         }
+        
+        // GPUなしはVRAMを使用しない 
+        boolean hasExtGPU = false;
+        List<String> gpus = Utility.getGpuList();
+        for (String s : gpus) {
+            if (Utility.isIntegratedGPU(s) == false) {
+                hasExtGPU = true;
+                break;
+            }
+        }
+        if (hasExtGPU == false) {
+            setData(SYSP_RENDERER_USE_GPU, "false");
+        }
     }
     
     private static MonitorPainter lightAnalyMonitor = new AnalyzeMonitorPainter();
@@ -341,6 +354,15 @@ public class SystemProperties {
         String str = props.getProperty(key);
         PropertiesNode node = getPropNode(key);
         node.setObject(str);
+    }
+    
+    public void setData(String key, String param) {
+        for (PropertiesNode node : getNodes()) {
+            if (node.getKey().equalsIgnoreCase(key) == true) {
+                node.setObject(param);
+                break;
+            }
+        }
     }
 
     public Object getData(String key) {
