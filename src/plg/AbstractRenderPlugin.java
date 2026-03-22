@@ -1,5 +1,6 @@
 package plg;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JLabel;
+import javax.swing.JWindow;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import gui.RainFallRendererWindow;
@@ -38,6 +42,8 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     private boolean exitFlag = false;
     public List<RendererWindow> winArray = null;
     private RendererConfigDialog launchWindow = null;
+    
+    private JWindow splash = null;
     
     public void exitStdPlg() {
         SystemProperties.getInstance().exit();
@@ -158,6 +164,18 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public void initialize() {
+        if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+            splash = new JWindow();
+            splash.setSize(300, 200);
+    
+            JLabel label = new JLabel("Loading...", SwingConstants.CENTER);
+            splash.add(label);
+            label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 28));
+    
+            splash.setLocationRelativeTo(null);
+            splash.setVisible(true);
+        }
+        
         createExtensions();
 
         Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
@@ -183,6 +201,10 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         }
         catch (IOException e1) {
             e1.printStackTrace();
+        }
+        
+        if (splash != null) {
+            splash.setVisible(false);
         }
         
         if (SystemProperties.getInstance().getPreloadFiles().isEmpty() == true) {
