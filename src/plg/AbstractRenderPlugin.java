@@ -62,12 +62,14 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         if (SyspViewMode.RAIN_FALL == SystemProperties.getInstance().getViewMode()) {
             win = new RainFallRendererWindow(
                     SystemProperties.getInstance().getWindowWidth(), 
-                    SystemProperties.getInstance().getWindowHeight());
+                    SystemProperties.getInstance().getWindowHeight(),
+                    SystemProperties.getInstance().isWindowMaximized());
         }
         else if (SyspViewMode.SIDE_FLOW == SystemProperties.getInstance().getViewMode()) {
             win = new SideFlowRendererWindow(
                     SystemProperties.getInstance().getWindowWidth(), 
-                    SystemProperties.getInstance().getWindowHeight());
+                    SystemProperties.getInstance().getWindowHeight(),
+                    SystemProperties.getInstance().isWindowMaximized());
         }
         return win;
     }

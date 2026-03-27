@@ -187,9 +187,9 @@ public class SystemProperties {
     private static Object[] NotesCountItemO = { -1 };
     private static String[] NotesCountItemS = { "auto" };
 
-    private static Object[] WinSizeItemO = { /* "2560*1440", "1920*1080", */"1280*720", "854*480", "640*360" };
-    private static Object[] WinSizeItemD = { /* "2560*1408", "1920*1024", */"1280*768", "896*512", "640*384" };
-    private static String[] WinSizeItemS = { /* "1440p", "1080p", */"720p", "480p", "360p", };
+    private static Object[] WinSizeItemO = { "Maximized",/* "2560*1440", "1920*1080", */"1280*720", "854*480", "640*360" };
+    private static Object[] WinSizeItemD = { "Maximized",/* "2560*1408", "1920*1024", */"1280*768", "896*512", "640*384" };
+    private static String[] WinSizeItemS = { "Maximized",/* "1440p", "1080p", */"720p", "480p", "360p", };
     
     private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE, SyspWinEffect.TOP_VIGNETTE };
     private static String[] winEffeItemS = { "none", "circle_vignette", "top_vignette" };
@@ -220,6 +220,7 @@ public class SystemProperties {
 
     private double dimOffset = 1.0;
 
+    private boolean windowMaximized = false;
     private int windowWidth = 1280;
     private int windowHeight = 720;
 
@@ -417,14 +418,23 @@ public class SystemProperties {
 
         String sWinSize = (String) getData(SYSP_RENDERER_WINSIZE);
         if (sWinSize != null && sWinSize.isBlank() == false) {
-            try {
-                String[] parts = sWinSize.split("[x×*,]");
-                windowWidth = Integer.parseInt(parts[0].trim()); // 幅
-                windowHeight = Integer.parseInt(parts[1].trim()); // 高さ
-            }
-            catch (Exception e) {
+            if (sWinSize.equalsIgnoreCase("Maximized")) {
+                windowMaximized = true;
                 windowWidth = 1280; // 幅
-                windowHeight = 720; // 高さ
+                windowHeight = 768; // 高さ
+            }
+            else {
+                windowMaximized = false;
+                
+                try {
+                    String[] parts = sWinSize.split("[x×*,]");
+                    windowWidth = Integer.parseInt(parts[0].trim()); // 幅
+                    windowHeight = Integer.parseInt(parts[1].trim()); // 高さ
+                }
+                catch (Exception e) {
+                    windowWidth = 1280; // 幅
+                    windowHeight = 720; // 高さ
+                }
             }
         }
 
@@ -651,6 +661,10 @@ public class SystemProperties {
 
     public int getWindowHeight() {
         return windowHeight;
+    }
+    
+    public boolean isWindowMaximized() {
+        return windowMaximized;
     }
 
     public int getDimWidth() {

@@ -13,8 +13,8 @@ import plg.SystemProperties;
 
 public class RainFallRendererWindow extends RendererWindow {
 
-    public RainFallRendererWindow(int winW, int winH) {
-        super(winW, winH);
+    public RainFallRendererWindow(int winW, int winH, boolean maximized) {
+        super(winW, winH, maximized);
     }
 
     @Override

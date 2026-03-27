@@ -175,7 +175,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     /**
      * Create the frame.
      */
-    public RendererWindow(int winW, int winH) {
+    public RendererWindow(int winW, int winH, boolean maximized) {
         this.setTitle("Rain MIDI");
         List<Image> icons = List.of(
                 new ImageIcon(RendererWindow.class.getResource("/icon/app16.png")).getImage(),
@@ -197,6 +197,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         setLocation(10, 10);
         getContentPane().setPreferredSize(new Dimension(winW, winH));
         pack();
+        
+        if (maximized) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
 
         setLayout(new BorderLayout(0, 0));
 

@@ -4,8 +4,8 @@ import java.awt.Graphics;
 
 public class SideFlowRendererWindow extends RendererWindow {
 
-    public SideFlowRendererWindow(int winW, int winH) {
-        super(winW, winH);
+    public SideFlowRendererWindow(int winW, int winH, boolean maximized) {
+        super(winW, winH, maximized);
     }
 
     @Override
