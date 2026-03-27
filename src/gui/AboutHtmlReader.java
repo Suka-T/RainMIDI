@@ -18,21 +18,27 @@ import javax.swing.text.html.HTMLEditorKit;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import plg.AbstractRenderPlugin;
+import plg.I18n;
 
 public class AboutHtmlReader {
     
     private File htmlFileEn = null;
     private File htmlFileja = null;
+    private boolean existsNewVersion = false;
 
-    public AboutHtmlReader() {
+    public AboutHtmlReader(boolean existsNewVersion) {
         Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_CURRENT_DIR, AbstractRenderPlugin.PluginInstance));
         //Path fullPath = folder.resolve("about").resolve("index.html");
-        Path fullPath = folder.resolve("manual.en.html");
+        //Path fullPath = folder.resolve("manual.en.html");
+        Path fullPath = folder.resolve("about.html");
         htmlFileEn = new File(fullPath.toString());
         
         //fullPath = folder.resolve("about").resolve("index.ja.html");
-        fullPath = folder.resolve("manual.html");
-        htmlFileja = new File(fullPath.toString());
+        //fullPath = folder.resolve("manual.html");
+        //htmlFileja = new File(fullPath.toString());
+        htmlFileja = htmlFileEn;
+        
+        this.existsNewVersion = existsNewVersion;
     }
     
     public URL getURL(String langCode) throws MalformedURLException {
@@ -53,6 +59,10 @@ public class AboutHtmlReader {
         StringWriter writer = new StringWriter();
         kit.write(writer, doc, 0, doc.getLength());
         String html = writer.toString();
+        html = html.replace("@@VERSION@@", "v" + AbstractRenderPlugin.APP_VERSION);
+        html = html.replace("@@NEWVER@@", 
+                this.existsNewVersion ? "<div class=\"newver\"><a class=\"newverlink\" href=\"NewVer\" target=\"_blank\">" + I18n.t("msg.newver") + "</a></div>" : ""
+                    );
         return html;
     }
 }

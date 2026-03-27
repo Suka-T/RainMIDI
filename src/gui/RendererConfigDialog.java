@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -75,6 +74,7 @@ import plg.PropertiesNode.PropertiesNodeType;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspLanguage;
 import plg.Utility;
+import plg.VersionChecker;
 
 public class RendererConfigDialog extends JFrame implements ActionListener {
 
@@ -125,6 +125,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JTabbedPane tabbedPane;
 
     private AbstractRenderPlugin targetPlg;
+    
+    private boolean existsNewVersion;
 
     List<String> synthItemKeys = new ArrayList<String>();
     List<String> synthItemLabels = new ArrayList<String>();
@@ -852,18 +854,20 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 public void hyperlinkUpdate(HyperlinkEvent e) {
                     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                         String desc = e.getDescription();
-                        if ("ja".equals(desc) || "en".equals(desc)) {
-                            updateAbout(desc);
-                        }
-                        else {
-                            // それ以外のリンクはブラウザで開く
+                        if ("NewVer".equals(desc)) {
                             try {
-                                Desktop.getDesktop().browse(new URI(desc));
+                                Desktop.getDesktop().browse(new URI("https://github.com/Suka-T/RainMIDI/releases"));
                             }
-                            catch (IOException e1) {
+                            catch (Exception e1) {
                                 e1.printStackTrace();
                             }
-                            catch (URISyntaxException e1) {
+                        }
+                        else {
+                            try {
+                                File df = new File(desc);
+                                Desktop.getDesktop().browse(df.toURI());
+                            }
+                            catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         }
@@ -920,7 +924,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         // HTMLコンテンツの作成
         if (this.targetPlg != null) {
             try {
-                AboutHtmlReader htmlReader = new AboutHtmlReader();
+                AboutHtmlReader htmlReader = new AboutHtmlReader(existsNewVersion);
                 editorPane.setText(htmlReader.getContent(langCode));
                 editorPane.setCaretPosition(0); // 上にスクロール
             }
@@ -1282,10 +1286,12 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         tabIndex = tabbedPane.indexOfComponent(layoutPanel);
         if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.expert2"));
         tabIndex = tabbedPane.indexOfComponent(aboutPanel);
-        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.about"));
+        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.about") + (existsNewVersion ? " ( ! )" : ""));
     }
     
     public void initializeView() {
+        
+        existsNewVersion = VersionChecker.existsLatestVersion();
         
         initialized.set(false);
         isCommitClose = false;
