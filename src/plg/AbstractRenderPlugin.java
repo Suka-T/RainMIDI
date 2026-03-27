@@ -1,5 +1,6 @@
 package plg;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -169,8 +170,12 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             splash.setSize(300, 200);
     
             JLabel label = new JLabel("Loading...", SwingConstants.CENTER);
+            // 背景色設定
+            label.setOpaque(true);
+            label.setBackground(new Color(49, 74, 134));
+            label.setForeground(new Color(112, 185, 255));
             splash.add(label);
-            label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 28));
+            label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 40));
     
             splash.setLocationRelativeTo(null);
             splash.setVisible(true);
