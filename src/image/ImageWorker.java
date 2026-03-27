@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,7 +14,8 @@ import layout.LayoutManager;
 
 public class ImageWorker implements Runnable {
     protected int leftMeasTh = 0;
-    protected volatile BufferedImage offScreenImage;
+    //protected volatile BufferedImage offScreenImage;
+    protected Image offScreenImage;
     protected Graphics2D offScreenGraphic;
     private boolean isExec = false;
     private int width = 0;
@@ -22,13 +24,16 @@ public class ImageWorker implements Runnable {
     protected RendererWindow window = null;
     private boolean isForcedEnd = false;
     
+    protected boolean isAvailableGpu = false;
+    
     private long debugRenderTime = 0;
 
-    public ImageWorker(RendererWindow window, int width, int height) {
+    public ImageWorker(RendererWindow window, int width, int height, boolean isAvailableGpu) {
         super();
         this.window = window;
         this.width = width;
         this.height = height;
+        this.isAvailableGpu = isAvailableGpu;
     }
 
     public void start() {
@@ -107,18 +112,21 @@ public class ImageWorker implements Runnable {
                 return;
             }
 
-            if (offScreenImage == null) {
-                // ノーツ画像
-                offScreenImage = LayoutManager.getInstance().createBufferdImage(getImageWidth(), getImageHeight());
-                offScreenGraphic = offScreenImage.createGraphics();
+            if (isAvailableGpu) {
+                if (offScreenImage == null) {
+                    offScreenImage = LayoutManager.getInstance().createDisplayImage(getImageWidth(), getImageHeight());
+                    offScreenGraphic = ((VolatileImage)offScreenImage).createGraphics();
+                }
+            }
+            else {
+                if (offScreenImage == null) {
+                    offScreenImage = LayoutManager.getInstance().createBufferdImage(getImageWidth(), getImageHeight());
+                    offScreenGraphic = ((BufferedImage)offScreenImage).createGraphics();
+                }
             }
 
-            Graphics2D g2d = offScreenImage.createGraphics();
-            g2d.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
-            g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
-            // g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
-            // g2d.fillRect(0, 0, getImageWidth(), getImageHeight());
-            g2d.dispose();
+            offScreenGraphic.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
+            offScreenGraphic.fillRect(0, 0, getImageWidth(), getImageHeight());
 
             // オフスクリーン描画
             paintImage(offScreenGraphic);

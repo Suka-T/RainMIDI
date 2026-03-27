@@ -10,10 +10,10 @@ public class ImagerWorkerManager {
     private volatile ImageWorker[] workers = null;
     private int currentWorkerIndex = 0;
 
-    public ImagerWorkerManager(RendererWindow window, int width, int height) {
+    public ImagerWorkerManager(RendererWindow window, int width, int height, boolean isAvailableGpu) {
         workers = new NotesImageWorker[SystemProperties.getInstance().getWorkerNum()];
         for (int i = 0; i < workers.length; i++) {
-            workers[i] = new NotesImageWorker(window, width, height);
+            workers[i] = new NotesImageWorker(window, width, height, isAvailableGpu);
         }
     }
 

@@ -490,7 +490,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     public void init() {
-        imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight());
+        imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight(), isAvailableGpu);
     }
 
     public void loadFile() {
@@ -1287,7 +1287,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             flipPage();
         }
 
-        BufferedImage notesImg = (BufferedImage) imageWorkerMgr.getNotesImage();
+        Image notesImg = imageWorkerMgr.getNotesImage();
         boolean validNotesImg = false;
         if (JMPCoreAccessor.getSystemManager().getStatus(ISystemManager.SYSTEM_STATUS_ID_FILE_LOADING) == false && isFirstRendering == false
                 && imageWorkerMgr.getNotesImage() != null) {

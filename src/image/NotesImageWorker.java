@@ -46,8 +46,8 @@ public class NotesImageWorker extends ImageWorker {
     private NotesPainter notesPainter = null;
     private NotesPainter.Context nContext = null;
 
-    public NotesImageWorker(RendererWindow window, int width, int height) {
-        super(window, width, height);
+    public NotesImageWorker(RendererWindow window, int width, int height, boolean isAvailableGpu) {
+        super(window, width, height, isAvailableGpu);
 
         noteOnEvents = new NoteOnCache[16][];
         for (int i = 0; i < 16; i++) {
