@@ -79,23 +79,23 @@ import plg.VersionChecker;
 public class RendererConfigDialog extends JFrame implements ActionListener {
 
     private static final String WORKNUM_LOW = "2";
-    private static final String NOTESIMAGENUM_LOW = "30";
-    private static final String USAGE_MIDIRAM_LOW = "2";
+    private static final String NOTESIMAGENUM_LOW = "40";
+    private static final String USAGE_MIDIRAM_LOW = "5";
     private static final String USAGE_MIDI_ANA_LOW = "1";
     private static final String USAGE_MIDI_EXT_LOW = "1";
     private static final String NOTESIMAGE_BITS_LOW = "rgb565";
     private static final String FIXED_FPS_LOW = "30";
 
-    private static final String WORKNUM_MID = "5";
-    private static final String NOTESIMAGENUM_MID = "60";
-    private static final String USAGE_MIDIRAM_MID = "25";
+    private static final String WORKNUM_MID = "3";
+    private static final String NOTESIMAGENUM_MID = "40";
+    private static final String USAGE_MIDIRAM_MID = "10";
     private static final String USAGE_MIDI_ANA_MID = "8";
     private static final String USAGE_MIDI_EXT_MID = "6";
     private static final String NOTESIMAGE_BITS_MID = "rgb888";
     private static final String FIXED_FPS_MID = "60";
 
-    private static final String WORKNUM_HIG = "8";
-    private static final String NOTESIMAGENUM_HIG = "120";
+    private static final String WORKNUM_HIG = "5";
+    private static final String NOTESIMAGENUM_HIG = "60";
     private static final String USAGE_MIDIRAM_HIG = "25";
     private static final String USAGE_MIDI_ANA_HIG = "8";
     private static final String USAGE_MIDI_EXT_HIG = "6";
@@ -103,8 +103,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private static final String FIXED_FPS_HIG = "60";
     
     private static final String WORKNUM_MAX = "8";
-    private static final String NOTESIMAGENUM_MAX = "300";
-    private static final String USAGE_MIDIRAM_MAX = "100";
+    private static final String NOTESIMAGENUM_MAX = "120";
+    private static final String USAGE_MIDIRAM_MAX = "50";
     private static final String USAGE_MIDI_ANA_MAX = "24";
     private static final String USAGE_MIDI_EXT_MAX = "24";
     private static final String NOTESIMAGE_BITS_MAX = "rgb888";
