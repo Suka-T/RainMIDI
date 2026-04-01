@@ -2,9 +2,7 @@ package gui;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -12,8 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.html.HTMLEditorKit;
 
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
@@ -49,18 +45,13 @@ public class AboutHtmlReader {
     }
     
     public String getContent(String langCode) throws MalformedURLException, IOException, BadLocationException {
-        HTMLEditorKit kit = new HTMLEditorKit();
-        Document doc = kit.createDefaultDocument();
-
-        try (Reader reader = new InputStreamReader(getURL(langCode).openStream(), StandardCharsets.UTF_8)) {
-            kit.read(reader, doc, 0);
+        String html = "";
+        try (InputStream is = getURL(langCode).openStream()) {
+            html = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         }
-
-        StringWriter writer = new StringWriter();
-        kit.write(writer, doc, 0, doc.getLength());
-        String html = writer.toString();
-        html = html.replace("@@VERSION@@", "v" + AbstractRenderPlugin.APP_VERSION);
-        html = html.replace("@@NEWVER@@", 
+        
+        html = html.replace("<h1>RainMIDI</h1>", "<h1>RainMIDI v" + AbstractRenderPlugin.APP_VERSION + "</h1>");
+        html = html.replace("<div class=\"newver\"></div>", 
                 this.existsNewVersion ? "<div class=\"newver\"><a class=\"newverlink\" href=\"NewVer\" target=\"_blank\">" + I18n.t("msg.newver") + "</a></div>" : ""
                     );
         return html;
