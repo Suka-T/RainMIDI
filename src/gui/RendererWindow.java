@@ -1405,8 +1405,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 fbpm = midiUnit.getMedianTempoInBPM();
                 break;
             case FIRST:
-            default:
                 fbpm = midiUnit.getFirstTempoInBPM();
+                break;
+            case DOMINANT:
+            default:
+                fbpm = midiUnit.getDominantTempoInBPM();
                 break;
             
         }

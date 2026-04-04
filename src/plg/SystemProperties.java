@@ -166,7 +166,7 @@ public class SystemProperties {
     }
     
     public static enum SyspNotesSpeedBase {
-        FIRST, AVERAGE, MEDIAN;
+        FIRST, AVERAGE, MEDIAN, DOMINANT;
     }
 
     private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE };
@@ -209,8 +209,8 @@ public class SystemProperties {
     private static Object[] spectrumPosItemO = { SyspSpectrumPosition.TOP, SyspSpectrumPosition.CENTER, SyspSpectrumPosition.BOTTOM };
     private static String[] spectrumPosItemS = { "top", "center", "bottom" };
     
-    private static Object[] notesSpeedBaseItemO = { SyspNotesSpeedBase.FIRST, SyspNotesSpeedBase.AVERAGE, SyspNotesSpeedBase.MEDIAN };
-    private static String[] notesSpeedBaseItemS = { "first", "average", "median" };
+    private static Object[] notesSpeedBaseItemO = { SyspNotesSpeedBase.FIRST, SyspNotesSpeedBase.AVERAGE, SyspNotesSpeedBase.MEDIAN, SyspNotesSpeedBase.DOMINANT };
+    private static String[] notesSpeedBaseItemS = { "first", "average", "median", "dominant" };
 
     private List<PropertiesNode> nodes;
     private int keyWidth = 50;
@@ -262,7 +262,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.DOUBLE, "1.0", "0.1", "5.0"));
-        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEEDBASE, PropertiesNodeType.ITEM, SyspNotesSpeedBase.FIRST, notesSpeedBaseItemS, notesSpeedBaseItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEEDBASE, PropertiesNodeType.ITEM, SyspNotesSpeedBase.DOMINANT, notesSpeedBaseItemS, notesSpeedBaseItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "60", "3", "1000", NotesCountItemS, NotesCountItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
