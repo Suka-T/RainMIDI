@@ -503,7 +503,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             return;
         }
         
-        SystemProperties.getInstance().clearRingBuffer();
+        SystemProperties.getInstance().getGraphMonScheduler().clearRingBuffer();
 
         debugRenderTime = 0;
         

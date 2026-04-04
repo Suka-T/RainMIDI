@@ -12,7 +12,7 @@ import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
-import plg.LongRingBuffer;
+import plg.GraphMonitorScheduler;
 import plg.SystemProperties;
 import plg.Utility;
 
@@ -41,9 +41,7 @@ public class GraphMonitorPainter extends MonitorPainter {
     public void paintMonitor(Graphics g, MonitorData info) {
         INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        
-        LongRingBuffer npsBuffer = SystemProperties.getInstance().getNpsBuffer();
-        LongRingBuffer polyBuffer = SystemProperties.getInstance().getPolyBuffer();
+        GraphMonitorScheduler graphMonSche = SystemProperties.getInstance().getGraphMonScheduler();
         
         int sx = 10;
         int sy = FONT_SIZE + 2;
@@ -56,10 +54,6 @@ public class GraphMonitorPainter extends MonitorPainter {
         int gwRes = 0;
         long[] data;
         long dataMax = 0;
-        npsBuffer.add((long)notesMonitor.getNps());
-        polyBuffer.add((long)notesMonitor.getPolyphony());
-        npsBuffer.updateSnapshot();
-        polyBuffer.updateSnapshot();
         
         Graphics2D gGrap = (Graphics2D) g;
         gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -156,7 +150,7 @@ public class GraphMonitorPainter extends MonitorPainter {
         gGrap.setColor(GRAPH_BG_COLOR);
         gGrap.fillRect(grapX, grapY, grapW, grapH);
         gGrap.setStroke(GRAPH_BORDER_STROKE);
-        data = npsBuffer.getSnapshot();
+        data = graphMonSche.getNpsSnapshot();
         dataMax = (long) notesMonitor.getMaxNps();
         if (dataMax < 32) {
             dataMax = 32;
@@ -201,7 +195,7 @@ public class GraphMonitorPainter extends MonitorPainter {
             gGrap.setColor(GRAPH_BG_COLOR);
             gGrap.fillRect(grapX, grapY, grapW, grapH);
             gGrap.setStroke(GRAPH_BORDER_STROKE);
-            data = polyBuffer.getSnapshot();
+            data = graphMonSche.getPolySnapshot();
             dataMax = (long) notesMonitor.getMaxPolyphony();
             if (dataMax < 32) {
                 dataMax = 32;

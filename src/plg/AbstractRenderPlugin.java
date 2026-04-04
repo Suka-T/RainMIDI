@@ -46,6 +46,9 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     
     private JWindow splash = null;
     
+    // 画面録画ツール(未実装) 
+    //private WindowRecorder recorder = null;
+    
     public void exitStdPlg() {
         SystemProperties.getInstance().exit();
         
@@ -306,10 +309,22 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public void startSequencer() {
+/*
+        if (recorder == null) {
+            recorder = new WindowRecorder();
+        }
+        recorder.startRecording();
+*/
     }
 
     @Override
     public void stopSequencer() {
+/*
+        if (recorder != null) {
+            recorder.stopRecording();
+            recorder = null;
+        }
+*/
     }
 
     @Override

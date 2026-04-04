@@ -238,11 +238,10 @@ public class SystemProperties {
     
     private double spectAmp = 0.0;
     
-    private LongRingBuffer npsBuffer = new LongRingBuffer(360);
-    private LongRingBuffer polyBuffer = new LongRingBuffer(360);
-    
     private MonitorPainter monitorPainter;
     private boolean isVisibleRsrcMonitor = false;
+    
+    private GraphMonitorScheduler graphMonScheduler = null;
     
     private SystemProperties() {
         nodes = new ArrayList<>();
@@ -294,6 +293,7 @@ public class SystemProperties {
         }
         
         osInfo = new OsInfoWrapper();
+        graphMonScheduler = new GraphMonitorScheduler();
     }
     
     public void reset() {
@@ -397,7 +397,7 @@ public class SystemProperties {
         PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
         dimNode.setObject("1280*768");
         
-        clearRingBuffer();
+        graphMonScheduler.clearRingBuffer();
         
         String sDimSize = (String) getData(SYSP_RENDERER_DIMENSION);
         if (sDimSize != null && sDimSize.isBlank() == false) {
@@ -569,6 +569,7 @@ public class SystemProperties {
     
     public void exit() {
         osInfo.exit();
+        graphMonScheduler.exit();
     }
 
     public void preloadAudioFiles() {
@@ -734,21 +735,12 @@ public class SystemProperties {
     public SyspNotesSpeedBase getNotesSpeedBase() {
         return (SyspNotesSpeedBase)getPropNode(SYSP_RENDERER_NOTESSPEEDBASE).getData();
     }
-
-    public void clearRingBuffer() {
-        npsBuffer.clear();
-        polyBuffer.clear();
-    }
-    
-    public LongRingBuffer getNpsBuffer() {
-        return npsBuffer;
-    }
-
-    public LongRingBuffer getPolyBuffer() {
-        return polyBuffer;
-    }
     
     public boolean isAvailavleGpu() {
         return isGPUAvailable;
+    }
+    
+    public GraphMonitorScheduler getGraphMonScheduler() {
+        return graphMonScheduler;
     }
 }
