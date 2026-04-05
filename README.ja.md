@@ -7,6 +7,9 @@
 
 [ユーザーマニュアル](https://suka-t.github.io/RainMIDI/)
 
+※静的ライブラリとして下記のプロジェクトを使用しています。<br>
+[JMPPlayer](https://github.com/Suka-T/JmpPlayer_midi)
+
 ## 📜 著作権表示
 Copyright (c) 2025, Suka  
 All rights reserved.

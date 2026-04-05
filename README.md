@@ -7,6 +7,9 @@
 
 [Users' manual](https://suka-t.github.io/RainMIDI/index.en.html)
 
+※The following project is used as a static library.<br>
+[JMPPlayer](https://github.com/Suka-T/JmpPlayer_midi)
+
 ## 📜 Copyright
 Copyright (c) 2025, Suka  
 All rights reserved.
