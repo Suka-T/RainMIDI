@@ -7,9 +7,6 @@
 
 [Users' manual](https://suka-t.github.io/RainMIDI/index.en.html)
 
-※The following project is used as a static library.<br>
-[JMPPlayer](https://github.com/Suka-T/JmpPlayer_midi)
-
 ## 📜 Copyright
 Copyright (c) 2025, Suka  
 All rights reserved.
@@ -30,6 +27,12 @@ and the accompanying documentation.
 caused by the software, including malfunction
 or environment issues.
 
+## 🔗 Reference
+RainMIDI utilizes the following projects:
+
+### [JMPPlayer](https://github.com/Suka-T/JmpPlayer_midi)<br>
+A library that provides core functionality for MIDI and audio playback.
+
 ## ☕ About Zulu JDK/JRE
 This application includes **Zulu OpenJDK** provided by **Azul Systems, Inc.**
 
@@ -48,7 +51,7 @@ For details, contact azul_openjdk@azul.com.
 JDK/JRE version used:
 Zulu 21.42+19 (c2f88d00-0d1c-448f-8f72-27f1326b7e18)
 
-## Links
+## 🔗 Links
 - [YouTube](https://youtube.com/@sukao_o567?si=EvGffBqJNjGzoMVd)
 - [X (Twitter)](https://x.com/Suka_XxO_OxX)
 - [GitHub](https://github.com/Suka-T)
