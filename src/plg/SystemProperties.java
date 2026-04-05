@@ -48,6 +48,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_NOTES_COLOR_BITS = "renderer.notesColorBits";
     public static final String SYSP_RENDERER_WORKNUM = "renderer.workerNum";
     public static final String SYSP_RENDERER_USE_GPU = "renderer.useGpu";
+    public static final String SYSP_RENDERER_USE_VRAM_IMAGE = "renderer.useVramImage";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
     public static final String SYSP_RENDERER_KEY_FOCUS_FUNC = "renderer.keyFocusFunc";
     public static final String SYSP_RENDERER_LAYERORDER = "renderer.layerOrder";
@@ -87,6 +88,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_NOTES_COLOR_BITS, "NotesImage color bit depth");
             put(SYSP_RENDERER_WORKNUM, "Rendering thread count [2 - 8]");
             put(SYSP_RENDERER_USE_GPU, "use GPU");
+            put(SYSP_RENDERER_USE_VRAM_IMAGE, "use VRAM Notes Image");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
             put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
@@ -227,6 +229,7 @@ public class SystemProperties {
     private List<File> preloadFiles = new ArrayList<File>();
     
     private boolean isGPUAvailable = true;
+    private boolean useVramImage = false;
 
     private static SystemProperties instance = new SystemProperties();
     
@@ -258,6 +261,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTES_COLOR_BITS, PropertiesNodeType.ITEM, SyspColorBitsDepth.RGB_888, colorBitsItemS, colorBitsItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WORKNUM, PropertiesNodeType.INT, "3", "2", "64"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_USE_GPU, PropertiesNodeType.BOOLEAN, "true"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_USE_VRAM_IMAGE, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
@@ -501,6 +505,7 @@ public class SystemProperties {
         }
         
         isGPUAvailable = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_GPU);
+        useVramImage = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_VRAM_IMAGE);
         
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
         int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
@@ -742,5 +747,9 @@ public class SystemProperties {
     
     public GraphMonitorScheduler getGraphMonScheduler() {
         return graphMonScheduler;
+    }
+
+    public boolean isUseVramImage() {
+        return useVramImage;
     }
 }

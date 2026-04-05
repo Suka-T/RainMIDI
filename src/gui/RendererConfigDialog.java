@@ -868,8 +868,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                         else {
                             try {
-                                File df = new File(desc);
-                                Desktop.getDesktop().browse(df.toURI());
+                                Desktop.getDesktop().browse(new URI(desc));
                             }
                             catch (Exception e1) {
                                 e1.printStackTrace();

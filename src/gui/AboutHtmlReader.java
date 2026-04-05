@@ -3,6 +3,7 @@ package gui;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +55,28 @@ public class AboutHtmlReader {
         html = html.replace("<div class=\"newver\"></div>", 
                 this.existsNewVersion ? "<div class=\"newver\"><a class=\"newverlink\" href=\"NewVer\" target=\"_blank\">" + I18n.t("msg.newver") + "</a></div>" : ""
                     );
+        
+        if (isOnline()) {
+            html = html.replace("href=\"manual.html\"", "href=\"https://suka-t.github.io/RainMIDI/\"");
+            html = html.replace("href=\"manual.en.html\"", "href=\"https://suka-t.github.io/RainMIDI/index.en.html\"");
+        }
+        else {
+            File df = new File("manual.html");
+            html = html.replace("href=\"manual.html\"", "href=\"" + df.toURI() + "\"");
+            df = new File("manual.en.html");
+            html = html.replace("href=\"manual.en.html\"", "href=\"" + df.toURI() + "\"");
+        }
         return html;
+    }
+    
+    boolean isOnline() {
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("https://suka-t.github.io/RainMIDI/").openConnection();
+            con.setConnectTimeout(2000);
+            con.connect();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

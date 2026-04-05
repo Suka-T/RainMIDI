@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 import gui.RendererWindow;
 import jlib.core.JMPCoreAccessor;
 import layout.LayoutManager;
+import plg.SystemProperties;
+import plg.SystemProperties.SyspKeyFocusFunc;
 
 public class ImageWorker implements Runnable {
     protected int leftMeasTh = 0;
@@ -24,16 +26,16 @@ public class ImageWorker implements Runnable {
     protected RendererWindow window = null;
     private boolean isForcedEnd = false;
     
-    protected boolean isAvailableGpu = false;
+    protected boolean useVramImage = false;
     
     private long debugRenderTime = 0;
 
-    public ImageWorker(RendererWindow window, int width, int height, boolean isAvailableGpu) {
+    public ImageWorker(RendererWindow window, int width, int height, boolean useVramImage) {
         super();
         this.window = window;
         this.width = width;
         this.height = height;
-        this.isAvailableGpu = isAvailableGpu;
+        this.useVramImage = useVramImage;
     }
 
     public void start() {
@@ -111,8 +113,14 @@ public class ImageWorker implements Runnable {
                 isExec = false;
                 return;
             }
+            
+            boolean useVolatileImg = useVramImage;
+            if (SystemProperties.getInstance().getKeyFocusFunc() == SyspKeyFocusFunc.COLOR) {
+                // 色判定はBufferdImageでしか行えない 
+                useVolatileImg = false;
+            }
 
-            if (isAvailableGpu) {
+            if (useVolatileImg) {
                 if (offScreenImage == null) {
                     offScreenImage = LayoutManager.getInstance().createDisplayImage(getImageWidth(), getImageHeight());
                     offScreenGraphic = ((VolatileImage)offScreenImage).createGraphics();

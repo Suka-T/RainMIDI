@@ -125,6 +125,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected SpectrumPainter spectrumPainter = null;
 
     protected boolean isAvailableGpu = true;
+    protected boolean useVramNotesImage = false;
     protected BufferedImage backBuffer = null;
     protected Graphics backBufferGrapics = null;
     protected Graphics backBufferCanvasGrapics = null;
@@ -257,7 +258,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         graphTitleFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
 
         isAvailableGpu = SystemProperties.getInstance().isAvailavleGpu();
-        System.out.println("isAvailavleGpu = " + isAvailableGpu);
+        useVramNotesImage = SystemProperties.getInstance().isUseVramImage();
+        System.out.println("isAvailableGpu=" + isAvailableGpu + ",useVramNotesImage=" + useVramNotesImage);
 
         hitEffeSteps = new AlphaComposite[HIT_EFFECT_STEPS];
         for (int j = 0; j < 16; j++) {
@@ -494,7 +496,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     public void init() {
-        imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight(), isAvailableGpu);
+        imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight(), useVramNotesImage);
     }
 
     public void loadFile() {
@@ -1210,7 +1212,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public int getKeyColor(int midiNo) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         if (SystemProperties.getInstance().getKeyFocusFunc() == SyspKeyFocusFunc.COLOR) {
-            BufferedImage notesImg = (BufferedImage) imageWorkerMgr.getNotesImage();
+            Image notesImg = imageWorkerMgr.getNotesImage();
             if (notesImg == null || JMPCoreAccessor.getSoundManager().isPlay() == false) {
                 return 0;
             }
@@ -1223,8 +1225,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int rgb = -1;
             int bgrgb = LayoutManager.getInstance().getPlayerColor().getBgColor().getRGB();
             int bdrgb = LayoutManager.getInstance().getPlayerColor().getBdColor().getRGB();
-            if ((0 <= effePickX && effePickX < notesImg.getWidth()) && (0 <= effePickY && effePickY < notesImg.getHeight())) {
-                rgb = notesImg.getRGB(effePickX, effePickY);
+            if ((0 <= effePickX && effePickX < notesImg.getWidth(null)) && (0 <= effePickY && effePickY < notesImg.getHeight(null))) {
+                rgb = ((BufferedImage)notesImg).getRGB(effePickX, effePickY);
 
                 for (int i = 0; i < LayoutManager.getInstance().getNotesColorSize(); i++) {
                     Color bc = LayoutManager.getInstance().getNotesColor(i).getBdColor();

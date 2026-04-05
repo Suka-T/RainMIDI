@@ -36,8 +36,6 @@ public abstract class SpectrumPainter {
     }
     
     protected void updateWavePoly(float[] spectWave, float[] noiseBuf, int spectSamples) {
-        //phase += 0.05f;
-        
         final float FIX_AMP = 32f;
 
         int poly = JMPCoreAccessor.getSoundManager().getNotesMonitor().getPolyphony();
@@ -78,7 +76,6 @@ public abstract class SpectrumPainter {
             }
             spectWave[i] = spectWave[i] * 0.6f + v * 0.4f;
         }
-
     }
     
     protected Path2D createNoClosePath(int w, int h, float[] spectWave, int spectSamples) {
