@@ -1,0 +1,28 @@
+# Gradle build output
+/build/
+/bin/
+/out/
+
+# Gradle Wrapper
+/gradle/wrapper/gradle-wrapper.jar
+
+# Eclipse / IntelliJ / VSCode などの IDE ファイル
+/.idea/
+/*.iml
+/.classpath
+/.project
+/.settings/
+/.vscode/
+
+# OS ごとのゴミファイル
+.DS_Store
+Thumbs.db
+
+# Gradle キャッシュ・ログ
+.gradle/
+/build.gradle.kts.lockfile
+/gradle.properties
+/gradle-app.setting
+
+# その他一時ファイル
+*.log
