@@ -148,6 +148,8 @@ public class NotesImageWorker extends ImageWorker {
             int command = statusByte & 0xF0;
             int channel = statusByte & 0x0F;
             if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON) && (data2 > 0)) {
+                if (data1 >= 128) return; // 不正なMidiNoを保護 
+                
                 if (SystemProperties.getInstance().isGhostNotes(data2) == false) {
                     if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
                         noteOnEvents[channel][data1].tick = tick;
@@ -156,6 +158,9 @@ public class NotesImageWorker extends ImageWorker {
             }
             else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)
                     || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
+                
+                if (data1 >= 128) return; // 不正なMidiNoを保護 
+                
                 // Note OFF
                 paintNt(nContext, trk, leftMeasTh, tick, channel, data1, data2);
                 
