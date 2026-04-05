@@ -13,6 +13,8 @@ public class GraphMonitorScheduler {
     
     private LongRingBuffer npsBuffer = null;
     private LongRingBuffer polyBuffer = null;
+    
+    private boolean locked = false;
 
     public GraphMonitorScheduler() {
         npsBuffer = new LongRingBuffer(100);
@@ -26,15 +28,27 @@ public class GraphMonitorScheduler {
     
     private void updateStats() {
         INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
-        npsBuffer.add((long)notesMonitor.getNps());
-        polyBuffer.add((long)notesMonitor.getPolyphony());
-        npsBuffer.updateSnapshot();
-        polyBuffer.updateSnapshot();
+        if (locked == false) {
+            npsBuffer.add((long)notesMonitor.getNps());
+            polyBuffer.add((long)notesMonitor.getPolyphony());
+            npsBuffer.updateSnapshot();
+            polyBuffer.updateSnapshot();
+        }
+    }
+    
+    public void lockCount() {
+        locked = true;
+    }
+    
+    public void releaseCount() {
+        locked = false;
     }
     
     public void clearRingBuffer() {
         npsBuffer.clear();
         polyBuffer.clear();
+        npsBuffer.updateSnapshot();
+        polyBuffer.updateSnapshot();
     }
     
     public long[] getNpsSnapshot() {

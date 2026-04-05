@@ -498,14 +498,17 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public void init() {
         imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight(), useVramNotesImage);
     }
+    
+    public void prepareLoadFile() {
+        SystemProperties.getInstance().getGraphMonScheduler().lockCount();
+        SystemProperties.getInstance().getGraphMonScheduler().clearRingBuffer();
+    }
 
     public void loadFile() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         if (midiUnit.isValidSequence() == false || running == false || isVisible() == false) {
             return;
         }
-        
-        SystemProperties.getInstance().getGraphMonScheduler().clearRingBuffer();
 
         debugRenderTime = 0;
         
@@ -513,7 +516,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         setLeftMeas(0);
         resetPage();
-
+        
+        SystemProperties.getInstance().getGraphMonScheduler().clearRingBuffer();
+        SystemProperties.getInstance().getGraphMonScheduler().releaseCount();
+        
         isFirstRendering = false;
     }
 

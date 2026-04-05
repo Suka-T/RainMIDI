@@ -298,6 +298,14 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     @Override
     protected void pitchBend(int channel, int pbValue, long timeStamp, short senderType) {
     }
+    
+    @Override
+    public void prepareLoadFile(File file) {
+        super.prepareLoadFile(file);
+        for (RendererWindow win : winArray) {
+            win.prepareLoadFile();
+        }
+    }
 
     @Override
     public void loadFile(File file) {
