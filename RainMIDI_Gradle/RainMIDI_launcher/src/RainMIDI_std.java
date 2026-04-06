@@ -1,5 +1,6 @@
 import java.io.File;
 
+import function.Platform;
 import jlib.core.IDataManager;
 import jmp.JMPFlags;
 import jmp.JMPLoader;
@@ -8,7 +9,9 @@ import plg.SystemProperties;
 import std.StandAlonePluginInvoker;
 
 public class RainMIDI_std {
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
+        Platform.setExecutionMainClass(RainMIDI_std.class);
+        
         JMPLoader.UsePluginDirectory = false;
         JMPLoader.UseConfigFile = false;
         JMPLoader.UseHistoryFile = false;
