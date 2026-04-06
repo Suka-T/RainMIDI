@@ -1,4 +1,5 @@
 import java.io.File;
+import java.net.URISyntaxException;
 
 import function.Platform;
 import jlib.core.IDataManager;
@@ -10,7 +11,16 @@ import std.StandAlonePluginInvoker;
 
 public class RainMIDI_std {
     public static void main(String[] args) {
-        Platform.setExecutionMainClass(RainMIDI_std.class);
+        
+        // クラスの場所を取得
+        File path;
+        try {
+            path = new File(RainMIDI_std.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        }
+        catch (URISyntaxException e) {
+            path = new File("");
+        }
+        Platform.setExecutionPath(path.isFile() ? path.getParentFile() : path.getParentFile());
         
         JMPLoader.UsePluginDirectory = false;
         JMPLoader.UseConfigFile = false;
