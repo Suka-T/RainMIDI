@@ -54,14 +54,3 @@ java {
         languageVersion = JavaLanguageVersion.of(25)
     }
 }
-
-eclipse {
-    jdt {
-        // Eclipse の [ウィンドウ] > [設定] > [Java] > [インストール済みの JRE]  
-        // で「追加」した時の名前と完全に一致させてください 
-        javaRuntimeName = "jdk-25"
-        
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
-    }
-}
