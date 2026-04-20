@@ -124,7 +124,7 @@ public class SystemProperties {
     public static int DEFAULT_DIM_H = 768;
 
     public static enum SyspLanguage {
-        AUTO, ENGLISH, JAPANESE;
+        AUTO, ENGLISH, JAPANESE, CHINESE;
     }
     
     public static enum SyspViewMode {
@@ -171,8 +171,8 @@ public class SystemProperties {
         FIRST, AVERAGE, MEDIAN, DOMINANT;
     }
 
-    private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE };
-    private static String[] langItemS = { "Auto", "English", "Japanese" };
+    private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE, SyspLanguage.CHINESE };
+    private static String[] langItemS = { "Auto", "English", "Japanese", "Chinese" };
     
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
