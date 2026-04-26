@@ -9,7 +9,9 @@ xcopy .\RainMIDI_launcher\ext\jre .\RainMIDI_vX.XX\jre /S /E /I /H /Y
 copy .\RainMIDI_launcher\ext\*.bat .\RainMIDI_vX.XX
 copy .\RainMIDI_launcher\ext\*.exe .\RainMIDI_vX.XX
 copy .\RainMIDI_launcher\ext\*.txt .\RainMIDI_vX.XX
+copy .\RainMIDI_launcher\ext\about.html .\RainMIDI_vX.XX
 copy ..\docs\index.html .\RainMIDI_vX.XX\manual.html
 copy ..\docs\index.en.html .\RainMIDI_vX.XX\manual.en.html
+
 
 pause
