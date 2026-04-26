@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -939,18 +939,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
     public void updateAbout() {
         SyspLanguage sLang = (SyspLanguage)SystemProperties.getInstance().getData(SystemProperties.SYSP_MISC_LANGUAGE);
-        switch (sLang) {
-            case ENGLISH:
-                updateAbout("en");
-                break;
-            case JAPANESE:
-                updateAbout("ja");
-                break;
-            case AUTO:
-            default:
-                updateAbout(Locale.getDefault().getLanguage());
-                break;
-        }
+        updateAbout(I18n.convertSyspLangToLocaleSuffix(sLang));
     }
 
     public void setSystemTableParam(String key, String value) {
@@ -1003,7 +992,15 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 for (String s : node.getItemArray()) {
                     comboBoxLanguage.addItem(s);
                 }
-                comboBoxLanguage.setSelectedItem(node.getDataString());
+                
+                DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboBoxLanguage.getModel();
+                for (int j = 0; j < model.getSize(); j++) {
+                    String item = model.getElementAt(j).toString();
+                    if (item.equalsIgnoreCase(node.getDataString().toLowerCase())) {
+                        comboBoxLanguage.setSelectedIndex(j);
+                        break;
+                    }
+                }
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_NOTESSPEED)) {
                 String notesSpeed = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_NOTESSPEED).getDataString();
@@ -1221,18 +1218,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private void updateLanguage() {
         
         SyspLanguage sLang = (SyspLanguage)SystemProperties.getInstance().getData(SystemProperties.SYSP_MISC_LANGUAGE);
-        switch (sLang) {
-            case ENGLISH:
-                I18n.setLocale(Locale.ENGLISH);
-                break;
-            case JAPANESE:
-                I18n.setLocale(Locale.JAPANESE);
-                break;
-            case AUTO:
-            default:
-                I18n.setLocale(Locale.getDefault());
-                break;
-        }
+        I18n.setLocale(sLang);
         
         ((TitledBorder)audioSummaryPanel.getBorder()).setTitle(I18n.t("border.audio"));
         ((TitledBorder)layoutSummaryPanel.getBorder()).setTitle(I18n.t("border.design"));
