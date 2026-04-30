@@ -39,16 +39,7 @@ public class I18n {
     }
     
     public static String convertSyspLangToLocaleSuffix(SyspLanguage syspLang) {
-        switch (syspLang) {
-        case ENGLISH:
-        	return "en";
-        case JAPANESE:
-        	return "ja";
-        case CHINESE:
-        	return "zh";
-        case AUTO:
-        default:
-        	return Locale.getDefault().getLanguage();
-	    }
+    	Locale locale = convertSyspLangToLocale(syspLang);
+    	return locale.getLanguage();
     }
 }
