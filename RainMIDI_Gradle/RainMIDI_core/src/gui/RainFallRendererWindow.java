@@ -242,7 +242,13 @@ public class RainFallRendererWindow extends RendererWindow {
         int cH = (int)((double)paneHeight * ((double)cW / (double)paneWidth));
         
         int clipX = curS1;
-        int clipY = paneHeight - cH;
+        int clipY = 0;
+        if (SystemProperties.getInstance().isViewReverse() == false) {
+        	clipY = paneHeight - cH;
+        }
+        else {
+        	clipY = 0;
+        }
         int clipW = cW;
         int clipH = cH;
         

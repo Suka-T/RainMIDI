@@ -635,7 +635,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int cH = cY2 - curS1 + 1;
         int cW = (int)((double)paneWidth * ((double)cH / (double)paneHeight));
         
-        int clipX = paneWidth - cW;
+        int clipX = 0;
+        if (SystemProperties.getInstance().isViewReverse() == false) {
+        	clipX = paneWidth - cW;
+        }
+        else {
+        	clipX = 0;
+        }
         int clipY = cY1;
         int clipW = cW;
         int clipH = cH;
