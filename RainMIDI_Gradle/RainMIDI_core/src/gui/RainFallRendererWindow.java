@@ -223,4 +223,33 @@ public class RainFallRendererWindow extends RendererWindow {
     protected int getEffectWidth(int dir) {
         return (dir < 0) ? 3 : 4;
     }
+    
+    @Override
+    public void updateViewport() {
+    	int paneWidth = getContentPane().getWidth();
+        viewportManager.updateOffs(paneWidth, getOrgHeight(), measCellHeight);
+    }
+    
+    @Override
+    protected void copyFromScreenImage(Graphics g) {
+    	int paneWidth = getContentPane().getWidth();
+        int paneHeight = getContentPane().getHeight();
+        
+        int curS1 = viewportManager.getOffsetCoordS();
+        int curE2 = viewportManager.getOffsetCoordE();
+        int cX2 = paneWidth - curE2 - 1;
+        int cW = cX2 - curS1 + 1;
+        int cH = (int)((double)paneHeight * ((double)cW / (double)paneWidth));
+        
+        int clipX = curS1;
+        int clipY = paneHeight - cH;
+        int clipW = cW;
+        int clipH = cH;
+        
+    	int dX1 = clipX;
+    	int dY1 = clipY;
+    	int dX2 = clipX + clipW - 1;
+    	int dY2 = clipY + clipH - 1;
+    	g.drawImage(bufferScreenImage, 0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), dX1, dY1, dX2, dY2, null);
+    }
 }

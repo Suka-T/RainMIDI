@@ -69,6 +69,7 @@ import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspMonitorType;
 import plg.SystemProperties.SyspWinEffect;
+import plg.ViewportManager;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
     private static final Stroke DEFAULT_STROKE = new BasicStroke();
@@ -144,6 +145,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private float[] dummySpectWave = new float[dummySpectSamples];
     //private float phase = 0f;
     private float[] noiseBuf = new float[dummySpectSamples];
+    
+    protected ViewportManager viewportManager;
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -384,6 +387,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 imageWorkerMgr.start();
 
                 adjustTickBar();
+                
+                viewportManager.start();
             }
         }
         else {
@@ -397,6 +402,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                
+                viewportManager.stop();
 
                 imageWorkerMgr.stop();
             }
@@ -497,6 +504,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     public void init() {
         imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight(), useVramNotesImage);
+        viewportManager = new ViewportManager();
+        
+        updateViewport();
     }
     
     public void prepareLoadFile() {
@@ -538,6 +548,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     //protected volatile VolatileImage orgScreenImage = null;
     protected volatile Image orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
+    
+    protected volatile Image bufferScreenImage = null;
+    protected volatile Graphics bufferScreenGraphic = null;
 
     private static final String[] topStrs = { //
             "、ヽ｀、ヽ｀个o(･ω･｡)｀ヽ、｀ヽ", //
@@ -604,6 +617,34 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else {
             g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(null), orgScreenImage.getHeight(null), null);
         }
+    }
+    
+    public void updateViewport() {
+    	int paneHeight = getContentPane().getHeight();
+        viewportManager.updateOffs(paneHeight, getOrgHeight(), measCellHeight);
+    }
+    
+    protected void copyFromScreenImage(Graphics g) {
+    	int paneWidth = getContentPane().getWidth();
+        int paneHeight = getContentPane().getHeight();
+        
+        int curS1 = viewportManager.getOffsetCoordE();
+        int curE2 = viewportManager.getOffsetCoordS();
+        int cY1 = curS1;
+        int cY2 = paneHeight - curE2 - 1;
+        int cH = cY2 - curS1 + 1;
+        int cW = (int)((double)paneWidth * ((double)cH / (double)paneHeight));
+        
+        int clipX = paneWidth - cW;
+        int clipY = cY1;
+        int clipW = cW;
+        int clipH = cH;
+        
+    	int dX1 = clipX;
+    	int dY1 = clipY;
+    	int dX2 = clipX + clipW - 1;
+    	int dY2 = clipY + clipH - 1;
+    	g.drawImage(bufferScreenImage, 0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), dX1, dY1, dX2, dY2, null);
     }
 
     private double angle = 0;
@@ -747,20 +788,51 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 orgScreenGraphic = ((BufferedImage)orgScreenImage).createGraphics();
             }
         }
-
+        
+        boolean updateBuffer = false;
         int paneWidth = getContentPane().getWidth();
         int paneHeight = getContentPane().getHeight();
+        if (bufferScreenImage == null) {
+        	updateBuffer = true;
+        }
+        else if (bufferScreenImage.getWidth(null) != paneWidth || bufferScreenImage.getHeight(null) != paneHeight){
+        	updateBuffer = true;
+        }
+        
+        if (isAvailableGpu) {
+        	VolatileImage vi = (VolatileImage)bufferScreenImage;
+            if (vi == null || vi.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
+            	updateBuffer = true;
+            }
+        }
+        
+        if (updateBuffer == true) {
+        	updateViewport();
+            
+            if (isAvailableGpu) {
+            	bufferScreenImage = LayoutManager.getInstance().createDisplayImage(paneWidth, paneHeight);
+            	bufferScreenGraphic = ((VolatileImage)bufferScreenImage).createGraphics();
+            }
+            else {
+                bufferScreenImage = LayoutManager.getInstance().createBufferdImage(paneWidth, paneHeight);
+            	bufferScreenGraphic = ((BufferedImage)bufferScreenImage).createGraphics();
+            }
+        }
 
         paintContents(orgScreenGraphic);
 
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D bg2 = (Graphics2D) bufferScreenGraphic;
 
         // 補間方法を設定
+        bg2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
+        bg2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        copyFromNotesImage(bg2);
+        
+        Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-        copyFromNotesImage(g);
-
+        copyFromScreenImage(g2);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         // スペクトラム表示

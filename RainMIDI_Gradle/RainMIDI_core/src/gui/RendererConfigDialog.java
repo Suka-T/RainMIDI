@@ -212,6 +212,12 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JPanel audioSummaryPanel;
     private JPanel layoutSummaryPanel;
     private JPanel systemSummaryPanel;
+    private JLabel lblNumOfKeysLabel;
+    private final ButtonGroup buttonGroup_5 = new ButtonGroup();
+    private JRadioButton rdbtnNumOfKeysAuto;
+    private JRadioButton rdbtnNumOfKeys128Keys;
+    private JRadioButton rdbtnNumOfKeys88Keys;
+    private JRadioButton rdbtnNumOfKeys76Keys;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -315,7 +321,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher v" + AbstractRenderPlugin.APP_VERSION);
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 689);
+        setBounds(100, 100, 643, 704);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -479,7 +485,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 286, 584, 248);
+                systemSummaryPanel.setBounds(12, 286, 584, 267);
                 panel.add(systemSummaryPanel);
 
                 lblWindowSizeLabel = new JLabel("Window Size");
@@ -763,6 +769,50 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 comboBoxLanguage.setBounds(330, 19, 113, 21);
                 systemSummaryPanel.add(comboBoxLanguage);
                 
+                lblNumOfKeysLabel = new JLabel("Key Range");
+                lblNumOfKeysLabel.setBounds(12, 234, 72, 13);
+                systemSummaryPanel.add(lblNumOfKeysLabel);
+                
+                rdbtnNumOfKeysAuto = new JRadioButton("Auto");
+                rdbtnNumOfKeysAuto.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "auto");
+                	}
+                });
+                buttonGroup_5.add(rdbtnNumOfKeysAuto);
+                rdbtnNumOfKeysAuto.setBounds(96, 230, 113, 21);
+                systemSummaryPanel.add(rdbtnNumOfKeysAuto);
+                
+                rdbtnNumOfKeys128Keys = new JRadioButton("128 Keys");
+                rdbtnNumOfKeys128Keys.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "full");
+                	}
+                });
+                buttonGroup_5.add(rdbtnNumOfKeys128Keys);
+                rdbtnNumOfKeys128Keys.setBounds(213, 230, 113, 21);
+                systemSummaryPanel.add(rdbtnNumOfKeys128Keys);
+                
+                rdbtnNumOfKeys88Keys = new JRadioButton("88 Keys");
+                rdbtnNumOfKeys88Keys.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "88");
+                	}
+                });
+                buttonGroup_5.add(rdbtnNumOfKeys88Keys);
+                rdbtnNumOfKeys88Keys.setBounds(330, 230, 113, 21);
+                systemSummaryPanel.add(rdbtnNumOfKeys88Keys);
+                
+                rdbtnNumOfKeys76Keys = new JRadioButton("76 Keys");
+                rdbtnNumOfKeys76Keys.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "76");
+                	}
+                });
+                buttonGroup_5.add(rdbtnNumOfKeys76Keys);
+                rdbtnNumOfKeys76Keys.setBounds(447, 230, 113, 21);
+                systemSummaryPanel.add(rdbtnNumOfKeys76Keys);
+                
                 btnShowExpertSettings = new JButton("Show Expert Settings");
                 btnShowExpertSettings.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -781,7 +831,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(439, 544, 157, 21);
+                btnShowExpertSettings.setBounds(439, 563, 157, 21);
                 panel.add(btnShowExpertSettings);
                 
                 btnInitializeSettings = new JButton("Initialize Settings");
@@ -807,7 +857,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 544, 140, 21);
+                btnInitializeSettings.setBounds(12, 563, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -1102,6 +1152,27 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_RSRCMONITOR_VISIBLE)) {
                 chckbxRsrcMonitorVisible.setSelected((boolean) node.getData());
             }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT)) {
+                SystemProperties.SyspNumOfKey numOfKeys = (SystemProperties.SyspNumOfKey) node.getData();
+                if (numOfKeys == SystemProperties.SyspNumOfKey.AUTO) {
+                    rdbtnNumOfKeysAuto.setSelected(true);
+                }
+                else if (numOfKeys == SystemProperties.SyspNumOfKey.FULL) {
+                    rdbtnNumOfKeys128Keys.setSelected(true);
+                }
+                else if (numOfKeys == SystemProperties.SyspNumOfKey.KEYS_88) {
+                    rdbtnNumOfKeys88Keys.setSelected(true);
+                }
+                else if (numOfKeys == SystemProperties.SyspNumOfKey.KEYS_76) {
+                    rdbtnNumOfKeys76Keys.setSelected(true);
+                }
+                else {
+                	rdbtnNumOfKeysAuto.setSelected(false);
+                	rdbtnNumOfKeys128Keys.setSelected(false);
+                	rdbtnNumOfKeys88Keys.setSelected(false);
+                	rdbtnNumOfKeys76Keys.setSelected(false);
+                }
+            }
 
             if (SystemProperties.SwapKeyName.containsKey(keyName)) {
                 keyName = SystemProperties.SwapKeyName.get(keyName);
@@ -1243,6 +1314,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         lblMonitorTypeLabel.setText(I18n.t("label.monitorType"));
         lblIgnoreNotesLabel.setText(I18n.t("label.ignoreNotes"));
         lblInvalidateEffectDesc.setText(I18n.t("rdbtn.noticeGPU"));
+        lblNumOfKeysLabel.setText(I18n.t("label.keyRange"));
         
         chckbxIgnoreInBetween.setText(I18n.t("chckbx.ignoreAudioIn"));
         chckbxViewReverse.setText(I18n.t("chckbx.viewReverse"));
@@ -1267,6 +1339,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         rdbtnMonitorType1.setText(I18n.t("rdbtn.notesAnaly"));
         rdbtnMonitorType2.setText(I18n.t("rdbtn.counter"));
         rdbtnMonitorType3.setText(I18n.t("rdbtn.classical"));
+        rdbtnNumOfKeysAuto.setText(I18n.t("rdbtn.auto"));
+        rdbtnNumOfKeys128Keys.setText(I18n.t("rdbtn.128keys"));
+        rdbtnNumOfKeys88Keys.setText(I18n.t("rdbtn.88keys"));
+        rdbtnNumOfKeys76Keys.setText(I18n.t("rdbtn.76keys"));
         
         int tabIndex = tabbedPane.indexOfComponent(summaryPanel);
         if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.summary"));

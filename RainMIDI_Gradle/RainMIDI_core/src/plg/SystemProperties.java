@@ -72,6 +72,10 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_SPECTRUM_TYPE = "renderer.spectrum.type";
     public static final String SYSP_RENDERER_SPECTRUM_POS = "renderer.spectrum.position";
     public static final String SYSP_RENDERER_SPECTRUM_AMP = "renderer.spectrum.amp";
+    public static final String SYSP_RENDERER_KEYRANGE_COUNT = "renderer.keyRange.count";
+    public static final String SYSP_RENDERER_KEYRANGE_RES_SEC = "renderer.keyRange.resolutionSec";
+    public static final String SYSP_RENDERER_KEYRANGE_RES_BPM = "renderer.keyRange.resolutionBaseBPM";
+    
     public static final String SYSP_DEBUGMODE = "debugMode";
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
@@ -112,6 +116,9 @@ public class SystemProperties {
             put(SYSP_RENDERER_SPECTRUM_TYPE, "Dummy Spectrum mode");
             put(SYSP_RENDERER_SPECTRUM_POS, "Dummy Spectrum position");
             put(SYSP_RENDERER_SPECTRUM_AMP, "Dummy Spectrum amp [1 - 100]");
+            put(SYSP_RENDERER_KEYRANGE_COUNT, "Key Range Count");
+            put(SYSP_RENDERER_KEYRANGE_RES_BPM, "Key Range Resolution Time BaseBPM");
+            put(SYSP_RENDERER_KEYRANGE_RES_SEC, "Key Range Resolution Time(sec)");
             put(SYSP_DEBUGMODE, "Debug mode enable");
         }
     };
@@ -170,6 +177,10 @@ public class SystemProperties {
     public static enum SyspNotesSpeedBase {
         FIRST, AVERAGE, MEDIAN, DOMINANT;
     }
+    
+    public static enum SyspNumOfKey {
+        AUTO, FULL, LARGE, KEYS_88, KEYS_76;
+    }
 
     private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE, SyspLanguage.CHINESE };
     private static String[] langItemS = { "Auto", "English", "Japanese", "Chinese" };
@@ -213,6 +224,9 @@ public class SystemProperties {
     
     private static Object[] notesSpeedBaseItemO = { SyspNotesSpeedBase.FIRST, SyspNotesSpeedBase.AVERAGE, SyspNotesSpeedBase.MEDIAN, SyspNotesSpeedBase.DOMINANT };
     private static String[] notesSpeedBaseItemS = { "first", "average", "median", "dominant" };
+    
+    private static Object[] ViewportItemO = { SyspNumOfKey.AUTO, SyspNumOfKey.FULL, SyspNumOfKey.LARGE, SyspNumOfKey.KEYS_88, SyspNumOfKey.KEYS_76 };
+    private static String[] ViewportItemS = { "auto", "full", "large", "88", "76" };
 
     private List<PropertiesNode> nodes;
     private int keyWidth = 50;
@@ -245,6 +259,8 @@ public class SystemProperties {
     private boolean isVisibleRsrcMonitor = false;
     
     private GraphMonitorScheduler graphMonScheduler = null;
+    
+    private int viewportIndex = 0;
     
     private SystemProperties() {
         nodes = new ArrayList<>();
@@ -285,6 +301,11 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_TYPE, PropertiesNodeType.ITEM, SyspSpectrumType.NONE, spectrumTypeItemS, spectrumTypeItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_POS, PropertiesNodeType.ITEM, SyspSpectrumPosition.BOTTOM, spectrumPosItemS, spectrumPosItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_AMP, PropertiesNodeType.INT, "5", "1", "100"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_COUNT, PropertiesNodeType.ITEM, SyspNumOfKey.AUTO, ViewportItemS, ViewportItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_BPM, PropertiesNodeType.DOUBLE, "160.0", "60.0", "1000.0"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_SEC, PropertiesNodeType.DOUBLE, "5.0", "3.0", "15.0"));
+        
+        
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
         
         reset();
@@ -556,6 +577,33 @@ public class SystemProperties {
         int iSpectAmp = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_SPECTRUM_AMP);
         spectAmp = (double)iSpectAmp / 100.0;
         
+        SyspNumOfKey numOfKeys = (SyspNumOfKey) getPropNode(SYSP_RENDERER_KEYRANGE_COUNT).getData();
+        switch (numOfKeys) {
+		case AUTO:
+			viewportIndex = -1;
+			break;
+		case FULL:
+			viewportIndex = 0;
+			break;
+		case LARGE:
+			viewportIndex = 1;
+			break;
+		case KEYS_88:
+			viewportIndex = 2;
+			break;
+		case KEYS_76:
+			viewportIndex = 3;
+			break;
+		default:
+			viewportIndex = 0;
+			break;
+		}
+        
+        double keyRangeResSec = (double)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_KEYRANGE_RES_SEC);
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setRenderedNoteResolutionSec(keyRangeResSec);
+        double keyRangeResBaseBPM = (double)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_KEYRANGE_RES_BPM);
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setRenderedNoteResolutionBaseBPM(keyRangeResBaseBPM);
+        
         boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
         JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
         
@@ -751,5 +799,9 @@ public class SystemProperties {
 
     public boolean isUseVramImage() {
         return useVramImage;
+    }
+    
+    public int getViewportNum() {
+        return viewportIndex;
     }
 }
