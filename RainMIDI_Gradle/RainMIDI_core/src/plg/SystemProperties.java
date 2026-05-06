@@ -518,7 +518,8 @@ public class SystemProperties {
         if (isInvalidateEffe == true) {
             LayoutManager.getInstance().invalidateEffectConfig();
             
-            imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; //軽量補完に差し替え
+            // ↓ キーボードの枠線がおかしくなるため軽量非推奨 
+            //imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; //軽量補完に差し替え
             LayoutManager.getInstance().setBmpFormat(BufferedImage.TYPE_USHORT_565_RGB);
             
             isVisibleRsrcMonitor = false;
