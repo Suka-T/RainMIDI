@@ -10,9 +10,9 @@ import jlib.midi.IMidiUnit;
 public class ViewportManager {
 	
 	private static final int DEFAULT_TRANS_COUNT = 45;
-	private static final int MAX_VIEWPORT = 3;
 	private ScheduledExecutorService scheduler = null;
 	
+	protected int maxViewport = 2;
     protected int defViewport = 0;
     protected int curViewport = 0;
     protected int oldViewport = 0;
@@ -31,6 +31,7 @@ public class ViewportManager {
 	
 	public ViewportManager() {
         defViewport = SystemProperties.getInstance().getViewportNum();
+        maxViewport = SystemProperties.getInstance().getViewportMax();
         curViewport = 0;
         oldViewport = curViewport;
         viewportTransCount = DEFAULT_TRANS_COUNT;
@@ -99,8 +100,8 @@ public class ViewportManager {
 	        
 	        if (defViewport == -1) {
 	        	curViewport = midiUnit.getRenderedNoteRange(midiUnit.getTickPosition());
-	        	if (curViewport > MAX_VIEWPORT) {
-	        		curViewport = MAX_VIEWPORT;
+	        	if (curViewport > maxViewport) {
+	        		curViewport = maxViewport;
 	        	}
 	        	if (viewportOffsS1.length <= curViewport) {
 	        		curViewport = viewportOffsS1.length - 1;

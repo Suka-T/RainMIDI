@@ -73,6 +73,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_SPECTRUM_POS = "renderer.spectrum.position";
     public static final String SYSP_RENDERER_SPECTRUM_AMP = "renderer.spectrum.amp";
     public static final String SYSP_RENDERER_KEYRANGE_COUNT = "renderer.keyRange.count";
+    public static final String SYSP_RENDERER_KEYRANGE_AUTOMAX = "renderer.keyRange.autoCountMax";
     public static final String SYSP_RENDERER_KEYRANGE_RES_SEC = "renderer.keyRange.resolutionSec";
     public static final String SYSP_RENDERER_KEYRANGE_RES_BPM = "renderer.keyRange.resolutionBaseBPM";
     
@@ -117,6 +118,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_SPECTRUM_POS, "Dummy Spectrum position");
             put(SYSP_RENDERER_SPECTRUM_AMP, "Dummy Spectrum amp [1 - 100]");
             put(SYSP_RENDERER_KEYRANGE_COUNT, "Key Range Count");
+            put(SYSP_RENDERER_KEYRANGE_AUTOMAX, "Key Range Auto Viewport Max[1 - 4]");
             put(SYSP_RENDERER_KEYRANGE_RES_BPM, "Key Range Resolution Time BaseBPM");
             put(SYSP_RENDERER_KEYRANGE_RES_SEC, "Key Range Resolution Time(sec)");
             put(SYSP_DEBUGMODE, "Debug mode enable");
@@ -302,6 +304,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_POS, PropertiesNodeType.ITEM, SyspSpectrumPosition.BOTTOM, spectrumPosItemS, spectrumPosItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_SPECTRUM_AMP, PropertiesNodeType.INT, "5", "1", "100"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_COUNT, PropertiesNodeType.ITEM, SyspNumOfKey.AUTO, ViewportItemS, ViewportItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_AUTOMAX, PropertiesNodeType.INT, "2", "1", "4"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_BPM, PropertiesNodeType.DOUBLE, "160.0", "60.0", "1000.0"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_SEC, PropertiesNodeType.DOUBLE, "5.0", "3.0", "15.0"));
         
@@ -803,5 +806,9 @@ public class SystemProperties {
     
     public int getViewportNum() {
         return viewportIndex;
+    }
+    
+    public int getViewportMax() {
+    	return (int)getPropNode(SYSP_RENDERER_KEYRANGE_AUTOMAX).getData();
     }
 }
