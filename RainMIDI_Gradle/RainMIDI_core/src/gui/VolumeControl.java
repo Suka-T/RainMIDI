@@ -143,6 +143,10 @@ public class VolumeControl extends RainControl {
             mouseX = -1;
             mouseY = -1;
         }
+        
+        // TODO Volumeは即閉じるようにする。(フレーム更新部で有効/無効を制御している都合上、非同期動作により閉じないことがあるかも）
+        LayoutManager.getInstance().clearVolumeVisibleTime();
+        setVisible(false);
     }
 
 }
