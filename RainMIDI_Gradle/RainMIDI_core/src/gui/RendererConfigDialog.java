@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -19,8 +18,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,13 +57,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import jlib.core.ISoundManager;
-import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import layout.LayoutConfig;
 import layout.LayoutManager;
@@ -138,6 +133,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     List<String> designItemKeys = new ArrayList<String>();
     
     private Map<String, Component> tabMap = new HashMap<>();
+    
+    private DesignViewer designViewer = new DesignViewer();
 
     // ユーザー非公開キー
     private List<String> ignoreKeysSystem = Arrays.asList(SystemProperties.SYSP_RENDERER_DIMENSION);
@@ -147,7 +144,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private Map<Integer, JComboBox<String>> comboBoxMapSys = new HashMap<>();
     private Map<Integer, JComboBox<String>> comboBoxMapLc = new HashMap<>();
     private JComboBox<String> comboBoxSynth;
-    private JLabel lblSelectedLayoutLabel;
     private JComboBox<String> comboBoxWindowSize;
     private final ButtonGroup buttonGroup = new ButtonGroup();
 
@@ -191,7 +187,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JCheckBox chckbxNoUseVRAM;
     private JButton btnLoadToPlayButton;
     private JButton okButton;
-    private JButton btnDefaultButton;
     private JButton btnLoadLayoutButton;
     private JButton btnInitializeSettings;
     private JButton btnShowExpertSettings;
@@ -206,7 +201,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JLabel lblNotesOrderLabel;
     private JLabel lblMonitorTypeLabel;
     private JLabel lblIgnoreNotesLabel;
-    private JLabel lblInvalidateEffectDesc;
     private JLabel lblLanguage;
     private JComboBox<String> comboBoxLanguage;
     private JPanel audioSummaryPanel;
@@ -321,7 +315,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher v" + AbstractRenderPlugin.APP_VERSION);
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 704);
+        setBounds(100, 100, 643, 669);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -439,25 +433,14 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 layoutSummaryPanel.setLayout(null);
                 layoutSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "Design", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                layoutSummaryPanel.setBounds(12, 160, 584, 116);
+                layoutSummaryPanel.setBounds(12, 160, 584, 77);
                 panel.add(layoutSummaryPanel);
 
-                lblSelectedLayoutLabel = new JLabel("Default Design");
-                lblSelectedLayoutLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-                lblSelectedLayoutLabel.setBounds(31, 21, 262, 31);
-                layoutSummaryPanel.add(lblSelectedLayoutLabel);
-
-                btnLoadLayoutButton = new JButton("Load Design");
+                btnLoadLayoutButton = new JButton("Design Change");
                 btnLoadLayoutButton.setActionCommand("LOAD_LAYOUT");
                 btnLoadLayoutButton.addActionListener(this);
-                btnLoadLayoutButton.setBounds(451, 57, 121, 26);
+                btnLoadLayoutButton.setBounds(23, 27, 121, 26);
                 layoutSummaryPanel.add(btnLoadLayoutButton);
-
-                btnDefaultButton = new JButton("Default");
-                btnDefaultButton.setActionCommand("DEF_LAYOUT");
-                btnDefaultButton.addActionListener(this);
-                btnDefaultButton.setBounds(451, 21, 121, 26);
-                layoutSummaryPanel.add(btnDefaultButton);
                 
                 chckbxInvalidateEffect = new JCheckBox("Invalidate Effect");
                 chckbxInvalidateEffect.addActionListener(new ActionListener() {
@@ -465,12 +448,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT, chckbxInvalidateEffect.isSelected() ? "true" : "false");
                     }
                 });
-                chckbxInvalidateEffect.setBounds(23, 83, 136, 21);
+                chckbxInvalidateEffect.setBounds(304, 30, 136, 21);
                 layoutSummaryPanel.add(chckbxInvalidateEffect);
-                
-                lblInvalidateEffectDesc = new JLabel("<html>If your PC does not have a GPU,<br>we recommend turning this on.</html>");
-                lblInvalidateEffectDesc.setBounds(171, 70, 215, 26);
-                layoutSummaryPanel.add(lblInvalidateEffectDesc);
                 
                 chckbxNoUseVRAM = new JCheckBox("No use VRAM");
                 chckbxNoUseVRAM.addActionListener(new ActionListener() {
@@ -478,14 +457,14 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_USE_GPU, chckbxNoUseVRAM.isSelected() ? "false" : "true");
                     }
                 });
-                chckbxNoUseVRAM.setBounds(23, 60, 136, 21);
+                chckbxNoUseVRAM.setBounds(164, 30, 136, 21);
                 layoutSummaryPanel.add(chckbxNoUseVRAM);
 
                 systemSummaryPanel = new JPanel();
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 286, 584, 267);
+                systemSummaryPanel.setBounds(12, 247, 584, 267);
                 panel.add(systemSummaryPanel);
 
                 lblWindowSizeLabel = new JLabel("Window Size");
@@ -831,7 +810,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(439, 563, 157, 21);
+                btnShowExpertSettings.setBounds(439, 524, 157, 21);
                 panel.add(btnShowExpertSettings);
                 
                 btnInitializeSettings = new JButton("Initialize Settings");
@@ -858,7 +837,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 563, 140, 21);
+                btnInitializeSettings.setBounds(12, 524, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -1008,14 +987,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     public void updateItem() {
         updateSystemItems();
         updateDesignItems();
-
-        String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_LAYOUT).getDataString();
-        if (layoutName != null && layoutName.isEmpty() == false) {
-            lblSelectedLayoutLabel.setText(layoutName);
-        }
-        else {
-            lblSelectedLayoutLabel.setText("Default Design");
-        }
     }
 
     public void updateSystemItems() {
@@ -1298,8 +1269,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         
         okButton.setText(I18n.t("button.launch"));
         btnLoadToPlayButton.setText(I18n.t("button.selectAndPlay"));
-        btnDefaultButton.setText(I18n.t("button.default"));
         btnLoadLayoutButton.setText(I18n.t("button.loadDesign"));
+        designViewer.setTitle(I18n.t("button.loadDesign"));
         btnInitializeSettings.setText(I18n.t("button.initSettings"));
         btnShowExpertSettings.setText(I18n.t("button.showExpertSettings"));
         
@@ -1314,7 +1285,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         lblNotesOrderLabel.setText(I18n.t("label.notesLayer"));
         lblMonitorTypeLabel.setText(I18n.t("label.monitorType"));
         lblIgnoreNotesLabel.setText(I18n.t("label.ignoreNotes"));
-        lblInvalidateEffectDesc.setText(I18n.t("rdbtn.noticeGPU"));
         lblNumOfKeysLabel.setText(I18n.t("label.keyRange"));
         
         chckbxIgnoreInBetween.setText(I18n.t("chckbx.ignoreAudioIn"));
@@ -1410,33 +1380,25 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
         switch (cmd) {
             case "LOAD_LAYOUT": {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setDialogTitle("Select layout config.");
-                chooser.addChoosableFileFilter(new FileNameExtensionFilter("Layout config (*.layout)", "layout"));
-
-                // ファイル選択ダイアログを表示
-                Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, targetPlg));
-                chooser.setCurrentDirectory(new File(folder.toString())); // 初期フォルダ
-                int result = chooser.showOpenDialog(null);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = chooser.getSelectedFile();
-                    try {
-                        LayoutManager.getInstance().read(selectedFile);
-                        String layoutName = Utility.getFileNameNotExtension(selectedFile);
-                        if (layoutName != null && layoutName.isEmpty() == false) {
-                            setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, layoutName);
-                            lblSelectedLayoutLabel.setText(layoutName);
-                        }
-                        updateDesignItems();
-                    }
-                    catch (IOException e1) {
-                        LayoutManager.getInstance().initializeConfig();
-                        setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
-                        lblSelectedLayoutLabel.setText("Default Design");
-                        updateDesignItems();
-                    }
-                }
+            	String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_LAYOUT).getDataString();
+            	designViewer.openDialog(layoutName);
+            	
+            	if (designViewer.isCommit()) {
+	            	File selectedFile = designViewer.getSelectedLayoutFile();
+	            	if (selectedFile != null) {
+		                layoutName = Utility.getFileNameNotExtension(selectedFile);
+		                if (layoutName != null && layoutName.isEmpty() == false) {
+		                    setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, layoutName);
+		                    updateDesignItems();
+		                }
+	            	}
+	            	else {
+	            		setToDefaultDesign();
+	            	}
+	            	
+	            	// 選択状態保持のためLayoutは先行してコミットする  
+	            	SystemProperties.getInstance().setData(SystemProperties.SYSP_FILE_LAYOUT, layoutName);
+            	}
                 break;
             }
             case "LOAD_TO_PLAY": {
@@ -1497,8 +1459,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private void setToDefaultDesign() {
     	LayoutManager.getInstance().initializeConfig();
         setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
-        lblSelectedLayoutLabel.setText("Default Design");
         updateDesignItems();
+        
+        // 選択状態保持のためLayoutは先行してコミットする  
+    	SystemProperties.getInstance().setData(SystemProperties.SYSP_FILE_LAYOUT, "");
     }
     
 
