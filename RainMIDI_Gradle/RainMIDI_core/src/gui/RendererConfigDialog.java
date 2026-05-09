@@ -853,6 +853,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                                 designTable.getCellEditor().stopCellEditing();
                             }
                             SystemProperties.getInstance().reset();
+                            setToDefaultDesign();
                             initializeView();
                         }
                     }
@@ -1469,10 +1470,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 break;
             }
             case "DEF_LAYOUT":
-                LayoutManager.getInstance().initializeConfig();
-                setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
-                lblSelectedLayoutLabel.setText("Default Design");
-                updateDesignItems();
+            	setToDefaultDesign();
                 break;
             case "OK":
                 SystemProperties.getInstance().getPreloadFiles().clear();
@@ -1494,6 +1492,13 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
     public boolean isCommitClose() {
         return isCommitClose;
+    }
+    
+    private void setToDefaultDesign() {
+    	LayoutManager.getInstance().initializeConfig();
+        setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
+        lblSelectedLayoutLabel.setText("Default Design");
+        updateDesignItems();
     }
     
 
