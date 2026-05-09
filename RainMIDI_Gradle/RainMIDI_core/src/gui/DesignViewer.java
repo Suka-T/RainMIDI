@@ -5,6 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -64,7 +65,9 @@ public class DesignViewer extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public DesignViewer() {
+	public DesignViewer(Frame owner) {
+		super(owner);
+		
 		setModal(true);
 		setTitle("Design Viewer");
 		setBounds(120, 120, 450, 300);

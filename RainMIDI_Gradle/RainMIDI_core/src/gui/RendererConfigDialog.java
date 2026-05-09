@@ -133,8 +133,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     List<String> designItemKeys = new ArrayList<String>();
     
     private Map<String, Component> tabMap = new HashMap<>();
-    
-    private DesignViewer designViewer = new DesignViewer();
 
     // ユーザー非公開キー
     private List<String> ignoreKeysSystem = Arrays.asList(SystemProperties.SYSP_RENDERER_DIMENSION);
@@ -1270,7 +1268,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         okButton.setText(I18n.t("button.launch"));
         btnLoadToPlayButton.setText(I18n.t("button.selectAndPlay"));
         btnLoadLayoutButton.setText(I18n.t("button.loadDesign"));
-        designViewer.setTitle(I18n.t("button.loadDesign"));
         btnInitializeSettings.setText(I18n.t("button.initSettings"));
         btnShowExpertSettings.setText(I18n.t("button.showExpertSettings"));
         
@@ -1381,6 +1378,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         switch (cmd) {
             case "LOAD_LAYOUT": {
             	String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_LAYOUT).getDataString();
+            	
+            	DesignViewer designViewer = new DesignViewer(this);
+            	designViewer.setLocationRelativeTo(this);
+            	designViewer.setTitle(I18n.t("button.loadDesign"));
             	designViewer.openDialog(layoutName);
             	
             	if (designViewer.isCommit()) {
