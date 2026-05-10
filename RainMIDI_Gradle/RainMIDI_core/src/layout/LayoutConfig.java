@@ -3,6 +3,7 @@ package layout;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -216,6 +217,14 @@ public class LayoutConfig {
         for (PropertiesNode nd : nodes) {
             setPropObject(props, nd.getKey());
         }
+    }
+    
+    public void write(File file) throws FileNotFoundException, IOException {
+        Properties props = new Properties();
+        for (PropertiesNode nd : nodes) {
+            props.setProperty(nd.getKey(), nd.getDataString());
+        }
+        props.store(new FileOutputStream(file), "");
     }
     
     public void initialize() {

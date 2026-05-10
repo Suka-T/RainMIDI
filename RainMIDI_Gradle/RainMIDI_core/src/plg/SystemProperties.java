@@ -37,7 +37,6 @@ import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
     public static final String SYSP_MISC_LANGUAGE = "misc.language";
-    public static final String SYSP_FILE_LAYOUT = "file.layout";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
     public static final String SYSP_AUDIO_USAGE_MIDI_BUF = "audio.usageRamOfMidi";
@@ -82,7 +81,6 @@ public class SystemProperties {
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
             put(SYSP_MISC_LANGUAGE, "Language");
-            put(SYSP_FILE_LAYOUT, "Preload Layout file name");
             put(SYSP_FILE_DEFAULT_PATH, "Default folder");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
             put(SYSP_AUDIO_USAGE_MIDI_BUF, "Use RAM of MIDI Event Buffer [1 - 100]");
@@ -268,7 +266,6 @@ public class SystemProperties {
         nodes = new ArrayList<>();
 
         nodes.add(new PropertiesNode(SYSP_MISC_LANGUAGE, PropertiesNodeType.ITEM, SyspLanguage.AUTO, langItemS, langItemO));
-        nodes.add(new PropertiesNode(SYSP_FILE_LAYOUT, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_FILE_DEFAULT_PATH, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_BUF, PropertiesNodeType.INT, "10", "1", "100"));
@@ -667,10 +664,6 @@ public class SystemProperties {
 
     public int getWorkerNum() {
         return (int) getPropNode(SYSP_RENDERER_WORKNUM).getData();
-    }
-
-    public String getLayoutFile() {
-        return (String) getPropNode(SYSP_FILE_LAYOUT).getData();
     }
 
     public boolean isDebugMode() {

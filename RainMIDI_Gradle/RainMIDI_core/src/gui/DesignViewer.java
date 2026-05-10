@@ -85,7 +85,19 @@ public class DesignViewer extends JDialog {
                 if (!initialized.get())
                     return; // 初期化中は無視
 				
-				if (comboBoxLayoutFile.getSelectedIndex() == 0) {
+                if (comboBoxLayoutFile.getSelectedIndex() == 0) {
+                	Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+                	Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
+                	selectedLayoutFile = fullPath.toFile();
+	                try {
+	                    LayoutManager.getInstance().read(selectedLayoutFile);
+	                }
+	                catch (IOException e1) {
+	                	selectedLayoutFile = null;
+	                    LayoutManager.getInstance().initializeConfig();
+	                }
+                }
+                else if (comboBoxLayoutFile.getSelectedIndex() == 1) {
 					LayoutManager.getInstance().initializeConfig();
 					
 					selectedLayoutFile = null;
@@ -133,7 +145,7 @@ public class DesignViewer extends JDialog {
 		        g.setColor(lm.getPlayerColor().getBdColor());
 		        int bdHeight = height / 4;
 		        for (int i=1; i <= 3; i++) {
-		        	g.drawLine(50, bdHeight * i, width, bdHeight * i);
+		        	g.drawLine(FIXED_TICK_POS, bdHeight * i, width, bdHeight * i);
 		        }
 		        
 		        NotesPainter ntPainter = lm.getNotesPainter();
@@ -243,12 +255,13 @@ public class DesignViewer extends JDialog {
 		initialized.set(true);
 	}
 	
-	public void openDialog(String selectedName) {
+	public void openDialog() {
 		isCommit = false;
 		makeKeyboardRsrc();
 		
 		initialized.set(false);
 		comboBoxLayoutFile.removeAllItems();
+		comboBoxLayoutFile.addItem("Backup");
 		comboBoxLayoutFile.addItem("RainMIDI-Default");
 		
 		Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
@@ -268,12 +281,7 @@ public class DesignViewer extends JDialog {
             }
         }
         
-        if (selectedName.isEmpty()) {
-        	comboBoxLayoutFile.setSelectedIndex(0);
-        }
-        else {
-        	comboBoxLayoutFile.setSelectedItem(selectedName);
-        }
+        comboBoxLayoutFile.setSelectedIndex(0);
         initialized.set(true);
         
         LayoutManager.getInstance().initialize(null);

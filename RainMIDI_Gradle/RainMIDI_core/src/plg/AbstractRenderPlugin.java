@@ -38,7 +38,8 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     public static String Extensions = "";
     public static AbstractRenderPlugin PluginInstance = null;
     
-    private static final String PROP_FILE_NAME = "renderer.properties";
+    public static final String PROP_FILE_NAME = "renderer.properties";
+    public static final String BACKUP_FILE_NAME = "backup.layout";
     
     private boolean exitFlag = false;
     public List<RendererWindow> winArray = null;
@@ -128,6 +129,14 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         SystemProperties.getInstance().write(propFile);
     }
     
+    public void writeBackupLayout() throws FileNotFoundException, IOException {
+        Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        Path fullPath = folder.resolve(BACKUP_FILE_NAME);
+        File backupLayoutFile = fullPath.toFile();
+        
+        LayoutManager.getInstance().write(backupLayoutFile);
+    }
+    
     public void startRendererWindow() {
         try {
             
@@ -136,6 +145,9 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
                 // SystemPropertiesの保存 
                 writeSystemProp();
+                
+                // Layout設定の保存
+                writeBackupLayout();
                 
                 if (JMPCoreAccessor.getSoundManager().getMidiUnit().isValidSequence()) {
                     JMPCoreAccessor.getSoundManager().initPosition();
@@ -199,18 +211,18 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             e1.printStackTrace();
         }
 
+        folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        fullPath = folder.resolve(BACKUP_FILE_NAME);
+        LayoutManager.getInstance().initializeConfig();
         try {
-
-            String layoutFilename = SystemProperties.getInstance().getLayoutFile();
-            if (!layoutFilename.contains(".")) {
-                layoutFilename += ".layout";
-                folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, this));
-                fullPath = folder.resolve(layoutFilename);
-                LayoutManager.getInstance().read(new File(fullPath.toString()));
-            }
+        	File backupLayoutFile = fullPath.toFile();
+        	if (backupLayoutFile.exists()) {
+        		LayoutManager.getInstance().read(backupLayoutFile);
+        	}
         }
         catch (IOException e1) {
             e1.printStackTrace();
+            LayoutManager.getInstance().initializeConfig();
         }
         
         if (splash != null) {

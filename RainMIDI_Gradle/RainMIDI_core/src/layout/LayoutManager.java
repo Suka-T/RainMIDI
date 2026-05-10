@@ -171,6 +171,10 @@ public class LayoutManager {
             layout.read(f);
         }
     }
+    
+    public void write(File f) throws IOException {
+    	layout.write(f);
+    }
 
     public ColorInfo getNotesColor(int index) {
         return notesColorInfos.get(index % notesColorInfos.size());

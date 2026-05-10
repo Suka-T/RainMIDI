@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,6 +64,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import jlib.core.ISoundManager;
+import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import layout.LayoutConfig;
 import layout.LayoutManager;
@@ -437,7 +440,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 btnLoadLayoutButton = new JButton("Design Change");
                 btnLoadLayoutButton.setActionCommand("LOAD_LAYOUT");
                 btnLoadLayoutButton.addActionListener(this);
-                btnLoadLayoutButton.setBounds(23, 27, 121, 26);
+                btnLoadLayoutButton.setBounds(12, 27, 121, 26);
                 layoutSummaryPanel.add(btnLoadLayoutButton);
                 
                 chckbxInvalidateEffect = new JCheckBox("Invalidate Effect");
@@ -446,7 +449,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT, chckbxInvalidateEffect.isSelected() ? "true" : "false");
                     }
                 });
-                chckbxInvalidateEffect.setBounds(304, 30, 136, 21);
+                chckbxInvalidateEffect.setBounds(281, 30, 136, 21);
                 layoutSummaryPanel.add(chckbxInvalidateEffect);
                 
                 chckbxNoUseVRAM = new JCheckBox("No use VRAM");
@@ -455,7 +458,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_USE_GPU, chckbxNoUseVRAM.isSelected() ? "false" : "true");
                     }
                 });
-                chckbxNoUseVRAM.setBounds(164, 30, 136, 21);
+                chckbxNoUseVRAM.setBounds(141, 30, 136, 21);
                 layoutSummaryPanel.add(chckbxNoUseVRAM);
 
                 systemSummaryPanel = new JPanel();
@@ -830,7 +833,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                                 designTable.getCellEditor().stopCellEditing();
                             }
                             SystemProperties.getInstance().reset();
-                            setToDefaultDesign();
+                            LayoutManager.getInstance().initializeConfig();
+                            updateDesignItems();
                             initializeView();
                         }
                     }
@@ -1341,9 +1345,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         
         initialized.set(true);
     }
-
-    private void commit() {
-        if (rendererTable.isEditing()) {
+    
+    private void commitSystem() {
+    	if (rendererTable.isEditing()) {
             rendererTable.getCellEditor().stopCellEditing();
         }
         for (int i = 0; i < rendererModel.getRowCount(); i++) {
@@ -1356,7 +1360,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 }
             }
         }
-        if (designTable.isEditing()) {
+    }
+    
+    private void commitLayout() {
+    	if (designTable.isEditing()) {
             designTable.getCellEditor().stopCellEditing();
         }
         for (int i = 0; i < designModel.getRowCount(); i++) {
@@ -1371,34 +1378,34 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         }
     }
 
+    private void commit() {
+    	commitSystem();
+    	commitLayout();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
 
         switch (cmd) {
             case "LOAD_LAYOUT": {
-            	String layoutName = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_LAYOUT).getDataString();
+            	commitLayout(); // 先に変更を決定する
+            	
+                try {
+                	Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, targetPlg));
+                    Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
+					LayoutManager.getInstance().write(fullPath.toFile());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
             	
             	DesignViewer designViewer = new DesignViewer(this);
             	designViewer.setLocationRelativeTo(this);
             	designViewer.setTitle(I18n.t("button.loadDesign"));
-            	designViewer.openDialog(layoutName);
+            	designViewer.openDialog();
             	
             	if (designViewer.isCommit()) {
-	            	File selectedFile = designViewer.getSelectedLayoutFile();
-	            	if (selectedFile != null) {
-		                layoutName = Utility.getFileNameNotExtension(selectedFile);
-		                if (layoutName != null && layoutName.isEmpty() == false) {
-		                    setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, layoutName);
-		                    updateDesignItems();
-		                }
-	            	}
-	            	else {
-	            		setToDefaultDesign();
-	            	}
-	            	
-	            	// 選択状態保持のためLayoutは先行してコミットする  
-	            	SystemProperties.getInstance().setData(SystemProperties.SYSP_FILE_LAYOUT, layoutName);
+            		updateDesignItems();
             	}
                 break;
             }
@@ -1433,7 +1440,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 break;
             }
             case "DEF_LAYOUT":
-            	setToDefaultDesign();
+            	LayoutManager.getInstance().initializeConfig();
+            	updateDesignItems();
                 break;
             case "OK":
                 SystemProperties.getInstance().getPreloadFiles().clear();
@@ -1456,16 +1464,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     public boolean isCommitClose() {
         return isCommitClose;
     }
-    
-    private void setToDefaultDesign() {
-    	LayoutManager.getInstance().initializeConfig();
-        setSystemTableParam(SystemProperties.SYSP_FILE_LAYOUT, "");
-        updateDesignItems();
-        
-        // 選択状態保持のためLayoutは先行してコミットする  
-    	SystemProperties.getInstance().setData(SystemProperties.SYSP_FILE_LAYOUT, "");
-    }
-    
 
     /**
      *
