@@ -168,6 +168,7 @@ public class LayoutManager {
 
     public void read(File f) throws IOException {
         if (f.exists() == true) {
+        	layout.definication(); // 差分以外をデフォルトにする 
             layout.read(f);
         }
     }
