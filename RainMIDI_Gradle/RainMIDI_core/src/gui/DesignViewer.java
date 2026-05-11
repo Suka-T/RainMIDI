@@ -18,8 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
@@ -88,7 +90,7 @@ public class DesignViewer extends JDialog {
                 updateView();
 			}
 		});
-		comboBoxLayoutFile.setBounds(12, 10, 165, 21);
+		comboBoxLayoutFile.setBounds(12, 10, 180, 21);
 		contentPanel.add(comboBoxLayoutFile);
 		
 		panelViewer = new JPanel() {
@@ -109,7 +111,6 @@ public class DesignViewer extends JDialog {
 		        
 		        g.setColor(lm.getPlayerColor().getBgColor());
 		        g.fillRect(0, 0, width, height);
-		        
 		        
 		        g.setColor(lm.getPlayerColor().getBdColor());
 		        if (LayoutManager.getInstance().isVisibleVerticalBorder()) {
@@ -192,6 +193,43 @@ public class DesignViewer extends JDialog {
 		panelViewer.setBackground(new Color(0, 0, 0));
 		panelViewer.setBounds(12, 41, 410, 179);
 		contentPanel.add(panelViewer);
+		
+		JButton buttonSave = new JButton("File Output");
+		buttonSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        JFileChooser fileChooser = new JFileChooser();
+		        fileChooser.setDialogTitle("Save Design Setting File");
+		        
+		        Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+		        File defaultDirectory = folder.toFile();
+		        fileChooser.setCurrentDirectory(defaultDirectory);
+
+		        // デフォルトの拡張子フィルタを設定
+		        FileNameExtensionFilter filter = new FileNameExtensionFilter("RainMIDI Design (*.layout)", "layout");
+		        fileChooser.setFileFilter(filter);
+
+		        int userSelection = fileChooser.showSaveDialog(null);
+
+		        if (userSelection == JFileChooser.APPROVE_OPTION) {
+		            File fileToSave = fileChooser.getSelectedFile();
+		            String filePath = fileToSave.getAbsolutePath();
+
+		            if (!filePath.toLowerCase().endsWith(".layout")) {
+		                fileToSave = new File(filePath + ".layout");
+		            }
+		            
+		            try {
+						LayoutManager.getInstance().write(fileToSave);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+		            
+		            updateCombobox();
+		        }
+			}
+		});
+		buttonSave.setBounds(331, 10, 91, 21);
+		contentPanel.add(buttonSave);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -222,15 +260,12 @@ public class DesignViewer extends JDialog {
 		initialized.set(true);
 	}
 	
-	public void openDialog() {
-		isCommit = false;
-		makeKeyboardRsrc();
-		
+	public void updateCombobox() {
 		initialized.set(false);
 		comboBoxLayoutFile.removeAllItems();
 		comboBoxLayoutFile.addItem("Backup");
 		comboBoxLayoutFile.addItem("RainMIDI-Default");
-		comboBoxLayoutFile.addItem("RainMIDI-Light");
+		comboBoxLayoutFile.addItem("RainMIDI-Lightweight");
 		
 		Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
         File folder = folderPath.toFile();
@@ -248,10 +283,15 @@ public class DesignViewer extends JDialog {
                 }
             }
         }
-        
         comboBoxLayoutFile.setSelectedIndex(0);
         initialized.set(true);
-        
+	}
+	
+	public void openDialog() {
+		isCommit = false;
+		makeKeyboardRsrc();
+		
+		updateCombobox();
         updateView();
         
         setVisible(true);
