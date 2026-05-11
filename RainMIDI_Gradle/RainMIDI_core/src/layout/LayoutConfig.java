@@ -25,7 +25,7 @@ public class LayoutConfig {
     public static final String LC_CURSOR_TYPE = "cursor.type";
     public static final String LC_CURSOR_COLOR = "cursor.color";
     public static final String LC_CURSOR_EFFE_COLOR = "cursor.effect.color";
-    public static final String LC_CURSOR_EFFE_VISIBLE = "cursor.effect.visible";
+    public static final String LC_CURSOR_LINE = "cursor.line";
     public static final String LC_CURSOR_POS = "cursor.position";
     public static final String LC_PB_COLOR = "pb.basecolor";
     public static final String LC_PB_VISIBLE = "pb.visible";
@@ -48,7 +48,7 @@ public class LayoutConfig {
             put(LC_CURSOR_TYPE, "View Keyboard or Line");
             put(LC_CURSOR_COLOR, "Hit Line color");
             put(LC_CURSOR_EFFE_COLOR, "Hit Line effect color");
-            put(LC_CURSOR_EFFE_VISIBLE, "Hit Line effect visible");
+            put(LC_CURSOR_LINE, "Hit Line design");
             put(LC_NOTES_DESIGN, "Notes design");
             put(LC_NOTES_COLOR_NUM, "Use notes color count");
             put(LC_NOTES_COLOR + "1", "Track1 notes color");
@@ -114,6 +114,12 @@ public class LayoutConfig {
     private static String[] EColEffectInS = { "none", "simple" };
     private static Object[] EColEffectOutO = { EColEffect.None, EColEffect.Simple, EColEffect.Color };
     private static String[] EColEffectOutS = { "none", "simple", "color" };
+    
+    public static enum ETickbarDesign {
+        Normal, Glow;
+    }
+    private static Object[] ETickbarDesignO = { ETickbarDesign.Normal, ETickbarDesign.Glow };
+    private static String[] ETickbarDesignS = { "normal", "glow" };
 
     private List<PropertiesNode> nodes;
 
@@ -127,7 +133,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_CURSOR_TYPE, PropertiesNodeType.ITEM, ECursorType.Keyboard, ECursorTypeS, ECursorTypeO));
         nodes.add(new PropertiesNode(LC_CURSOR_COLOR, PropertiesNodeType.COLOR, "#7FFFD4"));
         nodes.add(new PropertiesNode(LC_CURSOR_EFFE_COLOR, PropertiesNodeType.COLOR, "#FFFFFF"));
-        nodes.add(new PropertiesNode(LC_CURSOR_EFFE_VISIBLE, PropertiesNodeType.BOOLEAN, "true"));
+        nodes.add(new PropertiesNode(LC_CURSOR_LINE, PropertiesNodeType.ITEM, ETickbarDesign.Glow, ETickbarDesignS, ETickbarDesignO));
         nodes.add(new PropertiesNode(LC_CURSOR_POS, PropertiesNodeType.INT, "-1", "", "", CursorPosS, CursorPosO));
         nodes.add(new PropertiesNode(LC_PB_COLOR, PropertiesNodeType.COLOR, "#969696"));
         nodes.add(new PropertiesNode(LC_PB_VISIBLE, PropertiesNodeType.BOOLEAN, "false"));
@@ -172,7 +178,7 @@ public class LayoutConfig {
     
     public void invalidateEffectConfig() {
         // エフェクト有の設定を無効化する 
-        getPropNode(LC_CURSOR_EFFE_VISIBLE).setObject("false");
+        getPropNode(LC_CURSOR_LINE).setObject("normal");
         getPropNode(LC_COLLISION_EFFECT_IN).setObject("none");
         getPropNode(LC_COLLISION_EFFECT_OUT).setObject("none");
         if (getPropNode(LC_KEYBOARD_DESIGN).getData() == EKeyboardDesign.Smart) {
@@ -205,6 +211,15 @@ public class LayoutConfig {
             return null;
         }
         return node.getData();
+    }
+    
+    public void setData(String key, String param) {
+        for (PropertiesNode node : getNodes()) {
+            if (node.getKey().equalsIgnoreCase(key) == true) {
+                node.setObject(param);
+                break;
+            }
+        }
     }
 
     public void read(File file) throws FileNotFoundException, IOException {

@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -59,6 +58,7 @@ import layout.parts.KeyboardPainter;
 import layout.parts.KeyboardPainter.KindOfKey;
 import layout.parts.MonitorPainter;
 import layout.parts.SpectrumPainter;
+import layout.parts.TickbarPainter;
 import layout.parts.key.BlackKeyParts;
 import layout.parts.key.WhiteKeyParts;
 import layout.parts.monitor.MonitorData;
@@ -124,6 +124,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected KeyboardPainter keyboardPainter = null;
     protected MonitorPainter monitorPainter = null;
     protected SpectrumPainter spectrumPainter = null;
+    protected TickbarPainter tickbarPainter = null;
 
     protected boolean isAvailableGpu = true;
     protected boolean useVramNotesImage = false;
@@ -253,6 +254,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         keyboardPainter = LayoutManager.getInstance().getKeyboardPainter(SystemProperties.getInstance().getViewMode());
         monitorPainter = SystemProperties.getInstance().getMonitorPainter();
         spectrumPainter = SystemProperties.getInstance().getSpectrumPainter();
+        tickbarPainter = LayoutManager.getInstance().getTickbarPainter();
+        tickbarPainter.clearCache();
 
         msgFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 28);
         msgFontS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 18);
@@ -688,67 +691,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         g2d.translate(-w / 2, -h / 2);
     }
     
-    private static final float NO_EFFE_LINE_CORE_STROKE_VAL = 8.0f;     // 中心の線の太さ
-    private static final float NO_EFFE_LINE_BORDER_WIDTH = 0.5f;        // 白ボーダーの幅
-    private static final BasicStroke NO_EFFE_LINE_BORDER_STROKE = new BasicStroke(
-            NO_EFFE_LINE_CORE_STROKE_VAL + NO_EFFE_LINE_BORDER_WIDTH * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private static final BasicStroke NO_EFFE_LINE_CORE_STROKE = new BasicStroke(
-            NO_EFFE_LINE_CORE_STROKE_VAL, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-    private void drawNoEffeLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
-        if (LayoutManager.getInstance().isVisibleCursorEffect() == false) {
-            // ======= ボーダー線 =======
-            g2d.setStroke(NO_EFFE_LINE_BORDER_STROKE);
-
-            g2d.setColor(Color.BLACK);
-            g2d.drawLine(x1, y1, x2, y2);
-        }
-
-        // ======= 中心線（コア線） =======
-        g2d.setStroke(NO_EFFE_LINE_CORE_STROKE);
-        g2d.setColor(baseColor);
-        g2d.drawLine(x1, y1, x2, y2);
-
-        // ストロークを戻す
-        g2d.setStroke(DEFAULT_STROKE);
-    }
-/*
-    private void drawGlowingLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
-
-        // ======= 調整用パラメータ =======
-        // float coreStroke = 5.0f;
-        float glowMaxStroke = 24.0f;
-        float glowMinStroke = 12.0f;
-        float glowStep = 4.0f;
-
-        // ======= カラー分解（ベースカラー → RGB） =======
-        int r = baseColor.getRed();
-        int g = baseColor.getGreen();
-        int b = baseColor.getBlue();
-
-        // ======= グロー層（外側から内側へ） =======
-        for (float stroke = glowMaxStroke; stroke >= glowMinStroke; stroke -= glowStep) {
-            g2d.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2d.setColor(new Color(r, g, b, 20)); // 外周：淡く光らせる
-            g2d.drawLine(x1, y1, x2, y2);
-        }
-
-        // ======= 中間グロー層（やや濃い） =======
-        // g2d.setStroke(new BasicStroke(glowMinStroke - 1));
-        // g2d.setColor(new Color(Math.min(255, r + 40), Math.min(255, g + 40),
-        // Math.min(255, b + 40), 100));
-        // g2d.drawLine(x1, y1, x2, y2);
-
-        // ======= 中心線（コア線） =======
-        // g2d.setStroke(new BasicStroke(coreStroke));
-        // g2d.setColor(new Color(Math.min(255, r + 80), Math.min(255, g + 80),
-        // Math.min(255, b + 80), 220));
-        // g2d.drawLine(x1, y1, x2, y2);
-
-        g2d.setStroke(new BasicStroke());
-    }
-*/
-    
     public void paintVolume(Graphics g) {
         g.setFont(msgFontS);
         g.setColor(LayoutManager.getInstance().getPlayerColor().getBgRevColor());
@@ -1122,91 +1064,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
-    
-    private List<BasicStroke> ousStrokes = null;
-    private List<Color> ousColors = null;
-    private BasicStroke mainStroke = null;
-    private Color mainColor = null;
-    private List<BasicStroke> mergeStrokes = null;
-    private List<Color> mergeColors = null;
-    private BasicStroke coreStroke = null;
-    private Color coreColor = null;
-    protected void paintGrawLine(Graphics g, int x1, int y1, int x2, int y2, Color saberColor) {
-        Graphics2D g2 = (Graphics2D) g;
-    
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
-    
-        //Color saberColor = new Color(0, 200, 255); // 青
-        
-        if (mainColor == null) {
-            ousStrokes = new ArrayList<BasicStroke>();
-            ousColors = new ArrayList<Color>();
-            
-            // ごく薄い外側の光（控えめ）
-            for (int i = 8; i >= 1; i--) {
-                float alpha = 0.01f * i;   // ← かなり薄い
-                ousStrokes.add(new BasicStroke(12f + i * 2f,
-                        BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_ROUND));
-                
-                ousColors.add(new Color(
-                        saberColor.getRed(),
-                        saberColor.getGreen(),
-                        saberColor.getBlue(),
-                        (int)(255 * alpha)));
-            }
-            
-            // メインの色（白との境界用）
-            mainStroke = new BasicStroke(9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-            mainColor = new Color(saberColor.getRed(), saberColor.getGreen(), saberColor.getBlue(), 140);
-            
-            // 白→色のぼかしゾーン（最重要）
-            mergeStrokes = new ArrayList<BasicStroke>();
-            mergeColors = new ArrayList<Color>();
-            for (int i = 3; i >= 1; i--) {
-                float t = i / 3f; // 1.0 → 0.33
-                int r = (int)(255 * (1 - t) + saberColor.getRed()   * t);
-                int gC= (int)(255 * (1 - t) + saberColor.getGreen()* t);
-                int b = (int)(255 * (1 - t) + saberColor.getBlue() * t);
-        
-                mergeStrokes.add(new BasicStroke(6f + i * 1.2f,
-                        BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_ROUND));
-                mergeColors.add(new Color(r, gC, b, 160));
-            }
-            
-            // 中心の白い芯（太め）
-            coreStroke = new BasicStroke(5.5f,
-                    BasicStroke.CAP_ROUND,
-                    BasicStroke.JOIN_ROUND);
-            coreColor = new Color(245, 250, 255);
-        }
-    
-        // ごく薄い外側の光（控えめ）
-        for (int j = 0; j < ousStrokes.size(); j++) {
-            g2.setStroke(ousStrokes.get(j));
-            g2.setColor(ousColors.get(j));
-            g2.drawLine(x1, y1, x2, y2);
-        }
-    
-        // メインの色（白との境界用）
-        g2.setStroke(mainStroke);
-        g2.setColor(mainColor);
-        g2.drawLine(x1, y1, x2, y2);
-    
-        // 白→色のぼかしゾーン（最重要）
-        for (int j = 0; j < mergeStrokes.size(); j++) {
-            g2.setStroke(mergeStrokes.get(j));
-            g2.setColor(mergeColors.get(j));
-            g2.drawLine(x1, y1, x2, y2);
-        }
-    
-        // 中心の白い芯（太め）
-        g2.setStroke(coreStroke);
-        g2.setColor(coreColor);
-        g2.drawLine(x1, y1, x2, y2);
-    }
 
     private LinearGradientPaint topVigPaint = null;
     protected void paintWindowEffect(Graphics g) {
@@ -1470,13 +1327,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         
         /* Tickbar描画 */
         Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
-        drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
-        
-        /* Tickbarグローエフェクト描画 */
-        if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {
-            //drawGlowingLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
-            paintGrawLine(g, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
-        }
+        tickbarPainter.paintLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
     }
 
     public void resetPage() {

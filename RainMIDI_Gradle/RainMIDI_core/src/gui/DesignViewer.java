@@ -1,23 +1,18 @@
 package gui;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
@@ -35,6 +30,7 @@ import layout.parts.KeyParts;
 import layout.parts.KeyboardPainter;
 import layout.parts.KeyboardPainter.KindOfKey;
 import layout.parts.NotesPainter;
+import layout.parts.TickbarPainter;
 import layout.parts.key.BlackKeyParts;
 import layout.parts.key.WhiteKeyParts;
 import plg.AbstractRenderPlugin;
@@ -42,6 +38,10 @@ import plg.SystemProperties;
 import plg.Utility;
 
 public class DesignViewer extends JDialog {
+	
+	public static final int FIXED_KEY_COUNT = 18;
+	public static final int FIXED_KEY_HK = 11;
+	public static final int FIXED_KEY_KK = 7;
 	
 	private static final int FIXED_TICK_POS = 120; 
 
@@ -85,39 +85,7 @@ public class DesignViewer extends JDialog {
                 if (!initialized.get())
                     return; // 初期化中は無視
 				
-                if (comboBoxLayoutFile.getSelectedIndex() == 0) {
-                	Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
-                	Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
-                	selectedLayoutFile = fullPath.toFile();
-	                try {
-	                    LayoutManager.getInstance().read(selectedLayoutFile);
-	                }
-	                catch (IOException e1) {
-	                	selectedLayoutFile = null;
-	                    LayoutManager.getInstance().initializeConfig();
-	                }
-                }
-                else if (comboBoxLayoutFile.getSelectedIndex() == 1) {
-					LayoutManager.getInstance().initializeConfig();
-					
-					selectedLayoutFile = null;
-				}
-				else {
-					Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
-			        String fileNameStr = comboBoxLayoutFile.getSelectedItem().toString();
-			        Path fullPath = folderPath.resolve(fileNameStr + ".layout");
-			        selectedLayoutFile = fullPath.toFile();
-	                try {
-	                    LayoutManager.getInstance().read(selectedLayoutFile);
-	                }
-	                catch (IOException e1) {
-	                	selectedLayoutFile = null;
-	                    LayoutManager.getInstance().initializeConfig();
-	                }
-				}
-				LayoutManager.getInstance().initialize(null);
-				
-				panelViewer.repaint();
+                updateView();
 			}
 		});
 		comboBoxLayoutFile.setBounds(12, 10, 165, 21);
@@ -142,15 +110,18 @@ public class DesignViewer extends JDialog {
 		        g.setColor(lm.getPlayerColor().getBgColor());
 		        g.fillRect(0, 0, width, height);
 		        
+		        
 		        g.setColor(lm.getPlayerColor().getBdColor());
-		        int bdHeight = height / 4;
-		        for (int i=1; i <= 3; i++) {
-		        	g.drawLine(FIXED_TICK_POS, bdHeight * i, width, bdHeight * i);
+		        if (LayoutManager.getInstance().isVisibleVerticalBorder()) {
+			        int bdHeight = height / 4;
+			        for (int i=1; i <= 3; i++) {
+			        	g.drawLine(FIXED_TICK_POS, bdHeight * i, width, bdHeight * i);
+			        }
 		        }
 		        
 		        NotesPainter ntPainter = lm.getNotesPainter();
 		        NotesPainter.Context nContext = ntPainter.newContext();
-		        int measCellHeight = panelViewer.getHeight() / 12;// 5;
+		        int measCellHeight = getMeasHeight();
 		        
 		        int ntxOffs = 80;
 		        int ntSize = 90;
@@ -168,7 +139,7 @@ public class DesignViewer extends JDialog {
 			        ntPainter.paintNotes(nContext);
 		        }
 		        
-		        KeyboardPainter keyboardPainter = lm.getKeyboardPainter(SystemProperties.SyspViewMode.SIDE_FLOW);
+		        KeyboardPainter keyboardPainter = lm.getKeyboardPainter(SystemProperties.SyspViewMode.RAIN_FALL);
 		        int tickBarPositionOffs = 0;
 		        if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
 		            tickBarPositionOffs = 3;
@@ -178,7 +149,7 @@ public class DesignViewer extends JDialog {
 		            /* White Keyboard */
 		            Color keyBgColor;
 		            boolean isPush = false;
-		            keyboardPainter.setKeyboardWidth(height);
+		            keyboardPainter.setKeyboardWidth(FIXED_TICK_POS);
 		            for (int i = 0; i < aHakken.length; i++) {
 		                keyBgColor = Color.WHITE;
 		                keyboardPainter.paintKeyparts(g2d, aHakken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.WHITE);
@@ -189,7 +160,7 @@ public class DesignViewer extends JDialog {
 		            /* Black Keyboard */
 		            Color keyBgColor;
 		            boolean isPush = false;
-		            keyboardPainter.setKeyboardWidth(height);
+		            keyboardPainter.setKeyboardWidth(FIXED_TICK_POS);
 		            for (int i = 0; i < aKokken.length; i++) {
 		                keyBgColor = Color.BLACK;
 		                keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
@@ -211,15 +182,11 @@ public class DesignViewer extends JDialog {
                 colEffePainterOut.paintOut(g2d, effx, hitEffectPosY[3], keyHeight, keyBgColor, hitEffectColor);
                 g2d.setComposite(AlphaComposite.SrcOver);
 		        
-		        /* Tickbar描画 */
-		        Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
-		        drawNoEffeLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, panelViewer.getHeight(), csrColor);
-		        
-		        /* Tickbarグローエフェクト描画 */
-		        if (LayoutManager.getInstance().isVisibleCursorEffect() == true) {
-		            //drawGlowingLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
-		            paintGrawLine(g, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, panelViewer.getHeight(), csrColor);
-		        }
+                /* Tickbar描画 */
+                TickbarPainter tickbarPainter = LayoutManager.getInstance().getTickbarPainter();
+                tickbarPainter.clearCache();
+                Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
+                tickbarPainter.paintLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, panelViewer.getHeight(), csrColor);
 		    }
 		};
 		panelViewer.setBackground(new Color(0, 0, 0));
@@ -263,6 +230,7 @@ public class DesignViewer extends JDialog {
 		comboBoxLayoutFile.removeAllItems();
 		comboBoxLayoutFile.addItem("Backup");
 		comboBoxLayoutFile.addItem("RainMIDI-Default");
+		comboBoxLayoutFile.addItem("RainMIDI-Light");
 		
 		Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
         File folder = folderPath.toFile();
@@ -284,29 +252,75 @@ public class DesignViewer extends JDialog {
         comboBoxLayoutFile.setSelectedIndex(0);
         initialized.set(true);
         
-        LayoutManager.getInstance().initialize(null);
+        updateView();
+        
         setVisible(true);
+	}
+	
+	private void updateView() {
+		if (comboBoxLayoutFile.getSelectedIndex() == 0) {
+        	Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+        	Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
+        	selectedLayoutFile = fullPath.toFile();
+            try {
+                LayoutManager.getInstance().read(selectedLayoutFile);
+            }
+            catch (IOException e1) {
+            	selectedLayoutFile = null;
+                LayoutManager.getInstance().initializeConfig();
+            }
+        }
+        else if (comboBoxLayoutFile.getSelectedIndex() == 1) {
+			LayoutManager.getInstance().initializeConfig();
+			
+			selectedLayoutFile = null;
+		}
+        else if (comboBoxLayoutFile.getSelectedIndex() == 2) {
+			LayoutManager.getInstance().initializeConfigLight();
+			
+			selectedLayoutFile = null;
+		}
+		else {
+			Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+	        String fileNameStr = comboBoxLayoutFile.getSelectedItem().toString();
+	        Path fullPath = folderPath.resolve(fileNameStr + ".layout");
+	        selectedLayoutFile = fullPath.toFile();
+            try {
+                LayoutManager.getInstance().read(selectedLayoutFile);
+            }
+            catch (IOException e1) {
+            	selectedLayoutFile = null;
+                LayoutManager.getInstance().initializeConfig();
+            }
+		}
+		LayoutManager.getInstance().initialize(null);
+		LayoutManager.getInstance().setNotesBounds(80, getMeasHeight());
+		panelViewer.repaint();
+	}
+	
+	private int getMeasHeight() {
+		return 12;
 	}
 
     protected void makeKeyboardRsrc() {
-        hitEffectPosY = new int[13];
-        int measCellHeight = panelViewer.getHeight() / 12;// 5;
+        hitEffectPosY = new int[FIXED_KEY_COUNT];
+        int measCellHeight = getMeasHeight();
         int keyHeight = measCellHeight;
         int keyCount = 0;
         int topOffset = (keyHeight * keyCount);
-        for (int i = 0; i < 13; i++) {
+        for (int i = 0; i < FIXED_KEY_COUNT; i++) {
             hitEffectPosY[i] = topOffset + (keyHeight * i);
         }
 
-        aHakken = new KeyParts[8];
-        aKokken = new KeyParts[5];
+        aHakken = new KeyParts[FIXED_KEY_HK];
+        aKokken = new KeyParts[FIXED_KEY_KK];
 
         int kkCnt = 0;
         int hkCnt = 0;
         int hkWidth = FIXED_TICK_POS;
         int kkWidth = (int) (hkWidth * 0.7);
         int hakkenHeight = panelViewer.getHeight() / 7;
-        for (int i = 0; i < 13; i++) {
+        for (int i = 0; i < FIXED_KEY_COUNT; i++) {
             int midiNo = 127 - i;
             int key = midiNo % 12;
             switch (key) {
@@ -376,117 +390,6 @@ public class DesignViewer extends JDialog {
                     break;
             }
         }
-    }
-    
-    private static final Stroke DEFAULT_STROKE = new BasicStroke();
-    private static final float NO_EFFE_LINE_CORE_STROKE_VAL = 8.0f;     // 中心の線の太さ
-    private static final float NO_EFFE_LINE_BORDER_WIDTH = 0.5f;        // 白ボーダーの幅
-    private static final BasicStroke NO_EFFE_LINE_BORDER_STROKE = new BasicStroke(
-            NO_EFFE_LINE_CORE_STROKE_VAL + NO_EFFE_LINE_BORDER_WIDTH * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private static final BasicStroke NO_EFFE_LINE_CORE_STROKE = new BasicStroke(
-            NO_EFFE_LINE_CORE_STROKE_VAL, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-    private void drawNoEffeLine(Graphics2D g2d, int x1, int y1, int x2, int y2, Color baseColor) {
-        if (LayoutManager.getInstance().isVisibleCursorEffect() == false) {
-            // ======= ボーダー線 =======
-            g2d.setStroke(NO_EFFE_LINE_BORDER_STROKE);
-
-            g2d.setColor(Color.BLACK);
-            g2d.drawLine(x1, y1, x2, y2);
-        }
-
-        // ======= 中心線（コア線） =======
-        g2d.setStroke(NO_EFFE_LINE_CORE_STROKE);
-        g2d.setColor(baseColor);
-        g2d.drawLine(x1, y1, x2, y2);
-
-        // ストロークを戻す
-        g2d.setStroke(DEFAULT_STROKE);
-    }
-    
-    private List<BasicStroke> ousStrokes = null;
-    private List<Color> ousColors = null;
-    private BasicStroke mainStroke = null;
-    private Color mainColor = null;
-    private List<BasicStroke> mergeStrokes = null;
-    private List<Color> mergeColors = null;
-    private BasicStroke coreStroke = null;
-    private Color coreColor = null;
-    protected void paintGrawLine(Graphics g, int x1, int y1, int x2, int y2, Color saberColor) {
-        Graphics2D g2 = (Graphics2D) g;
-    
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
-    
-        //Color saberColor = new Color(0, 200, 255); // 青
-        mainColor = null;
-        if (mainColor == null) {
-            ousStrokes = new ArrayList<BasicStroke>();
-            ousColors = new ArrayList<Color>();
-            
-            // ごく薄い外側の光（控えめ）
-            for (int i = 8; i >= 1; i--) {
-                float alpha = 0.01f * i;   // ← かなり薄い
-                ousStrokes.add(new BasicStroke(12f + i * 2f,
-                        BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_ROUND));
-                
-                ousColors.add(new Color(
-                        saberColor.getRed(),
-                        saberColor.getGreen(),
-                        saberColor.getBlue(),
-                        (int)(255 * alpha)));
-            }
-            
-            // メインの色（白との境界用）
-            mainStroke = new BasicStroke(9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-            mainColor = new Color(saberColor.getRed(), saberColor.getGreen(), saberColor.getBlue(), 140);
-            
-            // 白→色のぼかしゾーン（最重要）
-            mergeStrokes = new ArrayList<BasicStroke>();
-            mergeColors = new ArrayList<Color>();
-            for (int i = 3; i >= 1; i--) {
-                float t = i / 3f; // 1.0 → 0.33
-                int r = (int)(255 * (1 - t) + saberColor.getRed()   * t);
-                int gC= (int)(255 * (1 - t) + saberColor.getGreen()* t);
-                int b = (int)(255 * (1 - t) + saberColor.getBlue() * t);
-        
-                mergeStrokes.add(new BasicStroke(6f + i * 1.2f,
-                        BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_ROUND));
-                mergeColors.add(new Color(r, gC, b, 160));
-            }
-            
-            // 中心の白い芯（太め）
-            coreStroke = new BasicStroke(5.5f,
-                    BasicStroke.CAP_ROUND,
-                    BasicStroke.JOIN_ROUND);
-            coreColor = new Color(245, 250, 255);
-        }
-    
-        // ごく薄い外側の光（控えめ）
-        for (int j = 0; j < ousStrokes.size(); j++) {
-            g2.setStroke(ousStrokes.get(j));
-            g2.setColor(ousColors.get(j));
-            g2.drawLine(x1, y1, x2, y2);
-        }
-    
-        // メインの色（白との境界用）
-        g2.setStroke(mainStroke);
-        g2.setColor(mainColor);
-        g2.drawLine(x1, y1, x2, y2);
-    
-        // 白→色のぼかしゾーン（最重要）
-        for (int j = 0; j < mergeStrokes.size(); j++) {
-            g2.setStroke(mergeStrokes.get(j));
-            g2.setColor(mergeColors.get(j));
-            g2.drawLine(x1, y1, x2, y2);
-        }
-    
-        // 中心の白い芯（太め）
-        g2.setStroke(coreStroke);
-        g2.setColor(coreColor);
-        g2.drawLine(x1, y1, x2, y2);
     }
 
 	public boolean isCommit() {

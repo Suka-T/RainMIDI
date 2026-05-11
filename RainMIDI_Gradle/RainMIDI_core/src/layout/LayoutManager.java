@@ -19,9 +19,11 @@ import layout.LayoutConfig.EColEffect;
 import layout.LayoutConfig.EColorAsign;
 import layout.LayoutConfig.EKeyboardDesign;
 import layout.LayoutConfig.ENotesDesign;
+import layout.LayoutConfig.ETickbarDesign;
 import layout.parts.CollisionEffectPainter;
 import layout.parts.KeyboardPainter;
 import layout.parts.NotesPainter;
+import layout.parts.TickbarPainter;
 import layout.parts.collisionEffect.ColorCollisionEffectPainter;
 import layout.parts.collisionEffect.NoneCollisionEffectPainter;
 import layout.parts.collisionEffect.SimpleCollisionEffectPainter;
@@ -33,6 +35,8 @@ import layout.parts.notes.FlatNotesPainter;
 import layout.parts.notes.FrameNotesPainter;
 import layout.parts.notes.Normal3dNotesPainter;
 import layout.parts.notes.NormalNotesPainter;
+import layout.parts.tickbar.GlowTickbarPainter;
+import layout.parts.tickbar.NormalTickbarPainter;
 import plg.PropertiesNode;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspViewMode;
@@ -64,6 +68,13 @@ public class LayoutManager {
             put(EColEffect.None, new NoneCollisionEffectPainter());
             put(EColEffect.Simple, new SimpleCollisionEffectPainter());
             put(EColEffect.Color, new ColorCollisionEffectPainter());
+        }
+    };
+    
+    private static Map<LayoutConfig.ETickbarDesign, TickbarPainter> tickBarPainters = new HashMap<LayoutConfig.ETickbarDesign, TickbarPainter>() {
+        {
+            put(ETickbarDesign.Normal, new NormalTickbarPainter());
+            put(ETickbarDesign.Glow, new GlowTickbarPainter());
         }
     };
 
@@ -162,6 +173,16 @@ public class LayoutManager {
         layout.definication();
     }
     
+    public void initializeConfigLight() {
+    	// 軽量デフォルト 
+        layout.definication();
+        layout.setData(LayoutConfig.LC_NOTES_DESIGN, "normal");
+        layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "default");
+        layout.setData(LayoutConfig.LC_COLLISION_EFFECT_IN, "none");
+        layout.setData(LayoutConfig.LC_COLLISION_EFFECT_OUT, "none");
+        layout.setData(LayoutConfig.LC_CURSOR_LINE, "normal");
+    }
+    
     public void invalidateEffectConfig() {
         layout.invalidateEffectConfig();
     }
@@ -211,10 +232,6 @@ public class LayoutManager {
 
     public boolean isVisiblePbLine() {
         return (boolean) layout.getData(LayoutConfig.LC_PB_VISIBLE);
-    }
-
-    public boolean isVisibleCursorEffect() {
-        return (boolean) layout.getData(LayoutConfig.LC_CURSOR_EFFE_VISIBLE);
     }
 
     public LayoutConfig.ENotesDesign getNotesDesign() {
@@ -307,5 +324,10 @@ public class LayoutManager {
     public CollisionEffectPainter getCollisionEffectPainterOut() {
         LayoutConfig.EColEffect effe = (LayoutConfig.EColEffect) layout.getData(LayoutConfig.LC_COLLISION_EFFECT_OUT);
         return cePainters.get(effe);
+    }
+    
+    public TickbarPainter getTickbarPainter() {
+        LayoutConfig.ETickbarDesign type = (LayoutConfig.ETickbarDesign) layout.getData(LayoutConfig.LC_CURSOR_LINE);
+        return tickBarPainters.get(type);
     }
 }
