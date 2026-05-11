@@ -177,7 +177,7 @@ public class LayoutManager {
     	// 軽量デフォルト 
         layout.definication();
         layout.setData(LayoutConfig.LC_NOTES_DESIGN, "normal");
-        layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "default");
+        layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "simple");
         layout.setData(LayoutConfig.LC_COLLISION_EFFECT_IN, "none");
         layout.setData(LayoutConfig.LC_COLLISION_EFFECT_OUT, "none");
         layout.setData(LayoutConfig.LC_CURSOR_LINE, "normal");

@@ -263,7 +263,7 @@ public class DesignViewer extends JDialog {
 	public void updateCombobox() {
 		initialized.set(false);
 		comboBoxLayoutFile.removeAllItems();
-		comboBoxLayoutFile.addItem("Backup");
+		comboBoxLayoutFile.addItem("-- Backup --");
 		comboBoxLayoutFile.addItem("RainMIDI-Default");
 		comboBoxLayoutFile.addItem("RainMIDI-Lightweight");
 		
