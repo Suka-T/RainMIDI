@@ -164,7 +164,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         imageWorkerMgr.dispose();
         System.gc();
 
-        if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+        if (AbstractRenderPlugin.PluginInstance.winArray.isEmpty()) {
             JMPCoreAccessor.getSoundManager().stop();
 
             if (JMPCoreAccessor.getWindowManager().getMainWindow().isWindowVisible() == true) {
@@ -172,6 +172,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
 
             JMPCoreAccessor.getSoundManager().removeMidiSequence();
+            
+            SystemProperties.getInstance().exitForRenderWindow();
 
             AbstractRenderPlugin.PluginInstance.launch();
         }

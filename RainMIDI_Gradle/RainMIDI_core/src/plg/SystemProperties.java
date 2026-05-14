@@ -22,6 +22,9 @@ import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
+import kdmapij.KDMAPI;
+import kdmapij.KDMAPIW;
+import kdmapij.OmniDirectReceiver;
 import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import layout.parts.SpectrumPainter;
@@ -36,8 +39,13 @@ import layout.parts.spectrum.NoneSpectrumPainter;
 import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
+
+	// JMPPに登録するKDMAPIラッパー名 
+	public static final String KDMAPI_NAME = "kdmapi";
+	
     public static final String SYSP_MISC_LANGUAGE = "misc.language";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
+    public static final String SYSP_AUDIO_FUNCTION = "audio.function";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
     public static final String SYSP_AUDIO_USAGE_MIDI_BUF = "audio.usageRamOfMidi";
     public static final String SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD = "audio.usageMidiAnalyThreadCnt";
@@ -82,6 +90,7 @@ public class SystemProperties {
         {
             put(SYSP_MISC_LANGUAGE, "Language");
             put(SYSP_FILE_DEFAULT_PATH, "Default folder");
+            put(SYSP_AUDIO_FUNCTION, "MIDI Audio function");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
             put(SYSP_AUDIO_USAGE_MIDI_BUF, "Use RAM of MIDI Event Buffer [1 - 100]");
             put(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, "Use MIDI Analyze Thread Count [1 - 24]");
@@ -134,6 +143,10 @@ public class SystemProperties {
         AUTO, ENGLISH, JAPANESE, CHINESE;
     }
     
+    public static enum SyspAudioFunc {
+        MIDISYSTEM, KDMAPI;
+    }
+
     public static enum SyspViewMode {
         RAIN_FALL, SIDE_FLOW;
     }
@@ -184,6 +197,9 @@ public class SystemProperties {
 
     private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE, SyspLanguage.CHINESE };
     private static String[] langItemS = { "Auto", "English", "Japanese", "Chinese" };
+    
+    private static Object[] audioFuncItemO = { SyspAudioFunc.MIDISYSTEM, SyspAudioFunc.KDMAPI };
+    private static String[] audioFuncItemS = { "midisys", "kdmapi" };
     
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
     private static String[] viewModeItemS = { "rain_fall", "side_flow" };
@@ -267,6 +283,7 @@ public class SystemProperties {
 
         nodes.add(new PropertiesNode(SYSP_MISC_LANGUAGE, PropertiesNodeType.ITEM, SyspLanguage.AUTO, langItemS, langItemO));
         nodes.add(new PropertiesNode(SYSP_FILE_DEFAULT_PATH, PropertiesNodeType.STRING, ""));
+        nodes.add(new PropertiesNode(SYSP_AUDIO_FUNCTION, PropertiesNodeType.ITEM, SyspAudioFunc.MIDISYSTEM, audioFuncItemS, audioFuncItemO));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_BUF, PropertiesNodeType.INT, "10", "1", "100"));
         nodes.add(new PropertiesNode(SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD, PropertiesNodeType.INT, "8", "1", "24"));
@@ -418,6 +435,14 @@ public class SystemProperties {
     }
 
     public void initialize() {
+    	
+    	if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
+	        if (KDMAPIW.IsKDMAPIAvailable()) {
+		        // KDMAPIの開始 
+		        KDMAPI.InitializeKDMAPIStream();
+	        }
+    	}
+    	
         // TODO Dimはバグるため720p固定とする
         PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
         dimNode.setObject("1280*768");
@@ -608,17 +633,44 @@ public class SystemProperties {
         boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
         JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
         
-        String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
-        ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
-        scheduler1.schedule(() -> {
-            JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, synthKey);
-        }, 200, TimeUnit.MILLISECONDS);
+        if (JMPCoreAccessor.getSoundManager().getMidiUnit().containsExternalReceiver(KDMAPI_NAME) == false) {
+    		JMPCoreAccessor.getSoundManager().getMidiUnit().addExternalReceiver(KDMAPI_NAME, new OmniDirectReceiver());
+    	}
+        
+        SyspAudioFunc audioFunc = (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData();
+        if (audioFunc == SyspAudioFunc.MIDISYSTEM) {
+        	// Midi System(WinMM) 
+        	ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
+            scheduler1.schedule(() -> {
+            	String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
+                JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, synthKey);
+            }, 200, TimeUnit.MILLISECONDS);
+        }
+        else {
+        	// KDMAPI 
+            ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
+            scheduler1.schedule(() -> {
+            	// KDMAPIの登録 
+                JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, KDMAPI_NAME);
+                System.out.println(JMPCoreAccessor.getDataManager().getConfigParam(IDataManager.CFG_KEY_MIDIOUT));
+            }, 200, TimeUnit.MILLISECONDS);
+        }
         
         // ファイルロードを予約する
         ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
         scheduler2.schedule(() -> {
             SystemProperties.getInstance().preloadAudioFiles();
         }, 400, TimeUnit.MILLISECONDS);
+    }
+    
+    public void exitForRenderWindow() {
+    	// 描画画面の終了 
+    	if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
+	        if (KDMAPIW.IsKDMAPIAvailable()) {
+	        	KDMAPI.ResetKDMAPIStream();
+		        KDMAPI.TerminateKDMAPIStream();
+	        }
+    	}
     }
     
     public void exit() {

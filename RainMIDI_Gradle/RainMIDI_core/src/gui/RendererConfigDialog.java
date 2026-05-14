@@ -66,6 +66,7 @@ import javax.swing.table.TableColumn;
 import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
+import kdmapij.KDMAPIW;
 import layout.LayoutConfig;
 import layout.LayoutManager;
 import plg.AbstractRenderPlugin;
@@ -191,7 +192,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JButton btnLoadLayoutButton;
     private JButton btnInitializeSettings;
     private JButton btnShowExpertSettings;
-    private JLabel lblSynthLabel;
     private JLabel lblVolumeLabel;
     private JLabel lblLow;
     private JLabel lblHigh;
@@ -213,6 +213,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JRadioButton rdbtnNumOfKeys128Keys;
     private JRadioButton rdbtnNumOfKeys88Keys;
     private JRadioButton rdbtnNumOfKeys76Keys;
+    private JRadioButton rdbtnAudioEnginMidiSystem;
+    private JRadioButton rdbtnAudioEnginKDMAPI;
+    private JLabel lblAudioEngin;
+    private final ButtonGroup buttonGroup_6 = new ButtonGroup();
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -316,7 +320,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher v" + AbstractRenderPlugin.APP_VERSION);
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 669);
+        setBounds(100, 100, 643, 685);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -341,7 +345,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 audioSummaryPanel = new JPanel();
                 audioSummaryPanel.setLayout(null);
                 audioSummaryPanel.setBorder(new TitledBorder(null, "Audio", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-                audioSummaryPanel.setBounds(12, 10, 584, 140);
+                audioSummaryPanel.setBounds(12, 10, 584, 157);
                 panel.add(audioSummaryPanel);
 
                 comboBoxSynth = new JComboBox<String>();
@@ -355,43 +359,39 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         updateSynthDescription();
                     }
                 });
-                comboBoxSynth.setBounds(96, 17, 175, 21);
+                comboBoxSynth.setBounds(96, 40, 175, 21);
                 audioSummaryPanel.add(comboBoxSynth);
 
-                lblSynthLabel = new JLabel("MIDI Receiver");
-                lblSynthLabel.setBounds(12, 21, 72, 13);
-                audioSummaryPanel.add(lblSynthLabel);
-
                 lblSynthDesc = new JLabel("");
-                lblSynthDesc.setBounds(283, 17, 289, 21);
+                lblSynthDesc.setBounds(283, 40, 289, 21);
                 audioSummaryPanel.add(lblSynthDesc);
 
                 chckbxIgnoreInBetween = new JCheckBox("Ignore audio in between two velocity values");
-                chckbxIgnoreInBetween.setBounds(96, 48, 303, 21);
+                chckbxIgnoreInBetween.setBounds(96, 67, 303, 21);
                 audioSummaryPanel.add(chckbxIgnoreInBetween);
 
                 spinnerIgnoreLow = new JSpinner();
-                spinnerIgnoreLow.setBounds(213, 75, 58, 20);
+                spinnerIgnoreLow.setBounds(207, 89, 58, 20);
                 audioSummaryPanel.add(spinnerIgnoreLow);
                 spinnerIgnoreLow.setModel(new SpinnerNumberModel(1, 1, 127, 1));
 
                 lblLow = new JLabel("Lowest");
-                lblLow.setBounds(159, 78, 50, 13);
+                lblLow.setBounds(153, 92, 50, 13);
                 audioSummaryPanel.add(lblLow);
                 lblLow.setHorizontalAlignment(SwingConstants.RIGHT);
 
                 lblHigh = new JLabel("Highest");
-                lblHigh.setBounds(315, 78, 50, 13);
+                lblHigh.setBounds(309, 92, 50, 13);
                 audioSummaryPanel.add(lblHigh);
                 lblHigh.setHorizontalAlignment(SwingConstants.RIGHT);
 
                 spinnerIgnoreHigh = new JSpinner();
-                spinnerIgnoreHigh.setBounds(370, 75, 58, 20);
+                spinnerIgnoreHigh.setBounds(364, 89, 58, 20);
                 audioSummaryPanel.add(spinnerIgnoreHigh);
                 spinnerIgnoreHigh.setModel(new SpinnerNumberModel(20, 1, 127, 1));
                 
                 lblVolumeLabel = new JLabel("Volume");
-                lblVolumeLabel.setBounds(12, 103, 72, 26);
+                lblVolumeLabel.setBounds(12, 119, 72, 26);
                 audioSummaryPanel.add(lblVolumeLabel);
                 
                 sliderVolume = new JSlider();
@@ -410,8 +410,34 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 sliderVolume.setMaximum(1000);
-                sliderVolume.setBounds(96, 103, 435, 26);
+                sliderVolume.setBounds(96, 119, 435, 26);
                 audioSummaryPanel.add(sliderVolume);
+                
+                lblAudioEngin = new JLabel("Render");
+                lblAudioEngin.setBounds(12, 21, 72, 13);
+                audioSummaryPanel.add(lblAudioEngin);
+                
+                rdbtnAudioEnginMidiSystem = new JRadioButton("MIDI System");
+                buttonGroup_6.add(rdbtnAudioEnginMidiSystem);
+                rdbtnAudioEnginMidiSystem.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		setSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION, "midisys");
+                		updateControlStatus();
+                	}
+                });
+                rdbtnAudioEnginMidiSystem.setBounds(96, 17, 113, 21);
+                audioSummaryPanel.add(rdbtnAudioEnginMidiSystem);
+                
+                rdbtnAudioEnginKDMAPI = new JRadioButton("KDMAPI");
+                buttonGroup_6.add(rdbtnAudioEnginKDMAPI);
+                rdbtnAudioEnginKDMAPI.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		setSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION, "kdmapi");
+                		updateControlStatus();
+                	}
+                });
+                rdbtnAudioEnginKDMAPI.setBounds(213, 17, 113, 21);
+                audioSummaryPanel.add(rdbtnAudioEnginKDMAPI);
                 spinnerIgnoreHigh.addChangeListener(new ChangeListener() {
                     public void stateChanged(ChangeEvent arg0) {
                         int value = (int) spinnerIgnoreHigh.getValue();
@@ -434,7 +460,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 layoutSummaryPanel.setLayout(null);
                 layoutSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "Design", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                layoutSummaryPanel.setBounds(12, 160, 584, 77);
+                layoutSummaryPanel.setBounds(12, 177, 584, 77);
                 panel.add(layoutSummaryPanel);
 
                 btnLoadLayoutButton = new JButton("Design Change");
@@ -465,7 +491,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 247, 584, 267);
+                systemSummaryPanel.setBounds(12, 264, 584, 267);
                 panel.add(systemSummaryPanel);
 
                 lblWindowSizeLabel = new JLabel("Window Size");
@@ -811,7 +837,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(439, 524, 157, 21);
+                btnShowExpertSettings.setBounds(441, 541, 157, 21);
                 panel.add(btnShowExpertSettings);
                 
                 btnInitializeSettings = new JButton("Initialize Settings");
@@ -839,7 +865,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 524, 140, 21);
+                btnInitializeSettings.setBounds(12, 541, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -985,6 +1011,19 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             }
         }
     }
+    
+    public String getSystemTableParam(String key) {
+        if (rendererTable.isEditing()) {
+            rendererTable.getCellEditor().stopCellEditing();
+        }
+        for (int i = 0; i < rendererModel.getRowCount(); i++) {
+            String skey = (String) systemItemKeys.get(i);
+            if (skey.equals(key)) {
+                return (String)rendererModel.getValueAt(i, 1);
+            }
+        }
+        return "";
+    }
 
     public void updateItem() {
         updateSystemItems();
@@ -1011,6 +1050,15 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     comboBoxWindowSize.addItem(s);
                 }
                 comboBoxWindowSize.setSelectedItem(node.getDataString());
+            }
+            else if (keyName.equals(SystemProperties.SYSP_AUDIO_FUNCTION)) {
+            	String audioFunc = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).getDataString();
+            	if (audioFunc.equals("midisys")) {
+                    rdbtnAudioEnginMidiSystem.setSelected(true);
+                }
+                else if (audioFunc.equals("kdmapi")) {
+                	rdbtnAudioEnginKDMAPI.setSelected(true);
+                }
             }
             else if (keyName.equals(SystemProperties.SYSP_MISC_LANGUAGE)) {
                 for (String s : node.getItemArray()) {
@@ -1251,6 +1299,20 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
         updateSynthDescription();
     }
+    
+    public void updateControlStatus() {
+        String engine = getSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION);
+        if (engine.equals("midisys")) {
+        	comboBoxSynth.setVisible(true);
+        	lblSynthDesc.setVisible(true);
+        }
+        else if (engine.equals("kdmapi")) {
+        	comboBoxSynth.setVisible(false);
+        	lblSynthDesc.setVisible(false);
+        }
+        
+        rdbtnAudioEnginKDMAPI.setEnabled(KDMAPIW.IsKDMAPIAvailable());
+    }
 
     @Override
     public void setVisible(boolean b) {
@@ -1275,7 +1337,6 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         btnInitializeSettings.setText(I18n.t("button.initSettings"));
         btnShowExpertSettings.setText(I18n.t("button.showExpertSettings"));
         
-        lblSynthLabel.setText(I18n.t("label.MIDIReceiver"));
         lblVolumeLabel.setText(I18n.t("label.volume"));
         lblHigh.setText(I18n.t("label.highest"));
         lblLow.setText(I18n.t("label.lowest"));
@@ -1287,6 +1348,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         lblMonitorTypeLabel.setText(I18n.t("label.monitorType"));
         lblIgnoreNotesLabel.setText(I18n.t("label.ignoreNotes"));
         lblNumOfKeysLabel.setText(I18n.t("label.keyRange"));
+        lblAudioEngin.setText(I18n.t("label.audioEngine"));
         
         chckbxIgnoreInBetween.setText(I18n.t("chckbx.ignoreAudioIn"));
         chckbxViewReverse.setText(I18n.t("chckbx.viewReverse"));
@@ -1335,10 +1397,14 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         if (Utility.isGpuAvailable() == false) {
             SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_USE_GPU).setObject("false");
         }
+        if (!Utility.isWindows()) {
+        	SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).setObject("midisys");
+        }
         updateLanguage();
         updateItem();
         updateSynthItem();
         updateAbout();
+        updateControlStatus();
         
         int cur = (int)(JMPCoreAccessor.getSoundManager().getLineVolume() * (float)sliderVolume.getMaximum());
         sliderVolume.setValue(cur);
