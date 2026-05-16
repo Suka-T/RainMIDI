@@ -121,6 +121,28 @@ public class GraphMonitorPainter extends MonitorPainter {
         sy += sh;
         
         sb.setLength(0);
+        sb.append("MAX NPS: ");
+        val2 = (long) notesMonitor.getMaxNps();
+        formatWithCommas(val2, sb);
+        g.setColor(backStrColor);
+        g.drawString(sb.toString(), sx + 1, sy + 1);
+        g.setColor(topStrColor);
+        g.drawString(sb.toString(), sx, sy);
+        sy += sh;
+        
+        if (midiUnit.isRenderingOnlyMode() == false) {
+	        sb.setLength(0);
+	        sb.append("MAX POLY: ");
+	        val2 = (long) notesMonitor.getMaxPolyphony();
+	        formatWithCommas(val2, sb);
+	        g.setColor(backStrColor);
+	        g.drawString(sb.toString(), sx + 1, sy + 1);
+	        g.setColor(topStrColor);
+	        g.drawString(sb.toString(), sx, sy);
+	        sy += sh;
+        }
+        
+        sb.setLength(0);
         val1 = (int) midiUnit.getTempoInBPM();
         val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
         sb.append("BPM: ").append(val1).append(".").append(val2);
@@ -170,9 +192,6 @@ public class GraphMonitorPainter extends MonitorPainter {
         sb.setLength(0);
         val1 = (long) notesMonitor.getNps();
         formatWithCommas(val1, sb);
-        sb.append(" / ");
-        val1 = (long) notesMonitor.getMaxNps();
-        formatWithCommas(val1, sb);
         gGrap.setFont(GRAPH_FONT);
         gGrap.setColor(backStrColor);
         gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 16);
@@ -214,9 +233,6 @@ public class GraphMonitorPainter extends MonitorPainter {
             }
             sb.setLength(0);
             val1 = (long) notesMonitor.getPolyphony();
-            formatWithCommas(val1, sb);
-            val1 = (long) notesMonitor.getMaxPolyphony();
-            sb.append(" / ");
             formatWithCommas(val1, sb);
             gGrap.setFont(GRAPH_FONT);
             gGrap.setColor(backStrColor);
