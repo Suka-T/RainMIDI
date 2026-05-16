@@ -22,7 +22,6 @@ import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
-import kdmapij.KDMAPI;
 import kdmapij.KDMAPIW;
 import kdmapij.OmniDirectReceiver;
 import layout.LayoutManager;
@@ -439,7 +438,7 @@ public class SystemProperties {
     	if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
 	        if (KDMAPIW.IsKDMAPIAvailable()) {
 		        // KDMAPIの開始 
-		        KDMAPI.InitializeKDMAPIStream();
+		        KDMAPIW.InitializeKDMAPIStream();
 	        }
     	}
     	
@@ -667,8 +666,8 @@ public class SystemProperties {
     	// 描画画面の終了 
     	if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
 	        if (KDMAPIW.IsKDMAPIAvailable()) {
-	        	KDMAPI.ResetKDMAPIStream();
-		        KDMAPI.TerminateKDMAPIStream();
+	        	KDMAPIW.ResetKDMAPIStream();
+		        KDMAPIW.TerminateKDMAPIStream();
 	        }
     	}
     }

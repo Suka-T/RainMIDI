@@ -217,6 +217,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JRadioButton rdbtnAudioEnginKDMAPI;
     private JLabel lblAudioEngin;
     private final ButtonGroup buttonGroup_6 = new ButtonGroup();
+    private JLabel lblMidiDevice;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -438,6 +439,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 rdbtnAudioEnginKDMAPI.setBounds(213, 17, 113, 21);
                 audioSummaryPanel.add(rdbtnAudioEnginKDMAPI);
+                
+                lblMidiDevice = new JLabel("Midi Device");
+                lblMidiDevice.setBounds(12, 44, 72, 13);
+                audioSummaryPanel.add(lblMidiDevice);
                 spinnerIgnoreHigh.addChangeListener(new ChangeListener() {
                     public void stateChanged(ChangeEvent arg0) {
                         int value = (int) spinnerIgnoreHigh.getValue();
@@ -1305,10 +1310,12 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         if (engine.equals("midisys")) {
         	comboBoxSynth.setVisible(true);
         	lblSynthDesc.setVisible(true);
+        	lblMidiDevice.setVisible(true);
         }
         else if (engine.equals("kdmapi")) {
         	comboBoxSynth.setVisible(false);
         	lblSynthDesc.setVisible(false);
+        	lblMidiDevice.setVisible(false);
         }
         
         rdbtnAudioEnginKDMAPI.setEnabled(KDMAPIW.IsKDMAPIAvailable());
@@ -1349,6 +1356,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         lblIgnoreNotesLabel.setText(I18n.t("label.ignoreNotes"));
         lblNumOfKeysLabel.setText(I18n.t("label.keyRange"));
         lblAudioEngin.setText(I18n.t("label.audioEngine"));
+        lblMidiDevice.setText(I18n.t("label.MIDIReceiver"));
         
         chckbxIgnoreInBetween.setText(I18n.t("chckbx.ignoreAudioIn"));
         chckbxViewReverse.setText(I18n.t("chckbx.viewReverse"));

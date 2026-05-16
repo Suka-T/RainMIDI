@@ -25,6 +25,7 @@ import jlib.core.JMPCoreAccessor;
 import jlib.player.IPlayerListener;
 import jlib.plugin.ISupportExtensionConstraints;
 import jlib.plugin.JMidiPlugin;
+import kdmapij.KDMAPIW;
 import layout.LayoutManager;
 import plg.SystemProperties.SyspViewMode;
 
@@ -199,6 +200,17 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         }
         
         createExtensions();
+        
+        // KDMAPIをロードする 
+        if (KDMAPIW.LoadKDMAPILibrary()) {
+        	System.out.println("KDMAPI Load Success");
+        	System.out.println("Wrapper Ver : " + KDMAPIW.VERSION_OF_WRAPPER);
+        	System.out.println("KDMAPI Ver : " + KDMAPIW.ReturnKDMAPIVer());
+        }
+        else {
+        	System.out.println("KDMAPI Load Fail");
+        }
+        
 
         Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
         Path fullPath = folder.resolve(PROP_FILE_NAME);
