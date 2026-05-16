@@ -40,7 +40,7 @@ import plg.PropertiesNode.PropertiesNodeType;
 public class SystemProperties {
 
 	// JMPPに登録するKDMAPIラッパー名 
-	public static final String KDMAPI_NAME = "kdmapi";
+	public static final String KDMAPI_NAME = "KDMAPI_for_RainMIDI";
 	
     public static final String SYSP_MISC_LANGUAGE = "misc.language";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
@@ -439,6 +439,10 @@ public class SystemProperties {
 	        if (KDMAPIW.IsKDMAPIAvailable()) {
 		        // KDMAPIの開始 
 		        KDMAPIW.InitializeKDMAPIStream();
+		        
+		        if (JMPCoreAccessor.getSoundManager().getMidiUnit().containsExternalReceiver(KDMAPI_NAME) == false) {
+		    		JMPCoreAccessor.getSoundManager().getMidiUnit().addExternalReceiver(KDMAPI_NAME, new OmniDirectReceiver());
+		    	}
 	        }
     	}
     	
@@ -631,10 +635,6 @@ public class SystemProperties {
         
         boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
         JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
-        
-        if (JMPCoreAccessor.getSoundManager().getMidiUnit().containsExternalReceiver(KDMAPI_NAME) == false) {
-    		JMPCoreAccessor.getSoundManager().getMidiUnit().addExternalReceiver(KDMAPI_NAME, new OmniDirectReceiver());
-    	}
         
         SyspAudioFunc audioFunc = (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData();
         if (audioFunc == SyspAudioFunc.MIDISYSTEM) {
