@@ -299,7 +299,7 @@ public class DesignViewer extends JDialog {
 	
 	private void updateView() {
 		if (comboBoxLayoutFile.getSelectedIndex() == 0) {
-        	Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+        	Path folder = Utility.getAppConfigDirectory();
         	Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
         	selectedLayoutFile = fullPath.toFile();
             try {

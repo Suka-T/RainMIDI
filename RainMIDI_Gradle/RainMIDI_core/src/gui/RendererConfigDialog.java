@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,7 +63,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import jlib.core.ISoundManager;
-import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import kdmapij.KDMAPIW;
 import layout.LayoutConfig;
@@ -1466,7 +1464,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             	commitLayout(); // 先に変更を決定する
             	
                 try {
-                	Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, targetPlg));
+                	Path folder = Utility.getAppConfigDirectory();
                     Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
 					LayoutManager.getInstance().write(fullPath.toFile());
 				} catch (IOException e1) {

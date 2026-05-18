@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +19,6 @@ import gui.RainFallRendererWindow;
 import gui.RendererConfigDialog;
 import gui.RendererWindow;
 import gui.SideFlowRendererWindow;
-import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import jlib.player.IPlayerListener;
 import jlib.plugin.ISupportExtensionConstraints;
@@ -123,15 +121,15 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     }
     
     public void writeSystemProp() throws FileNotFoundException, IOException {
-        Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        Path folder = Utility.getAppConfigDirectory();
         Path fullPath = folder.resolve(PROP_FILE_NAME);
-        File propFile = new File(fullPath.toString());
+        File propFile = fullPath.toFile();
         
         SystemProperties.getInstance().write(propFile);
     }
     
     public void writeBackupLayout() throws FileNotFoundException, IOException {
-        Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        Path folder = Utility.getAppConfigDirectory();
         Path fullPath = folder.resolve(BACKUP_FILE_NAME);
         File backupLayoutFile = fullPath.toFile();
         
@@ -212,7 +210,12 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         }
         
 
-        Path folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        Path folder = Utility.getAppConfigDirectory();
+        File fFolder = folder.toFile();
+        if (!fFolder.exists()) {
+        	fFolder.mkdir();
+        }
+        
         Path fullPath = folder.resolve(PROP_FILE_NAME);
         File propFile = new File(fullPath.toString());
         try {
@@ -223,7 +226,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             e1.printStackTrace();
         }
 
-        folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, this));
+        folder = Utility.getAppConfigDirectory();
         fullPath = folder.resolve(BACKUP_FILE_NAME);
         LayoutManager.getInstance().initializeConfig();
         try {

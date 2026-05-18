@@ -8,10 +8,17 @@ import java.awt.image.VolatileImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import jlib.core.ISystemManager;
+import jlib.core.JMPCoreAccessor;
+
 public class Utility {
+	
+	public static final String APP_DIR_NAME = "RainMIDI";
 
     /**
      * HTMLカラーコードをAWTカラーインスタンスに変換
@@ -294,5 +301,27 @@ public class Utility {
             }
         }
         return true;
+    }
+    
+    public static Path getAppConfigDirectory() {
+        String userHome = System.getProperty("user.home");
+        Path configPath;
+
+        if (isWindows()) {
+        	// Windows: C:/Users/username/AppData/Roaming
+            String appData = System.getenv("APPDATA");
+            if (appData != null) {
+                configPath = Paths.get(appData).resolve(APP_DIR_NAME);
+            }
+            else {
+                configPath = Paths.get(userHome, "AppData", "Roaming", APP_DIR_NAME);
+            }
+        }
+        else {
+        	// サポート外OSはカレントフォルダに生成。設定の引継ぎ不可  
+            configPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(
+            		ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+        }
+        return configPath;
     }
 }

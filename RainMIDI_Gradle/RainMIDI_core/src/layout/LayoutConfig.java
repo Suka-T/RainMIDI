@@ -202,7 +202,9 @@ public class LayoutConfig {
     private void setPropObject(Properties props, String key) {
         String str = props.getProperty(key);
         PropertiesNode node = getPropNode(key);
-        node.setObject(str);
+        if (node != null) {
+        	node.setObject(str);
+        }
     }
     
     public Object getData(String key) {
