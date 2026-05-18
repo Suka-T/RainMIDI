@@ -418,7 +418,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public int getFPS() {
         return fps;
     }
-
+    
     @Override
     public void run() {
         final long frameInterval = delayNano; // 1フレームあたりナノ秒
@@ -426,46 +426,116 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         long fpsCounterTime = lastTime;
         int frameCount = 0;
 
+        // スリープの精度を上げるためのしきい値（1ms未満の端数はビジーループで調整する）
+        final long sleepThresholdNanos = TimeUnit.MILLISECONDS.toNanos(1);
+
         while (running) {
             try {
                 long now = System.nanoTime();
                 long elapsed = now - lastTime;
 
                 if (elapsed >= frameInterval) {
-                    if (isAvailableGpu) {
-                        render(); // 描画処理
+                    // もし大幅に処理落ちしていた場合、時間を追いつかせる（追いつき処理）
+                    // これにより、重いフレームがあっても全体の再生速度が引きずられるのを防ぐ 
+                	int maxCatchup = 2;
+                	int catchupCount = 0;
+                	
+                	while (elapsed >= frameInterval && catchupCount < maxCatchup) {
+                	    lastTime += frameInterval;
+                	    elapsed -= frameInterval;
+                	    catchupCount++;
+                	}
+                	
+                	// もし2回追いついてもまだ現在時刻に追いついていない（大遅刻している）場合
+                    // lastTimeが過去に置き去りになるのを防ぐため、現在の時間でリセットして仕切り直す
+                    if (elapsed >= frameInterval) {
+                        lastTime = now;
                     }
-                    else {
-                        renderSoft(); // ソフトレンダリング
+
+                    // 描画処理を実行（追いつきが発生していても、描画は現在の最新状態で1回だけ行う）
+                    if (isAvailableGpu) {
+                        render();
+                    } else {
+                        renderSoft();
                     }
                     frameCount++;
-                    lastTime += frameInterval;
-
-                    // FPS計測（1秒ごと）
-                    if (now - fpsCounterTime >= TimeUnit.SECONDS.toNanos(1)) {
-                        fps = frameCount;
-                        frameCount = 0;
-                        fpsCounterTime = now;
+                } else {
+                    // 次のフレームまでの待ち時間を計算
+                    long sleepNanos = frameInterval - elapsed;
+                    
+                    // 1ミリ秒以上の余裕があるときだけ、1回だけ高精度にスリープする
+                    if (sleepNanos >= sleepThresholdNanos) {
+                        LockSupport.parkNanos(sleepNanos - (sleepThresholdNanos / 2));
+                    } else {
+                        // 1ミリ秒未満の極めてわずかな隙間は、あえてスレッドを休ませず
+                        // CPUの実行権を少しだけ譲る（Thread.onSpinWait）ことで、ナノ秒単位の超高精度なタイミングを作ります
+                        //Thread.onSpinWait();
+                    	Thread.yield(); // CPU負荷軽減のためyieldにする 
                     }
                 }
-                else {
-                    // 次フレームまで余裕があればスリープ
-                    long sleepNanos = frameInterval - elapsed;
-                    if (sleepNanos > 0) {
-                        long sleepMillis = sleepNanos / 1_000_000;
-                        int sleepNanoRemainder = (int) (sleepNanos % 1_000_000);
-                        if (sleepMillis > 0)
-                            Thread.sleep(sleepMillis);
-                        if (sleepNanoRemainder > 0)
-                            LockSupport.parkNanos(sleepNanoRemainder);
-                    }
+
+                // FPS計測はループの最外殻で行うことで、処理落ちに影響されない正確な1秒を測る
+                long currentNow = System.nanoTime();
+                if (currentNow - fpsCounterTime >= TimeUnit.SECONDS.toNanos(1)) {
+                    fps = frameCount;
+                    frameCount = 0;
+                    //fpsCounterTime = currentNow;
+                    fpsCounterTime += TimeUnit.SECONDS.toNanos(1);
                 }
             }
             catch (Throwable e) {
-                JMPCoreAccessor.getSystemManager().errorHandle(e);
+                JMPCoreAccessor.getSystemManager().errorHandle(e, true, true);
             }
         }
     }
+
+//    @Override
+//    public void run() {
+//        final long frameInterval = delayNano; // 1フレームあたりナノ秒
+//        long lastTime = System.nanoTime();
+//        long fpsCounterTime = lastTime;
+//        int frameCount = 0;
+//
+//        while (running) {
+//            try {
+//                long now = System.nanoTime();
+//                long elapsed = now - lastTime;
+//
+//                if (elapsed >= frameInterval) {
+//                    if (isAvailableGpu) {
+//                        render(); // 描画処理
+//                    }
+//                    else {
+//                        renderSoft(); // ソフトレンダリング
+//                    }
+//                    frameCount++;
+//                    lastTime += frameInterval;
+//
+//                    // FPS計測（1秒ごと）
+//                    if (now - fpsCounterTime >= TimeUnit.SECONDS.toNanos(1)) {
+//                        fps = frameCount;
+//                        frameCount = 0;
+//                        fpsCounterTime = now;
+//                    }
+//                }
+//                else {
+//                    // 次フレームまで余裕があればスリープ
+//                    long sleepNanos = frameInterval - elapsed;
+//                    if (sleepNanos > 0) {
+//                        long sleepMillis = sleepNanos / 1_000_000;
+//                        int sleepNanoRemainder = (int) (sleepNanos % 1_000_000);
+//                        if (sleepMillis > 0)
+//                            Thread.sleep(sleepMillis);
+//                        if (sleepNanoRemainder > 0)
+//                            LockSupport.parkNanos(sleepNanoRemainder);
+//                    }
+//                }
+//            }
+//            catch (Throwable e) {
+//                JMPCoreAccessor.getSystemManager().errorHandle(e);
+//            }
+//        }
+//    }
 
     protected void render() {
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
@@ -478,32 +548,33 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         strategy.show();
     }
-
+    
     protected void renderSoft() {
-        // CPU上オフスクリーン描画用のバックバッファーを用意
-        if (backBuffer == null || backBufferGrapics == null || backBufferCanvasGrapics == null) {
-            backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        int width = getWidth();
+        int height = getHeight();
+
+        if (backBuffer == null || backBuffer.getWidth() != width || backBuffer.getHeight() != height) {
+            if (backBufferGrapics != null) {
+            	backBufferGrapics.dispose();
+            }
+            
+            backBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             backBufferGrapics = backBuffer.createGraphics();
-            backBufferCanvasGrapics = canvas.getGraphics();
         }
 
-        Graphics2D g = (Graphics2D)backBufferGrapics;
         try {
-            paintDisplay(g);
-        }
-        finally {
-        }
-
-        // バッファを画面に転送
-        Graphics2D screen = (Graphics2D) backBufferCanvasGrapics;
-        try {
-            screen.drawImage(backBuffer, 0, 0, null);
-        }
-        finally {
+            paintDisplay(backBufferGrapics);
+        } catch (Exception e) {
+            e.printStackTrace(); // 描画中の例外でループが止まるのを防ぐ
         }
 
-        if (backBuffer.getWidth() != getWidth() || backBuffer.getHeight() != getHeight()) {
-            backBuffer = null;
+        Graphics2D screen = (Graphics2D) canvas.getGraphics();
+        if (screen != null) {
+            try {                
+                screen.drawImage(backBuffer, 0, 0, null);
+            } finally {
+                screen.dispose(); // 取得したGraphicsは必ず使い捨てる
+            }
         }
     }
 
@@ -591,7 +662,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             // 補間方法を設定
             lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
             lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
             
             int panelW = getContentPane().getWidth();
             int panelH = getContentPane().getHeight();
@@ -659,6 +730,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private double angle = 0;
+    private Color armColor = null;
+    private Color[] armColors = new Color[12];
+    private float spinR = 0f;
+    private float spinG = 0f;
+    private float spinB = 0f;
 
     private void drawSpinner(Graphics2D g2d) {
         int w = getContentPane().getWidth();
@@ -669,19 +745,24 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             angle += 0.1;
         }
 
-        Color armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
+        if (armColor == null) {
+        	armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
+        	spinR = (float) armColor.getRed() / 255.0f;
+        	spinG = (float) armColor.getGreen() / 255.0f;
+        	spinB = (float) armColor.getBlue() / 255.0f;
+        	
+        	for (int i = 0; i < 12; i++) {
+        		float alpha = (i + 1) / 12f;
+        		armColors[i] = new Color(spinR, spinG, spinB, alpha);
+        	}
+        }
 
         g2d.translate(w / 2, h / 2);
         g2d.rotate(angle);
 
-        float fr = (float) armColor.getRed() / 255.0f;
-        float fg = (float) armColor.getGreen() / 255.0f;
-        float fb = (float) armColor.getBlue() / 255.0f;
-
         // 回転アームを描画（12本）
         for (int i = 0; i < 12; i++) {
-            float alpha = (i + 1) / 12f;
-            g2d.setColor(new Color(fr, fg, fb, alpha));
+            g2d.setColor(armColors[i]);
             int armWidth = 32;
             int armHeight = 10;
             g2d.fillRoundRect(spinnerRadius, -armHeight / 2, armWidth, armHeight, 10, 10);
@@ -775,13 +856,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         // 補間方法を設定
         bg2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
-        bg2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        bg2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
         copyFromNotesImage(bg2);
         
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         copyFromScreenImage(g2);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
@@ -824,13 +905,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 fsize = 16;
                 g.setFont(msgFontS);
                 fm = g.getFontMetrics();
-
-                // sb.setLength(0);
-                // sb.append("TICK: ").append(midiUnit.getProgressReadTick());
-                // stringWidth = fm.stringWidth(sb.toString());
-                // strX = (paneWidth - stringWidth) / 2;
-                // g.drawString(sb.toString(), strX, strY + (fsize / 2));
-                // strY += fsize + 2;
 
                 sb.setLength(0);
                 sb.append("NOTES: ").append(midiUnit.getProgressNotesCount());

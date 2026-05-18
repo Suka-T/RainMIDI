@@ -353,6 +353,8 @@ public class SystemProperties {
         }
         if (hasExtGPU == false) {
             setData(SYSP_RENDERER_USE_GPU, "false");
+            setData(SYSP_RENDERER_FPS, "30");
+            setData(SYSP_RENDERER_NOTES_COLOR_BITS, "rgb565");
         }
     }
     
@@ -558,7 +560,7 @@ public class SystemProperties {
         
         isGPUAvailable = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_GPU);
         useVramImage = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_VRAM_IMAGE);
-        
+
         boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
         int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
         int ignoreNotesHighestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST);
