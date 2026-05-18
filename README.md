@@ -33,6 +33,9 @@ RainMIDI utilizes the following projects:
 ### [JMPPlayer](https://github.com/Suka-T/JmpPlayer_midi)<br>
 A library that provides core functionality for MIDI and audio playback.
 
+### [Java Wrapper for KDMAPI](https://github.com/Suka-T/KDMAPI_Java)<br>
+Java JNA Wrapper for OmniMIDI (KDMAPI).
+
 ## ☕ About Zulu JDK/JRE
 This application includes **Zulu OpenJDK** provided by **Azul Systems, Inc.**
 
