@@ -173,14 +173,18 @@ public class LayoutManager {
         layout.definication();
     }
     
-    public void initializeConfigLight() {
-    	// 軽量デフォルト 
+    public void initializeClassic() {
+    	// Classic Design
         layout.definication();
-        layout.setData(LayoutConfig.LC_NOTES_DESIGN, "normal");
-        layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "simple");
-        layout.setData(LayoutConfig.LC_COLLISION_EFFECT_IN, "none");
+        layout.setData(LayoutConfig.LC_NOTES_DESIGN, "normal3d");
+        layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "default");
+        layout.setData(LayoutConfig.LC_COLLISION_EFFECT_IN, "simple");
         layout.setData(LayoutConfig.LC_COLLISION_EFFECT_OUT, "none");
         layout.setData(LayoutConfig.LC_CURSOR_LINE, "normal");
+    }
+    
+    public void initializeConfigLight() {
+    	initializeClassic();
     }
     
     public void invalidateEffectConfig() {
