@@ -114,6 +114,10 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             else {
                 startRendererWindow();
             }
+            
+            if (splash != null) {
+            	if (splash.isVisible()) splash.setVisible(false);
+            }
         }
         catch (Exception e1) {
             e1.printStackTrace();
@@ -238,10 +242,6 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         catch (IOException e1) {
             e1.printStackTrace();
             LayoutManager.getInstance().initializeConfig();
-        }
-        
-        if (splash != null) {
-            splash.setVisible(false);
         }
         
         if (SystemProperties.getInstance().getPreloadFiles().isEmpty() == true) {
