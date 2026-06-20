@@ -23,7 +23,7 @@ public class GraphMonitorPainter extends MonitorPainter {
     private static final int FONT_SIZE = 28;
     
     private static final BasicStroke GRAPH_BORDER_STROKE = new BasicStroke(
-            1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke GRAPH_FRAMEBORDER_STROKE = new BasicStroke(2.0f);
     private static final Font GRAPH_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
     private static final Font GRAPH_GUIDE_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 10);
