@@ -264,7 +264,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         msgFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 28);
         msgFontS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 18);
         msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
-        graphFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 12);
+        graphFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
         graphTitleFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
 
         isAvailableGpu = SystemProperties.getInstance().isAvailavleGpu();
@@ -1065,6 +1065,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             Graphics2D gGrap = (Graphics2D) g.create();
             gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
+            Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
+            Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
+            
             int grapW = 100;
             int grapH = 60;
             int grapX = this.getWidth() - grapW - 30;
@@ -1080,12 +1083,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             // CPU
             sb.setLength(0);
             sb.append("CPU");
-            gGrap.setFont(graphTitleFont);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
             gGrap.setColor(GRAPH_BG_COLOR);
             gGrap.fillRect(grapX, grapY, grapW, grapH);
+            gGrap.setFont(graphTitleFont);
+            gGrap.setColor(backStrColor);
+            gGrap.drawString(sb.toString(), grapX + 3, grapY + 22);
+            gGrap.setColor(topStrColor);
+            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
             gGrap.setStroke(GRAPH_BORDER_STROKE);
             data = osInfo.getUsageCpuBuffer();
             gwRes = data.length - 1;
@@ -1105,7 +1109,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             sb.append(DF.format(osInfo.getUsageCpu() * 100.0)).append("%");
             gGrap.setFont(graphFont);
             gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 15);
+            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
             gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
             gGrap.setColor(Color.WHITE);
             gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
@@ -1115,12 +1119,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             // RAM
             sb.setLength(0);
             sb.append("RAM");
-            gGrap.setFont(graphTitleFont);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
             gGrap.setColor(GRAPH_BG_COLOR);
             gGrap.fillRect(grapX, grapY, grapW, grapH);
+            gGrap.setFont(graphTitleFont);
+            gGrap.setColor(backStrColor);
+            gGrap.drawString(sb.toString(), grapX + 3, grapY + 22);
+            gGrap.setColor(topStrColor);
+            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
             gGrap.setStroke(GRAPH_BORDER_STROKE);
             data = osInfo.getUsageRamBuffer();
             gwRes = data.length - 1;
@@ -1140,7 +1145,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             sb.append(DF.format(osInfo.getUsageRam() * 100.0)).append("%");
             gGrap.setFont(graphFont);
             gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 15);
+            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
             gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
             gGrap.setColor(Color.WHITE);
             gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);

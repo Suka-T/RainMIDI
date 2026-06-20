@@ -3,6 +3,7 @@ package layout.parts.monitor;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -24,9 +25,15 @@ public class GraphMonitorPainter extends MonitorPainter {
     private static final BasicStroke GRAPH_BORDER_STROKE = new BasicStroke(
             1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke GRAPH_FRAMEBORDER_STROKE = new BasicStroke(2.0f);
-    private static final Font GRAPH_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 12);
+    private static final Font GRAPH_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
+    private static final Font GRAPH_GUIDE_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 10);
     private static final Font GRAPH_TITLE_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
+    private static Color GRAPH_TITLE_COLOR = new Color(255, 255, 255, 255);
     private static Color GRAPH_BG_COLOR = new Color(0, 0, 0, 100);
+    
+    private static final BasicStroke GRAPH_GUIDE_STROKE = new BasicStroke(1.0f);
+    private static Color GRAPH_GUIDE_COLOR = new Color(225, 225, 225, 128);
+    private static Color GRAPH_GUIDE_TEXT_COLOR = new Color(225, 225, 225, 180);
 
     public GraphMonitorPainter() {
         if (Utility.isWindows()) {
@@ -51,7 +58,10 @@ public class GraphMonitorPainter extends MonitorPainter {
         int grapH = 60;
         int grapX = sx;
         int grapY = sy + 20;
-        int gwRes = 0;
+        if (!SystemProperties.getInstance().isVisibleRsrcMonitor()) {
+        	grapW = 200;
+        	grapH = 80;
+        }
         long[] data;
         long dataMax = 0;
         
@@ -60,7 +70,6 @@ public class GraphMonitorPainter extends MonitorPainter {
         
         Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
         Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
-        ;
         g.setFont(info1Font);
 
         sb.setLength(0);
@@ -164,21 +173,120 @@ public class GraphMonitorPainter extends MonitorPainter {
         // データの点と点を線で結ぶ
         grapX = sx;
         grapY = sy - 10;
+        data = graphMonSche.getNpsSnapshot();
+        dataMax = graphMonSche.getNpsPeekMax();
         sb.setLength(0);
-        sb.append("NPS");
-        gGrap.setFont(GRAPH_TITLE_FONT);
+        drawGraph(gGrap, sb, grapX, grapY, grapW, grapH, data, dataMax, "NPS", Color.CYAN);
+        
+        sb.setLength(0);
+        val1 = (long) notesMonitor.getNps();
+        formatWithCommas(val1, sb);
+        gGrap.setFont(GRAPH_FONT);
+        gGrap.setColor(backStrColor);
+        gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 18);
+        gGrap.setColor(topStrColor);
+        gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
+        gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
         gGrap.setColor(Color.WHITE);
-        gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
+        gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
+        sy += grapH;
+
+        if (midiUnit.isRenderingOnlyMode() == false) {
+            // データの点と点を線で結ぶ2
+            grapX = sx;
+            grapY = sy + sh - 10;
+            data = graphMonSche.getPolySnapshot();
+            dataMax = graphMonSche.getPolyPeekMax();
+            sb.setLength(0);
+            drawGraph(gGrap, sb, grapX, grapY, grapW, grapH, data, dataMax, "POLY", Color.PINK);
+
+            sb.setLength(0);
+            val1 = (long) notesMonitor.getPolyphony();
+            formatWithCommas(val1, sb);
+            gGrap.setFont(GRAPH_FONT);
+            gGrap.setColor(backStrColor);
+            gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 18);
+            gGrap.setColor(topStrColor);
+            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
+            gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
+            gGrap.setColor(Color.WHITE);
+            gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
+            sy += grapH;
+        }
+    }
+
+    private void drawGraph(Graphics2D gGrap, StringBuilder sb, int grapX, int grapY, int grapW, int grapH, long[] data, long dataMax, String title, Color graphColor) {
+        sb.append(title);
+        gGrap.setFont(GRAPH_TITLE_FONT);
         gGrap.setColor(GRAPH_BG_COLOR);
         gGrap.fillRect(grapX, grapY, grapW, grapH);
-        gGrap.setStroke(GRAPH_BORDER_STROKE);
-        data = graphMonSche.getNpsSnapshot();
-        dataMax = (long) notesMonitor.getMaxNps();
-        if (dataMax < 32) {
-            dataMax = 32;
+        gGrap.setColor(GRAPH_TITLE_COLOR);
+        gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
+        int gwRes = data.length - 1;
+        
+        gGrap.setFont(GRAPH_GUIDE_FONT);
+        
+        long step = 50;
+        sb.setLength(0);
+        if (dataMax > 0) {
+            double rawStep = (double) dataMax / 3.8; 
+            double log10 = Math.log10(rawStep);
+            double power = Math.pow(10, Math.floor(log10));
+            double normalized = rawStep / power;
+
+            if (normalized < 1.2)       step = (long) (1 * power);
+            else if (normalized < 2.5)  step = (long) (2 * power);
+            else if (normalized < 6.0)  step = (long) (5 * power); // 500Kなどの「5」を維持
+            else                        step = (long) (10 * power);
+
+            if (step < 10) step = 10; 
         }
-        gwRes = data.length - 1;
-        gGrap.setColor(Color.CYAN);
+        if (step <= 0) step = 10;
+
+        // --- 2. ガイドラインの描画ループ（ここは変更なし、自動で2本の線になります） ---
+        gGrap.setStroke(GRAPH_GUIDE_STROKE);
+    	for (long lineVal = step; lineVal < dataMax; lineVal += step) {
+            
+            int lineY = grapY + (grapH - (int) (lineVal * grapH / dataMax));
+            gGrap.setColor(GRAPH_GUIDE_COLOR);
+            gGrap.drawLine(grapX, lineY, grapX + grapW, lineY);
+            
+            sb.setLength(0);
+            if (lineVal >= 1000000) {
+                // --- M表記の処理 ---
+                long remainder = lineVal % 1000000;
+                sb.append((int)(lineVal / 1000000));
+                
+                // 10万の位が5なら「.5」を付け足す (例: 1,500,000 -> 1.5M)
+                if (remainder >= 500000) {
+                    sb.append(".5");
+                }
+                sb.append("M");
+                
+            } else if (lineVal >= 1000) {
+                // --- K表記の処理 ---
+                long remainder = lineVal % 1000;
+                sb.append((int)(lineVal / 1000));
+                
+                // 100の位が5なら「.5」を付け足す (例: 1,500 -> 1.5K)
+                if (remainder >= 500) {
+                    sb.append(".5");
+                }
+                sb.append("K");
+                
+            } else {
+                // 1000未満
+                sb.append((int)(lineVal));
+            }
+            
+            String label = sb.toString();
+            FontMetrics fm = gGrap.getFontMetrics();
+            int labelWidth = fm.stringWidth(label);
+            
+            gGrap.setColor(GRAPH_GUIDE_TEXT_COLOR);
+            gGrap.drawString(label, grapX + grapW - labelWidth - 5, lineY + 10); 
+        }
+        gGrap.setColor(graphColor);
         gGrap.setStroke(GRAPH_BORDER_STROKE);
         for (int i = 0; i < data.length - 1; i++) {
             long dt1 = data[i] < 0 ? 0 : data[i];
@@ -189,61 +297,5 @@ public class GraphMonitorPainter extends MonitorPainter {
             int y2 = grapY + (grapH - (int) (dt2 * grapH / dataMax));
             gGrap.drawLine(x1, y1, x2, y2);
         }
-        sb.setLength(0);
-        val1 = (long) notesMonitor.getNps();
-        formatWithCommas(val1, sb);
-        gGrap.setFont(GRAPH_FONT);
-        gGrap.setColor(backStrColor);
-        gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 16);
-        gGrap.setColor(topStrColor);
-        gGrap.drawString(sb.toString(), grapX, grapY + grapH + 15);
-        gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-        gGrap.setColor(Color.WHITE);
-        gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
-        sy += grapH;
-
-        if (midiUnit.isRenderingOnlyMode() == false) {
-            // データの点と点を線で結ぶ2
-            grapX = sx;
-            grapY = sy + sh - 10;
-            sb.setLength(0);
-            sb.append("POLY");
-            gGrap.setFont(GRAPH_TITLE_FONT);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
-            gGrap.setColor(GRAPH_BG_COLOR);
-            gGrap.fillRect(grapX, grapY, grapW, grapH);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
-            data = graphMonSche.getPolySnapshot();
-            dataMax = (long) notesMonitor.getMaxPolyphony();
-            if (dataMax < 32) {
-                dataMax = 32;
-            }
-            gwRes = data.length - 1;
-            gGrap.setColor(Color.PINK);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
-            for (int i = 0; i < data.length - 1; i++) {
-                long dt1 = data[i] < 0 ? 0 : data[i];
-                long dt2 = data[i + 1] < 0 ? 0 : data[i + 1];
-                int x1 = grapX + (i * grapW / gwRes);
-                int y1 = grapY + (grapH - (int) (dt1 * grapH / dataMax));
-                int x2 = grapX + ((i + 1) * grapW / gwRes);
-                int y2 = grapY + (grapH - (int) (dt2 * grapH / dataMax));
-                gGrap.drawLine(x1, y1, x2, y2);
-            }
-            sb.setLength(0);
-            val1 = (long) notesMonitor.getPolyphony();
-            formatWithCommas(val1, sb);
-            gGrap.setFont(GRAPH_FONT);
-            gGrap.setColor(backStrColor);
-            gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 16);
-            gGrap.setColor(topStrColor);
-            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 15);
-            gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
-            sy += grapH;
-        }
     }
-
 }

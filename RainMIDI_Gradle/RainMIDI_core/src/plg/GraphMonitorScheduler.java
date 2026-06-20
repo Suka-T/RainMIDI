@@ -14,6 +14,11 @@ public class GraphMonitorScheduler {
     private LongRingBuffer npsBuffer = null;
     private LongRingBuffer polyBuffer = null;
     
+    private long npsPeekMax = 100;
+    private long npsPeekMin = 0;
+    private long polyPeekMax = 100;
+    private long polyPeekMin = 0;
+    
     private boolean locked = false;
 
     public GraphMonitorScheduler() {
@@ -33,6 +38,20 @@ public class GraphMonitorScheduler {
             polyBuffer.add((long)notesMonitor.getPolyphony());
             npsBuffer.updateSnapshot();
             polyBuffer.updateSnapshot();
+            
+            long maxData = npsBuffer.getPeekMax();
+            long minData = npsBuffer.getPeekMin();
+            if (100 > maxData) maxData = 100;
+            npsPeekMax = maxData;
+            if (0 > minData) minData = 0;
+            npsPeekMin = minData;
+            
+            maxData = polyBuffer.getPeekMax();
+            minData = polyBuffer.getPeekMin();
+            if (30 > maxData) maxData = 30;
+            polyPeekMax = maxData;
+            if (0 > minData) minData = 0;
+            polyPeekMin = minData;
         }
     }
     
@@ -58,4 +77,20 @@ public class GraphMonitorScheduler {
     public long[] getPolySnapshot() {
         return polyBuffer.getSnapshot();
     }
+
+	public long getNpsPeekMax() {
+		return npsPeekMax;
+	}
+
+	public long getPolyPeekMax() {
+		return polyPeekMax;
+	}
+
+	public long getNpsPeekMin() {
+		return npsPeekMin;
+	}
+
+	public long getPolyPeekMin() {
+		return polyPeekMin;
+	}
 }
