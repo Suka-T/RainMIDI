@@ -186,9 +186,6 @@ public class GraphMonitorPainter extends MonitorPainter {
         gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 18);
         gGrap.setColor(topStrColor);
         gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
-        gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-        gGrap.setColor(Color.WHITE);
-        gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
         sy += grapH;
 
         if (midiUnit.isRenderingOnlyMode() == false) {
@@ -208,9 +205,6 @@ public class GraphMonitorPainter extends MonitorPainter {
             gGrap.drawString(sb.toString(), grapX + 1, grapY + grapH + 18);
             gGrap.setColor(topStrColor);
             gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
-            gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
             sy += grapH;
         }
     }
@@ -225,6 +219,10 @@ public class GraphMonitorPainter extends MonitorPainter {
         int gwRes = data.length - 1;
         
         gGrap.setFont(GRAPH_GUIDE_FONT);
+        
+        // 天井に空間を設ける 
+        int areaY = grapY + 5;
+        int areaH = grapH - 5;
         
         long step = 50;
         sb.setLength(0);
@@ -243,11 +241,11 @@ public class GraphMonitorPainter extends MonitorPainter {
         }
         if (step <= 0) step = 10;
 
-        // --- 2. ガイドラインの描画ループ（ここは変更なし、自動で2本の線になります） ---
+        // ガイドラインの描画ループ 
         gGrap.setStroke(GRAPH_GUIDE_STROKE);
     	for (long lineVal = step; lineVal < dataMax; lineVal += step) {
             
-            int lineY = grapY + (grapH - (int) (lineVal * grapH / dataMax));
+            int lineY = areaY + (areaH - (int) (lineVal * areaH / dataMax));
             gGrap.setColor(GRAPH_GUIDE_COLOR);
             gGrap.drawLine(grapX, lineY, grapX + grapW, lineY);
             
@@ -284,7 +282,7 @@ public class GraphMonitorPainter extends MonitorPainter {
             int labelWidth = fm.stringWidth(label);
             
             gGrap.setColor(GRAPH_GUIDE_TEXT_COLOR);
-            gGrap.drawString(label, grapX + grapW - labelWidth - 5, lineY + 10); 
+            gGrap.drawString(label, grapX + grapW - labelWidth - 5, lineY + 10);
         }
         gGrap.setColor(graphColor);
         gGrap.setStroke(GRAPH_BORDER_STROKE);
@@ -292,10 +290,14 @@ public class GraphMonitorPainter extends MonitorPainter {
             long dt1 = data[i] < 0 ? 0 : data[i];
             long dt2 = data[i + 1] < 0 ? 0 : data[i + 1];
             int x1 = grapX + (i * grapW / gwRes);
-            int y1 = grapY + (grapH - (int) (dt1 * grapH / dataMax));
+            int y1 = areaY + (areaH - (int) (dt1 * areaH / dataMax));
             int x2 = grapX + ((i + 1) * grapW / gwRes);
-            int y2 = grapY + (grapH - (int) (dt2 * grapH / dataMax));
+            int y2 = areaY + (areaH - (int) (dt2 * areaH / dataMax));
             gGrap.drawLine(x1, y1, x2, y2);
         }
+        
+        gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
+        gGrap.setColor(Color.WHITE);
+        gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
     }
 }
