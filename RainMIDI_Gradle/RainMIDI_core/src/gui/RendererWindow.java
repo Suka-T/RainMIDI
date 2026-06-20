@@ -131,8 +131,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     protected BufferedImage backBuffer = null;
     protected Graphics backBufferGrapics = null;
     protected Graphics backBufferCanvasGrapics = null;
-    protected int backBufferWidth = -1;
-    protected int backBufferHeight = -1;
 
     private Font msgFont = null;
     private Font msgFontS = null;
@@ -555,16 +553,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int width = getWidth();
         int height = getHeight();
 
-        if (backBuffer == null || backBufferWidth != width || backBufferHeight != height) {
+        if (backBuffer == null || backBuffer.getWidth() != width || backBuffer.getHeight() != height) {
             if (backBufferGrapics != null) {
             	backBufferGrapics.dispose();
             }
             
             backBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             backBufferGrapics = backBuffer.createGraphics();
-            
-            backBufferWidth = backBuffer.getWidth();
-            backBufferHeight = backBuffer.getHeight();
         }
 
         try {
@@ -632,9 +627,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     
     protected volatile Image bufferScreenImage = null;
     protected volatile Graphics bufferScreenGraphic = null;
-    
-    protected int bufferScreenImageWidth = -1;
-    protected int bufferScreenImageHeight = -1;
 
     private static final String[] topStrs = { //
             "、ヽ｀、ヽ｀个o(･ω･｡)｀ヽ、｀ヽ", //
@@ -659,40 +651,44 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         Dimension dim = this.getContentPane().getSize();
         
         if (SystemProperties.getInstance().isViewReverse() == false) {
-        	Graphics2D lotG2d = (Graphics2D) g;
+            Graphics2D lotG2d = (Graphics2D) g;
+            
+            // 元状態を保存
+            AffineTransform oldTransform = lotG2d.getTransform();
+            Object oldInterpolation = lotG2d.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+            Object oldAA = lotG2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            Object oldRendering = lotG2d.getRenderingHint(RenderingHints.KEY_RENDERING);
 
-        	// 1. 元状態の保存
-        	AffineTransform oldTransform = lotG2d.getTransform();
+            // 補間方法を設定
+            lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
+            lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            
+            int panelW = getContentPane().getWidth();
+            int panelH = getContentPane().getHeight();
 
-        	// 2. レンダリングヒントの設定
-        	lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
-        	lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        	lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            int imgW = orgScreenImage.getWidth(null);
+            int imgH = orgScreenImage.getHeight(null);
+            
+            
+            // 回転の中心に移動（ウィンドウの中心）
+            lotG2d.translate(panelW / 2.0, panelH / 2.0);
+            lotG2d.rotate(Math.toRadians(180));
+            
+            // スケーリング（アスペクト比を無視してウィンドウ全体に引き伸ばす）
+            double scaleX = (double) panelW / imgW; // 幅と高さが逆になることに注意
+            double scaleY = (double) panelH / imgH;
+            lotG2d.scale(scaleX, -scaleY);
+            
+            // 画像中心を原点に合わせて描画
+            lotG2d.translate(-imgW / 2.0, -imgH / 2.0);
+            lotG2d.drawImage(orgScreenImage, 0, 0, null);
 
-        	int panelW = getContentPane().getWidth();
-        	int panelH = getContentPane().getHeight();
-        	int imgW = orgScreenImage.getWidth(null);
-        	int imgH = orgScreenImage.getHeight(null);
-
-        	// 3. 行列計算を一発で組み立てる
-        	AffineTransform tx = new AffineTransform();
-
-        	// 現在の仕様（180度回転 + Y軸反転）の座標変換を1つの数式にまとめる
-        	// ウィンドウ中心への移動と、画像サイズに合わせたスケーリングを同時に行う
-        	double scaleX = (double) panelW / imgW;
-        	double scaleY = (double) panelH / imgH;
-
-        	tx.translate(panelW / 2.0, panelH / 2.0);
-        	tx.scale(scaleX, -scaleY);
-        	tx.rotate(Math.toRadians(180)); // 180度は Math.PI でもOK
-        	tx.translate(-imgW / 2.0, -imgH / 2.0);
-
-        	// 4. 変換行列を適用して描画
-        	lotG2d.transform(tx);
-        	lotG2d.drawImage(orgScreenImage, 0, 0, null);
-
-        	// 5. 元状態に戻す
-        	lotG2d.setTransform(oldTransform);
+            // 元状態に戻す
+            lotG2d.setTransform(oldTransform);
+            lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, oldInterpolation);
+            lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, oldRendering);
         }
         else {
             g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(null), orgScreenImage.getHeight(null), null);
@@ -706,40 +702,31 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     
     protected void copyFromScreenImage(Graphics g) {
     	int paneWidth = getContentPane().getWidth();
-    	int paneHeight = getContentPane().getHeight();
-
-    	int curS1 = viewportManager.getOffsetCoordE();
-    	int curE2 = viewportManager.getOffsetCoordS();
-    	int cY1 = curS1;
-    	int cY2 = paneHeight - curE2 - 1;
-    	int cH = cY2 - curS1 + 1;
-    	int cW = (paneWidth * cH) / paneHeight; 
-
-    	int clipX = 0;
-    	if (!SystemProperties.getInstance().isViewReverse()) {
-    	    clipX = paneWidth - cW;
-    	} else {
-    	    clipX = 0;
-    	}
-    	int clipY = cY1;
-    	int clipW = cW;
-    	int clipH = cH;
-
-    	// 画面上の描画先座標（Destination）
+        int paneHeight = getContentPane().getHeight();
+        
+        int curS1 = viewportManager.getOffsetCoordE();
+        int curE2 = viewportManager.getOffsetCoordS();
+        int cY1 = curS1;
+        int cY2 = paneHeight - curE2 - 1;
+        int cH = cY2 - curS1 + 1;
+        int cW = (int)((double)paneWidth * ((double)cH / (double)paneHeight));
+        
+        int clipX = 0;
+        if (SystemProperties.getInstance().isViewReverse() == false) {
+        	clipX = paneWidth - cW;
+        }
+        else {
+        	clipX = 0;
+        }
+        int clipY = cY1;
+        int clipW = cW;
+        int clipH = cH;
+        
     	int dX1 = clipX;
     	int dY1 = clipY;
     	int dX2 = clipX + clipW - 1;
     	int dY2 = clipY + clipH - 1;
-
-    	// 画像の元データサイズ（Source）
-    	int sX1 = 0;
-    	int sY1 = 0;
-    	int sX2 = bufferScreenImageWidth - 1; // 通常は末尾ピクセルなので -1 が安全
-    	int sY2 = bufferScreenImageHeight - 1;
-
-    	// 【修正】引数の順番を正しく配置
-    	// g.drawImage(img, dx1,  dy1,  dx2,  dy2,  sx1,  sy1,  sx2,  sy2, observer);
-    	g.drawImage(bufferScreenImage, dX1, dY1, dX2, dY2, sX1, sY1, sX2, sY2, null);
+    	g.drawImage(bufferScreenImage, 0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), dX1, dY1, dX2, dY2, null);
     }
 
     private double angle = 0;
@@ -791,6 +778,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         g.setFont(msgFontS);
         g.setColor(LayoutManager.getInstance().getPlayerColor().getBgRevColor());
         FontMetrics fm = g.getFontMetrics();
+        sb.setLength(0);
+        sb.append("Volume: ");
         int paneWidth = getContentPane().getWidth();
         int paneHeight = getContentPane().getHeight();
         int volConWidth = 240;
@@ -813,6 +802,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private MonitorData monitorInfo = new MonitorData();
     public void paintDisplay(Graphics g) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        
         frameLimiter.frameEvent();
 
         /* ノーツ描画 */
@@ -838,7 +828,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (bufferScreenImage == null) {
         	updateBuffer = true;
         }
-        else if (bufferScreenImageWidth != paneWidth || bufferScreenImageHeight != paneHeight){
+        else if (bufferScreenImage.getWidth(null) != paneWidth || bufferScreenImage.getHeight(null) != paneHeight){
         	updateBuffer = true;
         }
         
@@ -860,9 +850,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 bufferScreenImage = LayoutManager.getInstance().createBufferdImage(paneWidth, paneHeight);
             	bufferScreenGraphic = ((BufferedImage)bufferScreenImage).createGraphics();
             }
-            
-            bufferScreenImageWidth = bufferScreenImage.getWidth(null);
-            bufferScreenImageHeight = bufferScreenImage.getHeight(null);
         }
 
         paintContents(orgScreenGraphic);
