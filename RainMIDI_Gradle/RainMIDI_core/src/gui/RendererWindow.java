@@ -798,13 +798,12 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int volConX = (paneWidth - volConWidth) / 2;
         int volConY = (paneHeight - volConHeight) / 2 + 125;
         if (volumeControl.isVisible()) {
+        	sb.setLength(0);
+            sb.append("Volume: ");
             int stringWidth = fm.stringWidth(sb.toString());
             int stringHeight = fm.getHeight();
             int strX = volConX - stringWidth;
             int strY = volConY + (stringHeight / 2);
-            
-        	sb.setLength(0);
-            sb.append("Volume: ");
             g.drawString(sb.toString(), strX, strY);
         }
         volumeControl.setLocation(volConX, volConY, volConWidth, volConHeight);
