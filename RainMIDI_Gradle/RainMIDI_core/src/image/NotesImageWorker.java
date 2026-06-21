@@ -299,11 +299,11 @@ public class NotesImageWorker extends ImageWorker {
         // 描画開始
         int startMeas = (int) ((double) startEvent / (double) midiUnit.getResolution()) + leftMeas;
         int startOffset = (int) ((double) startEvent % (double) midiUnit.getResolution());
-        nContext.x = (float) (window.getMeasCellWidth() * (startMeas + (double) startOffset / (double) midiUnit.getResolution())) + offsetCoordX;
-        nContext.y = (float) ((127 - data1) * window.getMeasCellHeight()) + topOffset;
+        nContext.x = (double) (window.getMeasCellWidth() * (startMeas + (double) startOffset / (double) midiUnit.getResolution())) + offsetCoordX;
+        nContext.y = (double) ((127 - data1) * window.getMeasCellHeight()) + topOffset;
 
-        nContext.w = (float) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / (double) midiUnit.getResolution());
-        nContext.h = (float) window.getMeasCellHeight();
+        nContext.w = (double) (window.getMeasCellWidth() * (double) (endEvent - startEvent) / (double) midiUnit.getResolution());
+        nContext.h = (double) window.getMeasCellHeight();
 
         if (LayoutManager.getInstance().getColorRule() == LayoutConfig.EColorRule.Channel) {
             nContext.bgColor = LayoutManager.getInstance().getNotesColor(channel).getBgColor();
@@ -316,20 +316,20 @@ public class NotesImageWorker extends ImageWorker {
             nContext.colorIndex = trk;
         }
 
-        float x1 = nContext.x;
-        float x2 = nContext.x + nContext.w - 1;
-        if ((x2 < 0.0f) || (imgWidth <= x1)) {
+        double x1 = nContext.x;
+        double x2 = nContext.x + nContext.w - 1;
+        if ((x2 < 0.0) || (imgWidth <= x1)) {
 
         }
         else {
-            if (x1 < 0.0f) {
-                x1 = 0.0f;
+            if (x1 < 0.0) {
+                x1 = 0.0;
             }
             if (x2 >= imgWidth) {
                 x2 = imgWidth - 1;
             }
             nContext.x = x1;
-            nContext.w = x2 - x1 + 1.0f;
+            nContext.w = x2 - x1 + 1.0;
             nContext.createParam();
             notesPainter.paintNotes(nContext);
         }

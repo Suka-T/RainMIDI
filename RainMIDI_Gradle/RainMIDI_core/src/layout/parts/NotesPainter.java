@@ -8,7 +8,7 @@ public abstract class NotesPainter {
         public Context() {
         }
         
-        public void setParam(float x, float y, float w, float h) {
+        public void setParam(double x, double y, double w, double h) {
             this.x = x;
             this.y = y;
             this.w = w;
@@ -18,20 +18,20 @@ public abstract class NotesPainter {
         }
         
         public void createParam() {
-            this.iX = Math.round(this.x);
-            this.iY = Math.round(this.y);
-            this.iW = Math.round(this.w);
-            this.iH = Math.round(this.h);
+            this.iX = (int)Math.round(this.x);
+            this.iY = (int)Math.round(this.y);
+            this.iW = (int)Math.round(this.w);
+            this.iH = (int)Math.round(this.h);
             if (this.iW < 1) {
                 this.iW = 1;
             }
         }
 
         public Graphics g;
-        public float x;
-        public float y;
-        public float w;
-        public float h;
+        public double x;
+        public double y;
+        public double w;
+        public double h;
         
         public int iX;
         public int iY;
