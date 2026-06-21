@@ -115,8 +115,9 @@ public class ViewportManager {
 	        curE2 = viewportOffsE2[curViewport];
 	        if (curViewport != oldViewport) {
 	        	double elapsed = (double) viewportTransCount / (double) DEFAULT_TRANS_COUNT;
-	        	double eased = 1.0 - (1.0 - elapsed) * (1.0 - elapsed);
+	        	//double eased = 1.0 - (1.0 - elapsed) * (1.0 - elapsed);
 	        	//double eased = elapsed * elapsed;
+	        	double eased = Utility.calcEasedZoomInOut(elapsed);
 	        	int oldS1 = viewportOffsS1[oldViewport];
 	            int oldE2 = viewportOffsE2[oldViewport];
 	            

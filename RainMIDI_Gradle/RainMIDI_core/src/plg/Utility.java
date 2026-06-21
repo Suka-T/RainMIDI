@@ -324,4 +324,20 @@ public class Utility {
         }
         return configPath;
     }
+    
+    public static double calcEasedZoomInOut(double x) {
+		double eased;
+		if (x == 0.0) {
+		    eased = 0.0;
+		} else if (x == 1.0) {
+		    eased = 1.0;
+		} else if (x < 0.5) {
+		    // 徐々に加速する（Ease-In）
+		    eased = Math.pow(2, 20 * x - 10) / 2.0;
+		} else {
+		    // 徐々に減速する（Ease-Out）
+		    eased = (2.0 - Math.pow(2, -20 * x + 10)) / 2.0;
+		}
+		return eased;
+    }
 }
