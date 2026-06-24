@@ -147,7 +147,7 @@ public class SystemProperties {
     }
 
     public static enum SyspViewMode {
-        RAIN_FALL, SIDE_FLOW;
+        RAIN_FALL, SIDE_FLOW, MONITOR_ONLY;
     }
 
     public static enum SyspKeyFocusFunc {
@@ -200,8 +200,8 @@ public class SystemProperties {
     private static Object[] audioFuncItemO = { SyspAudioFunc.MIDISYSTEM, SyspAudioFunc.KDMAPI };
     private static String[] audioFuncItemS = { "midisys", "kdmapi" };
     
-    private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW };
-    private static String[] viewModeItemS = { "rain_fall", "side_flow" };
+    private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW, SyspViewMode.MONITOR_ONLY };
+    private static String[] viewModeItemS = { "rain_fall", "side_flow", "monitor_only" };
 
     private static Object[] keyFocusFuncItemO = { SyspKeyFocusFunc.MIDI_EVENT, SyspKeyFocusFunc.COLOR };
     private static String[] keyFocusFuncItemS = { "midi_event", "color" };

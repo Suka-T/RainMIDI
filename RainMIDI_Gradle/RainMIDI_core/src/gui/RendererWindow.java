@@ -699,7 +699,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
     }
     
-    public void updateViewport() {
+    protected void updateViewport() {
     	int paneHeight = getContentPane().getHeight();
         viewportManager.updateOffs(paneHeight, getOrgHeight(), measCellHeight);
     }
@@ -800,12 +800,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         volumeControl.setLocation(volConX, volConY, volConWidth, volConHeight);
         volumeControl.paint(g);
     }
-
-    private MonitorData monitorInfo = new MonitorData();
-    public void paintDisplay(Graphics g) {
-        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        frameLimiter.frameEvent();
-
+    
+    public void renderMidiNotesDisplay(Graphics g) {
+    	Graphics2D g2 = (Graphics2D) g;
+    	
+    	int paneWidth = getContentPane().getWidth();
+	    int paneHeight = getContentPane().getHeight();
+        
         /* ノーツ描画 */
         GraphicsConfiguration gc = getGraphicsConfiguration();
         if (isAvailableGpu) {
@@ -822,10 +823,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 orgScreenGraphic = ((BufferedImage)orgScreenImage).createGraphics();
             }
         }
-        
+
         boolean updateBuffer = false;
-        int paneWidth = getContentPane().getWidth();
-        int paneHeight = getContentPane().getHeight();
         if (bufferScreenImage == null) {
         	updateBuffer = true;
         }
@@ -866,11 +865,23 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         copyFromNotesImage(bg2);
         
-        Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         copyFromScreenImage(g2);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    }
+
+    private MonitorData monitorInfo = new MonitorData();
+    public void paintDisplay(Graphics g) {
+        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        frameLimiter.frameEvent();
+	    int paneWidth = getContentPane().getWidth();
+	    int paneHeight = getContentPane().getHeight();
+	    
+        Graphics2D g2 = (Graphics2D) g;
+        g.clearRect(0, 0, paneWidth, paneHeight);
+
+        renderMidiNotesDisplay(g);
         
         // スペクトラム表示
         spectrumPainter.paintSpectram(g, paneWidth, paneHeight, dummySpectWave, noiseBuf, dummySpectSamples);
@@ -926,7 +937,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 g.drawString(sb.toString(), strX, strY + (fsize / 2));
                 strY += fsize + 2;
             }
-            drawSpinner(g2);
+            drawSpinner((Graphics2D) g);
             volumeControl.setVisible(false);
         }
         else if (midiUnit.isValidSequence() == false && isFirstRendering == false) {
@@ -1308,7 +1319,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     private int cnt = 0;
 
-    private void paintContents(Graphics g) {
+    protected void paintContents(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
         g.fillRect(0, 0, getOrgWidth(), getOrgHeight());

@@ -15,6 +15,7 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import gui.ChromaKeyWindow;
 import gui.RainFallRendererWindow;
 import gui.RendererConfigDialog;
 import gui.RendererWindow;
@@ -70,6 +71,12 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         }
         else if (SyspViewMode.SIDE_FLOW == SystemProperties.getInstance().getViewMode()) {
             win = new SideFlowRendererWindow(
+                    SystemProperties.getInstance().getWindowWidth(), 
+                    SystemProperties.getInstance().getWindowHeight(),
+                    SystemProperties.getInstance().isWindowMaximized());
+        }
+        else if (SyspViewMode.MONITOR_ONLY == SystemProperties.getInstance().getViewMode()) {
+            win = new ChromaKeyWindow(
                     SystemProperties.getInstance().getWindowWidth(), 
                     SystemProperties.getInstance().getWindowHeight(),
                     SystemProperties.getInstance().isWindowMaximized());

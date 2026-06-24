@@ -13,6 +13,7 @@ import jlib.core.JMPCoreAccessor;
 import layout.LayoutManager;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspKeyFocusFunc;
+import plg.SystemProperties.SyspViewMode;
 
 public class ImageWorker implements Runnable {
     protected int leftMeasTh = 0;
@@ -98,6 +99,16 @@ public class ImageWorker implements Runnable {
                     disposeImage();
                 }
                 isForcedEnd = false;
+                isExec = false;
+                return;
+            }
+            
+            if (SystemProperties.getInstance().getViewMode() == SyspViewMode.MONITOR_ONLY) {
+            	if (offScreenImage == null) {
+                    offScreenImage = LayoutManager.getInstance().createBufferdImage(10, 10);
+                    offScreenGraphic = ((BufferedImage)offScreenImage).createGraphics();
+                }
+            	isForcedEnd = false;
                 isExec = false;
                 return;
             }
