@@ -1170,21 +1170,37 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.CIRCLE_VIGNETTE) {
             Graphics2D effeG2 = (Graphics2D) g.create();
+            
+            effeG2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            effeG2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
             Color bc = LayoutManager.getInstance().getPlayerColor().getBgRev2Color();
-            float radius = (float) (Math.max(w, h) * 0.9f);
+            int r = bc.getRed();
+            int g2 = bc.getGreen();
+            int b = bc.getBlue();
 
-            Color[] colorGrad = null;
-            float[] colorF = null;
-            colorF = new float[] { 0.0f, 0.6f, 1.0f };
-            colorGrad = new Color[] { new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 0), new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 120),
-                    new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), 240) };
+            // 画面の対角線の半分を半径とする
+            float radius = (float) (Math.sqrt(w * w + h * h) / 2.0);
 
-            RadialGradientPaint paint = new RadialGradientPaint(new Point(w / 2, h / 2), radius, colorF, colorGrad);
+            float[] colorF = new float[] { 0.0f, 0.3f, 0.65f, 0.85f, 1.0f };
+            Color[] colorGrad = new Color[] { 
+                new Color(r, g2, b, 0),   // 中央30%までは完全透明
+                new Color(r, g2, b, 0),   // 30%地点（ここから色が乗り始める）
+                new Color(r, g2, b, 70),  // 65%地点：画面の中間層もほんのり暗く包む
+                new Color(r, g2, b, 160), // 85%地点：かなり色が濃くなる
+                new Color(r, g2, b, 240)  // 四隅（最外周）：ほぼ不透明に近い濃さに
+            };
+
+            RadialGradientPaint paint = new RadialGradientPaint(
+                new Point(w / 2, h / 2), 
+                radius, 
+                colorF, 
+                colorGrad
+            );
 
             effeG2.setPaint(paint);
-
-            // 確認用は円形で塗る
-            effeG2.fillOval(w / 2 - (int) radius, h / 2 - (int) radius, (int) (radius * 2), (int) (radius * 2));
+            effeG2.fillRect(0, 0, w, h); // 画面全体を塗る
+            
             effeG2.dispose();
         }
         else if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.TOP_VIGNETTE) {
