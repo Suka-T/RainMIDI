@@ -1384,7 +1384,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         tabIndex = tabbedPane.indexOfComponent(layoutPanel);
         if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.expert2"));
         tabIndex = tabbedPane.indexOfComponent(aboutPanel);
-        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.about") + (existsNewVersion ? " ( ! )" : ""));
+        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.about") + (existsNewVersion ? " 【New】" : ""));
     }
     
     public void initializeView() {
