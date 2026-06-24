@@ -6,7 +6,7 @@ import layout.LayoutManager;
 import layout.parts.NotesPainter;
 
 public class ArcNotesPainter extends NotesPainter {
-    
+
     @Override
     public void paintNotes(Context context) {
         int r = 0;
@@ -47,7 +47,7 @@ public class ArcNotesPainter extends NotesPainter {
                     r = 0;
                     g2d.drawLine(context.iX, context.iY + i, context.iX + context.iW - 1, context.iY + i);
                 }
-                
+
                 g2d.setColor(context.bdColor);
                 if (i == 0 || i == context.iH - 1) {
                     g2d.drawLine(context.iX + r, context.iY + i, context.iX + context.iW - r - 1, context.iY + i);

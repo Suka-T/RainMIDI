@@ -17,7 +17,7 @@ import plg.SystemProperties.SyspViewMode;
 
 public class ImageWorker implements Runnable {
     protected int leftMeasTh = 0;
-    //protected volatile BufferedImage offScreenImage;
+    // protected volatile BufferedImage offScreenImage;
     protected Image offScreenImage;
     protected Graphics2D offScreenGraphic;
     private boolean isExec = false;
@@ -26,9 +26,9 @@ public class ImageWorker implements Runnable {
     private ExecutorService service = null;
     protected RendererWindow window = null;
     private boolean isForcedEnd = false;
-    
+
     protected boolean useVramImage = false;
-    
+
     private long debugRenderTime = 0;
 
     public ImageWorker(RendererWindow window, int width, int height, boolean useVramImage) {
@@ -92,7 +92,7 @@ public class ImageWorker implements Runnable {
     public void run() {
         try {
             debugRenderTime = 0;
-            
+
             if (window.isVisible() == false) {
                 if (offScreenImage != null) {
                     // イメージオブジェクトのメモリを解放
@@ -102,19 +102,19 @@ public class ImageWorker implements Runnable {
                 isExec = false;
                 return;
             }
-            
+
             if (SystemProperties.getInstance().getViewMode() == SyspViewMode.MONITOR_ONLY) {
-            	if (offScreenImage == null) {
+                if (offScreenImage == null) {
                     offScreenImage = LayoutManager.getInstance().createBufferdImage(10, 10);
-                    offScreenGraphic = ((BufferedImage)offScreenImage).createGraphics();
+                    offScreenGraphic = ((BufferedImage) offScreenImage).createGraphics();
                 }
-            	isForcedEnd = false;
+                isForcedEnd = false;
                 isExec = false;
                 return;
             }
-            
+
             long start = System.currentTimeMillis();
-            
+
             if (calcViewport() == false) {
                 if (offScreenImage != null) {
                     // イメージオブジェクトのメモリを解放
@@ -124,23 +124,23 @@ public class ImageWorker implements Runnable {
                 isExec = false;
                 return;
             }
-            
+
             boolean useVolatileImg = useVramImage;
             if (SystemProperties.getInstance().getKeyFocusFunc() == SyspKeyFocusFunc.COLOR) {
-                // 色判定はBufferdImageでしか行えない 
+                // 色判定はBufferdImageでしか行えない
                 useVolatileImg = false;
             }
 
             if (useVolatileImg) {
                 if (offScreenImage == null) {
                     offScreenImage = LayoutManager.getInstance().createDisplayImage(getImageWidth(), getImageHeight());
-                    offScreenGraphic = ((VolatileImage)offScreenImage).createGraphics();
+                    offScreenGraphic = ((VolatileImage) offScreenImage).createGraphics();
                 }
             }
             else {
                 if (offScreenImage == null) {
                     offScreenImage = LayoutManager.getInstance().createBufferdImage(getImageWidth(), getImageHeight());
-                    offScreenGraphic = ((BufferedImage)offScreenImage).createGraphics();
+                    offScreenGraphic = ((BufferedImage) offScreenImage).createGraphics();
                 }
             }
 
@@ -149,10 +149,10 @@ public class ImageWorker implements Runnable {
 
             // オフスクリーン描画
             paintImage(offScreenGraphic);
-            
+
             long end = System.currentTimeMillis();
             debugRenderTime = end - start;
-            
+
             isForcedEnd = false;
             isExec = false;
         }
@@ -168,7 +168,7 @@ public class ImageWorker implements Runnable {
     public void setLeftMeasTh(int leftMeasTh) {
         this.leftMeasTh = leftMeasTh;
     }
-    
+
     protected boolean calcViewport() {
         /* 継承先で処理を記述 */
         return false;
@@ -196,7 +196,7 @@ public class ImageWorker implements Runnable {
     public void forcedEnd() {
         this.isForcedEnd = true;
     }
-    
+
     public void clearForcedEnd() {
         this.isForcedEnd = false;
     }

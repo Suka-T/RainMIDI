@@ -11,6 +11,7 @@ public abstract class KeyParts {
     public int orgWidth = 0;
     public int orgHeight = 0;
     public int midiNo = 0;
+
     public KeyParts() {
     }
 }

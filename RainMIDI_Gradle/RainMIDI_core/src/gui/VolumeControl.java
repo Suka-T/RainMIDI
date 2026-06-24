@@ -18,53 +18,51 @@ public class VolumeControl extends RainControl {
     private int pressY = -1;
     private int mouseX = -1;
     private int mouseY = -1;
-    
+
     private int x = 0;
     private int y = 0;
     private int width = 0;
     private int height = 0;
-    
+
     public VolumeControl() {
         super();
     }
-    
+
     public void paint(Graphics g) {
         if (isVisible) {
-            float volWidth = (float)width * JMPCoreAccessor.getSoundManager().getLineVolume();
-            
+            float volWidth = (float) width * JMPCoreAccessor.getSoundManager().getLineVolume();
+
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setComposite(AlphaComposite.SrcOver);
             g2d.setColor(Color.BLACK);
             g2d.fillRect(x, y, width, height);
             g2d.setPaint(volGrad);
-            g2d.fillRect(x, y, (int)volWidth, height);
+            g2d.fillRect(x, y, (int) volWidth, height);
             g2d.setColor(Color.WHITE);
             g2d.drawRect(x, y, width, height);
             g2d.dispose();
         }
     }
-    
+
     public void setLocation(int x, int y, int w, int h) {
         if (this.x != x || this.y != y || this.width != w || this.height != h) {
-            volGrad = new LinearGradientPaint(x, y, x + w - 1, y, 
-                    new float[] { 0f, 1f },
-                    new Color[] { new Color(0f, 1f, 0f, 1.0f), new Color(0.6f, 0f, 0f, 1f) }
-            );
+            volGrad = new LinearGradientPaint(x, y, x + w - 1, y, new float[] { 0f, 1f },
+                    new Color[] { new Color(0f, 1f, 0f, 1.0f), new Color(0.6f, 0f, 0f, 1f) });
         }
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
     }
-    
+
     public void setVisible(boolean b) {
         isVisible = b;
     }
-    
+
     public boolean isVisible() {
         return isVisible;
     }
-    
+
     private void updateVolume() {
         int cur = mouseX - this.x;
         if (cur < 0) {
@@ -73,12 +71,12 @@ public class VolumeControl extends RainControl {
         else if (cur > this.width) {
             cur = this.width;
         }
-        float volume = (float)cur / (float)(this.width);
+        float volume = (float) cur / (float) (this.width);
         JMPCoreAccessor.getSoundManager().setLineVolume(volume);
-        
+
         LayoutManager.getInstance().setVolumeVisibleTime();
     }
-    
+
     public boolean onPress(MouseEvent e) {
         if (x <= e.getX() && e.getX() <= x + width - 1 && y <= e.getY() && e.getY() <= y + height - 1) {
             return true;
@@ -91,7 +89,7 @@ public class VolumeControl extends RainControl {
         if (pressX != -1 && pressY != -1) {
             mouseX = e.getX();
             mouseY = e.getY();
-            
+
             updateVolume();
         }
     }
@@ -129,7 +127,7 @@ public class VolumeControl extends RainControl {
                 pressY = e.getY();
                 mouseX = pressX;
                 mouseY = pressY;
-                
+
                 updateVolume();
             }
         }
@@ -143,7 +141,7 @@ public class VolumeControl extends RainControl {
             mouseX = -1;
             mouseY = -1;
         }
-        
+
         // TODO Volumeは即閉じるようにする。(フレーム更新部で有効/無効を制御している都合上、非同期動作により閉じないことがあるかも）
         LayoutManager.getInstance().clearVolumeVisibleTime();
         setVisible(false);

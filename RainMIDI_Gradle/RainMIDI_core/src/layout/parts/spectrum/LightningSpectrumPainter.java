@@ -11,7 +11,7 @@ import java.awt.geom.Path2D;
 import layout.parts.SpectrumPainter;
 
 public class LightningSpectrumPainter extends SpectrumPainter {
-    
+
     private final AlphaComposite alphaComp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
 
     private final Color outGrowColor = new Color(80, 200, 255, 40);

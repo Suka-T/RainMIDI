@@ -4,20 +4,20 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public abstract class KeyboardPainter {
-    
+
     protected int keyboardWidth = 0;
-    
+
     public static enum KindOfKey {
-        WHITE,
-        BLACK
+        WHITE, BLACK
     }
-    
-    public KeyboardPainter() {}
-    
+
+    public KeyboardPainter() {
+    }
+
     public void setKeyboardWidth(int width) {
         this.keyboardWidth = width;
     }
-    
+
     public int getKeyboardWidth() {
         return this.keyboardWidth;
     }
@@ -40,9 +40,12 @@ public abstract class KeyboardPainter {
             }
         }
     }
-    
+
     protected abstract void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush);
+
     protected abstract void paintWhiteKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush);
+
     protected abstract void paintBlackKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush);
+
     protected abstract void paintBlackKeyPush(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush);
 }

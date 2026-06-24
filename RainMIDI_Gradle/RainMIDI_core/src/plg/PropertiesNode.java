@@ -12,7 +12,7 @@ public class PropertiesNode {
 
     private Object data = null;
     private String key = "";
-    
+
     private String defaultSVal = "";
     private String maxSVal = "";
     private String minSVal = "";
@@ -76,7 +76,7 @@ public class PropertiesNode {
             }
         }
         this.itemArray = itemName;
-        
+
         this.data = getObject(null);
     }
 
@@ -116,56 +116,57 @@ public class PropertiesNode {
         this.itemArray = itemName;
         this.data = getObject(null);
     }
-    
+
     public void reset() {
         setObject(defaultSVal);
     }
-    
+
     public String getKey() {
         return key;
     }
-    
+
     public PropertiesNodeType getType() {
         return this.type;
     }
-    
+
     public Object getData() {
         return data;
     }
-    
+
     public Set<String> getItems() {
         return map.keySet();
     }
-    
+
     public String getDataString() {
-        if (data == null) return "";
-        
+        if (data == null)
+            return "";
+
         if (v2kmap.containsKey(data)) {
             return (String) v2kmap.get(data);
         }
-        
+
         if (type == PropertiesNodeType.INT) {
-            return String.valueOf((int)data);
+            return String.valueOf((int) data);
         }
         else if (type == PropertiesNodeType.BOOLEAN) {
-            return String.valueOf((boolean)data);
+            return String.valueOf((boolean) data);
         }
         else if (type == PropertiesNodeType.DOUBLE) {
-            return String.valueOf((double)data);
+            return String.valueOf((double) data);
         }
         else if (type == PropertiesNodeType.STRING) {
-            return String.valueOf((String)data);
+            return String.valueOf((String) data);
         }
         else if (type == PropertiesNodeType.COLOR) {
-            return String.valueOf((String)data);
+            return String.valueOf((String) data);
         }
         else if (type == PropertiesNodeType.ITEM) {
-            
+
             return (String) v2kmap.get(data);
         }
         return "";
     }
-    
+
     public void setObject(String s) {
         data = getObject(s);
     }

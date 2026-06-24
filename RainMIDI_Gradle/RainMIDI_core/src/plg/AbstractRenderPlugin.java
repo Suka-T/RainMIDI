@@ -29,7 +29,7 @@ import layout.LayoutManager;
 import plg.SystemProperties.SyspViewMode;
 
 public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener, ISupportExtensionConstraints {
-    
+
     public static final String APP_NAME = "Rain MIDI";
     public static final String APP_VERSION = "1.17";
     public static final String APP_YEAR = "2025";
@@ -37,22 +37,22 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     public static String Extensions = "";
     public static AbstractRenderPlugin PluginInstance = null;
-    
+
     public static final String PROP_FILE_NAME = "renderer.properties";
     public static final String BACKUP_FILE_NAME = "backup.layout";
-    
+
     private boolean exitFlag = false;
     public List<RendererWindow> winArray = null;
     private RendererConfigDialog launchWindow = null;
-    
+
     private JWindow splash = null;
-    
-    // 画面録画ツール(未実装) 
-    //private WindowRecorder recorder = null;
-    
+
+    // 画面録画ツール(未実装)
+    // private WindowRecorder recorder = null;
+
     public void exitStdPlg() {
         SystemProperties.getInstance().exit();
-        
+
         exitFlag = true;
     }
 
@@ -64,42 +64,36 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     protected RendererWindow createMainWindow() {
         RendererWindow win = null;
         if (SyspViewMode.RAIN_FALL == SystemProperties.getInstance().getViewMode()) {
-            win = new RainFallRendererWindow(
-                    SystemProperties.getInstance().getWindowWidth(), 
-                    SystemProperties.getInstance().getWindowHeight(),
+            win = new RainFallRendererWindow(SystemProperties.getInstance().getWindowWidth(), SystemProperties.getInstance().getWindowHeight(),
                     SystemProperties.getInstance().isWindowMaximized());
         }
         else if (SyspViewMode.SIDE_FLOW == SystemProperties.getInstance().getViewMode()) {
-            win = new SideFlowRendererWindow(
-                    SystemProperties.getInstance().getWindowWidth(), 
-                    SystemProperties.getInstance().getWindowHeight(),
+            win = new SideFlowRendererWindow(SystemProperties.getInstance().getWindowWidth(), SystemProperties.getInstance().getWindowHeight(),
                     SystemProperties.getInstance().isWindowMaximized());
         }
         else if (SyspViewMode.MONITOR_ONLY == SystemProperties.getInstance().getViewMode()) {
-            win = new ChromaKeyWindow(
-                    SystemProperties.getInstance().getWindowWidth(), 
-                    SystemProperties.getInstance().getWindowHeight(),
+            win = new ChromaKeyWindow(SystemProperties.getInstance().getWindowWidth(), SystemProperties.getInstance().getWindowHeight(),
                     SystemProperties.getInstance().isWindowMaximized());
         }
         return win;
     }
-    
+
     public String getAppName() {
         return "My App";
     }
-    
+
     public String getAppVersion() {
         return "X.XX";
     }
-    
+
     public String getAppYear() {
         return "";
     }
-    
+
     public String getAppCompany() {
         return "";
     }
-    
+
     public void launch() {
         try {
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
@@ -109,7 +103,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
                 }
                 else {
                     SwingUtilities.invokeAndWait(new Runnable() {
-                        
+
                         @Override
                         public void run() {
                             launchWindow = new RendererConfigDialog(AbstractRenderPlugin.this);
@@ -121,49 +115,50 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             else {
                 startRendererWindow();
             }
-            
+
             if (splash != null) {
-            	if (splash.isVisible()) splash.setVisible(false);
+                if (splash.isVisible())
+                    splash.setVisible(false);
             }
         }
         catch (Exception e1) {
             e1.printStackTrace();
         }
     }
-    
+
     public void writeSystemProp() throws FileNotFoundException, IOException {
         Path folder = Utility.getAppConfigDirectory();
         Path fullPath = folder.resolve(PROP_FILE_NAME);
         File propFile = fullPath.toFile();
-        
+
         SystemProperties.getInstance().write(propFile);
     }
-    
+
     public void writeBackupLayout() throws FileNotFoundException, IOException {
         Path folder = Utility.getAppConfigDirectory();
         Path fullPath = folder.resolve(BACKUP_FILE_NAME);
         File backupLayoutFile = fullPath.toFile();
-        
+
         LayoutManager.getInstance().write(backupLayoutFile);
     }
-    
+
     public void startRendererWindow() {
         try {
-            
+
             SystemProperties.getInstance().initialize();
-            
+
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-                // SystemPropertiesの保存 
+                // SystemPropertiesの保存
                 writeSystemProp();
-                
+
                 // Layout設定の保存
                 writeBackupLayout();
-                
+
                 if (JMPCoreAccessor.getSoundManager().getMidiUnit().isValidSequence()) {
                     JMPCoreAccessor.getSoundManager().initPosition();
                 }
             }
-            
+
             if (SwingUtilities.isEventDispatchThread()) {
                 RendererWindow win = createMainWindow();
                 win.init();
@@ -173,7 +168,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             }
             else {
                 SwingUtilities.invokeAndWait(new Runnable() {
-    
+
                     @Override
                     public void run() {
                         RendererWindow win = createMainWindow();
@@ -195,7 +190,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
             splash = new JWindow();
             splash.setSize(300, 200);
-    
+
             JLabel label = new JLabel("Loading...", SwingConstants.CENTER);
             // 背景色設定
             label.setOpaque(true);
@@ -203,30 +198,29 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             label.setForeground(new Color(112, 185, 255));
             splash.add(label);
             label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 40));
-    
+
             splash.setLocationRelativeTo(null);
             splash.setVisible(true);
         }
-        
+
         createExtensions();
-        
-        // KDMAPIをロードする 
+
+        // KDMAPIをロードする
         if (KDMAPIW.LoadKDMAPILibrary()) {
-        	System.out.println("KDMAPI Load Success");
-        	System.out.println("Wrapper Ver : " + KDMAPIW.VERSION_OF_WRAPPER);
-        	System.out.println("KDMAPI Ver : " + KDMAPIW.ReturnKDMAPIVer());
+            System.out.println("KDMAPI Load Success");
+            System.out.println("Wrapper Ver : " + KDMAPIW.VERSION_OF_WRAPPER);
+            System.out.println("KDMAPI Ver : " + KDMAPIW.ReturnKDMAPIVer());
         }
         else {
-        	System.out.println("KDMAPI Load Fail");
+            System.out.println("KDMAPI Load Fail");
         }
-        
 
         Path folder = Utility.getAppConfigDirectory();
         File fFolder = folder.toFile();
         if (!fFolder.exists()) {
-        	fFolder.mkdir();
+            fFolder.mkdir();
         }
-        
+
         Path fullPath = folder.resolve(PROP_FILE_NAME);
         File propFile = new File(fullPath.toString());
         try {
@@ -241,16 +235,16 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
         fullPath = folder.resolve(BACKUP_FILE_NAME);
         LayoutManager.getInstance().initializeConfig();
         try {
-        	File backupLayoutFile = fullPath.toFile();
-        	if (backupLayoutFile.exists()) {
-        		LayoutManager.getInstance().read(backupLayoutFile);
-        	}
+            File backupLayoutFile = fullPath.toFile();
+            if (backupLayoutFile.exists()) {
+                LayoutManager.getInstance().read(backupLayoutFile);
+            }
         }
         catch (IOException e1) {
             e1.printStackTrace();
             LayoutManager.getInstance().initializeConfig();
         }
-        
+
         if (SystemProperties.getInstance().getPreloadFiles().isEmpty() == true) {
             launch();
         }
@@ -307,7 +301,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
                     break;
                 }
             }
-            
+
             return isOpen;
         }
     }
@@ -332,7 +326,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     @Override
     protected void pitchBend(int channel, int pbValue, long timeStamp, short senderType) {
     }
-    
+
     @Override
     public void prepareLoadFile(File file) {
         super.prepareLoadFile(file);
@@ -351,22 +345,17 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public void startSequencer() {
-/*
-        if (recorder == null) {
-            recorder = new WindowRecorder();
-        }
-        recorder.startRecording();
-*/
+        /*
+         * if (recorder == null) { recorder = new WindowRecorder(); }
+         * recorder.startRecording();
+         */
     }
 
     @Override
     public void stopSequencer() {
-/*
-        if (recorder != null) {
-            recorder.stopRecording();
-            recorder = null;
-        }
-*/
+        /*
+         * if (recorder != null) { recorder.stopRecording(); recorder = null; }
+         */
     }
 
     @Override

@@ -8,9 +8,9 @@ import java.awt.Graphics2D;
 import layout.parts.CollisionEffectPainter;
 
 public class SimpleCollisionEffectPainter extends CollisionEffectPainter {
-    
+
     public static final int HIT_EFFECT_STEPS = 16;
-    
+
     protected AlphaComposite[] hitEffeSteps = null;
 
     public SimpleCollisionEffectPainter() {
@@ -23,7 +23,7 @@ public class SimpleCollisionEffectPainter extends CollisionEffectPainter {
 
     @Override
     public void paintIn(Graphics g, int x, int y, int keySize, Color focusColor, Color defColor) {
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(defColor);
         int effx = x;
         int keyHeight = keySize;
@@ -37,7 +37,7 @@ public class SimpleCollisionEffectPainter extends CollisionEffectPainter {
 
     @Override
     public void paintOut(Graphics g, int x, int y, int keySize, Color focusColor, Color defColor) {
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(defColor);
         int effx = x;
         int keyHeight = keySize;

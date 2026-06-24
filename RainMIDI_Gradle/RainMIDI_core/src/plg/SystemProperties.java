@@ -39,9 +39,9 @@ import plg.PropertiesNode.PropertiesNodeType;
 
 public class SystemProperties {
 
-	// JMPPに登録するKDMAPIラッパー名 
-	public static final String KDMAPI_NAME = "KDMAPI_for_RainMIDI";
-	
+    // JMPPに登録するKDMAPIラッパー名
+    public static final String KDMAPI_NAME = "KDMAPI_for_RainMIDI";
+
     public static final String SYSP_MISC_LANGUAGE = "misc.language";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_FUNCTION = "audio.function";
@@ -82,7 +82,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_KEYRANGE_AUTOMAX = "renderer.keyRange.autoCountMax";
     public static final String SYSP_RENDERER_KEYRANGE_RES_SEC = "renderer.keyRange.resolutionSec";
     public static final String SYSP_RENDERER_KEYRANGE_RES_BPM = "renderer.keyRange.resolutionBaseBPM";
-    
+
     public static final String SYSP_DEBUGMODE = "debugMode";
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
@@ -133,15 +133,15 @@ public class SystemProperties {
 
     public static int MAX_NOTES_WIDTH = 2400;
     public static int MIN_NOTES_WIDTH = 160;
-    public static int CNT_NOTES_WIDTH = MIN_NOTES_WIDTH;//(MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
-    
+    public static int CNT_NOTES_WIDTH = MIN_NOTES_WIDTH;// (MAX_NOTES_WIDTH - MIN_NOTES_WIDTH) / 2;
+
     public static int DEFAULT_DIM_W = 1280;
     public static int DEFAULT_DIM_H = 768;
 
     public static enum SyspLanguage {
         AUTO, ENGLISH, JAPANESE, CHINESE;
     }
-    
+
     public static enum SyspAudioFunc {
         MIDISYSTEM, KDMAPI;
     }
@@ -153,7 +153,7 @@ public class SystemProperties {
     public static enum SyspKeyFocusFunc {
         MIDI_EVENT, COLOR;
     }
-    
+
     public static enum SyspLayerOrder {
         ASC, DESC;
     }
@@ -161,51 +161,51 @@ public class SystemProperties {
     public static enum SyspMonitorType {
         NONE, TYPE1, TYPE2, TYPE3, GRAPH;
     }
-    
+
     public static enum SyspWinEffect {
         NONE, CIRCLE_VIGNETTE, TOP_VIGNETTE;
     }
-    
+
     public static enum SyspImgInterpol {
         BILINEAR, BICUBIC, NEAREST_NEIGHBOR;
     }
-    
+
     public static enum SyspPolyCalc {
         CHANNEL, TRACK;
     }
-    
+
     public static enum SyspColorBitsDepth {
         RGB_888, RGB_565, GRAY;
     }
-    
+
     public static enum SyspSpectrumType {
         NONE, LIGHTNING, CURTAIN;
     }
-    
+
     public static enum SyspSpectrumPosition {
         TOP, CENTER, BOTTOM;
     }
-    
+
     public static enum SyspNotesSpeedBase {
         FIRST, AVERAGE, MEDIAN, DOMINANT;
     }
-    
+
     public static enum SyspNumOfKey {
         AUTO, FULL, LARGE, KEYS_88, KEYS_76;
     }
 
     private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE, SyspLanguage.CHINESE };
     private static String[] langItemS = { "Auto", "English", "Japanese", "Chinese" };
-    
+
     private static Object[] audioFuncItemO = { SyspAudioFunc.MIDISYSTEM, SyspAudioFunc.KDMAPI };
     private static String[] audioFuncItemS = { "midisys", "kdmapi" };
-    
+
     private static Object[] viewModeItemO = { SyspViewMode.RAIN_FALL, SyspViewMode.SIDE_FLOW, SyspViewMode.MONITOR_ONLY };
     private static String[] viewModeItemS = { "rain_fall", "side_flow", "monitor_only" };
 
     private static Object[] keyFocusFuncItemO = { SyspKeyFocusFunc.MIDI_EVENT, SyspKeyFocusFunc.COLOR };
     private static String[] keyFocusFuncItemS = { "midi_event", "color" };
-    
+
     private static Object[] layerOrderItemO = { SyspLayerOrder.ASC, SyspLayerOrder.DESC };
     private static String[] layerOrderItemS = { "asc", "desc" };
 
@@ -215,31 +215,32 @@ public class SystemProperties {
     private static Object[] NotesCountItemO = { -1 };
     private static String[] NotesCountItemS = { "auto" };
 
-    private static Object[] WinSizeItemO = { "Maximized",/* "2560*1440", "1920*1080", */"1280*720", "854*480", "640*360" };
-    private static Object[] WinSizeItemD = { "Maximized",/* "2560*1408", "1920*1024", */"1280*768", "896*512", "640*384" };
-    private static String[] WinSizeItemS = { "Maximized",/* "1440p", "1080p", */"720p", "480p", "360p", };
-    
+    private static Object[] WinSizeItemO = { "Maximized", /* "2560*1440", "1920*1080", */"1280*720", "854*480", "640*360" };
+    private static Object[] WinSizeItemD = { "Maximized", /* "2560*1408", "1920*1024", */"1280*768", "896*512", "640*384" };
+    private static String[] WinSizeItemS = { "Maximized", /* "1440p", "1080p", */"720p", "480p", "360p", };
+
     private static Object[] winEffeItemO = { SyspWinEffect.NONE, SyspWinEffect.CIRCLE_VIGNETTE, SyspWinEffect.TOP_VIGNETTE };
     private static String[] winEffeItemS = { "none", "circle_vignette", "top_vignette" };
-    
+
     private static Object[] ImgInterpolItemO = { SyspImgInterpol.BILINEAR, SyspImgInterpol.BICUBIC, SyspImgInterpol.NEAREST_NEIGHBOR };
     private static String[] ImgInterpolItemS = { "bilinear", "bicubic", "nearest" };
-    
+
     private static Object[] PolyCalcItemO = { SyspPolyCalc.CHANNEL, SyspPolyCalc.TRACK };
     private static String[] PolyCalcItemS = { "channel", "track" };
-    
+
     private static Object[] colorBitsItemO = { SyspColorBitsDepth.RGB_888, SyspColorBitsDepth.RGB_565, SyspColorBitsDepth.GRAY };
     private static String[] colorBitsItemS = { "rgb888", "rgb565", "gray" };
-    
+
     private static Object[] spectrumTypeItemO = { SyspSpectrumType.NONE, SyspSpectrumType.LIGHTNING, SyspSpectrumType.CURTAIN };
     private static String[] spectrumTypeItemS = { "none", "lightning", "curtain" };
-    
+
     private static Object[] spectrumPosItemO = { SyspSpectrumPosition.TOP, SyspSpectrumPosition.CENTER, SyspSpectrumPosition.BOTTOM };
     private static String[] spectrumPosItemS = { "top", "center", "bottom" };
-    
-    private static Object[] notesSpeedBaseItemO = { SyspNotesSpeedBase.FIRST, SyspNotesSpeedBase.AVERAGE, SyspNotesSpeedBase.MEDIAN, SyspNotesSpeedBase.DOMINANT };
+
+    private static Object[] notesSpeedBaseItemO = { SyspNotesSpeedBase.FIRST, SyspNotesSpeedBase.AVERAGE, SyspNotesSpeedBase.MEDIAN,
+            SyspNotesSpeedBase.DOMINANT };
     private static String[] notesSpeedBaseItemS = { "first", "average", "median", "dominant" };
-    
+
     private static Object[] ViewportItemO = { SyspNumOfKey.AUTO, SyspNumOfKey.FULL, SyspNumOfKey.LARGE, SyspNumOfKey.KEYS_88, SyspNumOfKey.KEYS_76 };
     private static String[] ViewportItemS = { "auto", "full", "large", "88", "76" };
 
@@ -256,27 +257,27 @@ public class SystemProperties {
     private int windowHeight = 720;
 
     private List<File> preloadFiles = new ArrayList<File>();
-    
+
     private boolean isGPUAvailable = true;
     private boolean useVramImage = false;
 
     private static SystemProperties instance = new SystemProperties();
-    
+
     private String generalFontName = "";
-    
+
     private Object imageInterpol = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-    
+
     private OsInfoWrapper osInfo;
-    
+
     private double spectAmp = 0.0;
-    
+
     private MonitorPainter monitorPainter;
     private boolean isVisibleRsrcMonitor = false;
-    
+
     private GraphMonitorScheduler graphMonScheduler = null;
-    
+
     private int viewportIndex = 0;
-    
+
     private SystemProperties() {
         nodes = new ArrayList<>();
 
@@ -297,7 +298,8 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.DOUBLE, "1.0", "0.1", "5.0"));
-        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEEDBASE, PropertiesNodeType.ITEM, SyspNotesSpeedBase.DOMINANT, notesSpeedBaseItemS, notesSpeedBaseItemO));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEEDBASE, PropertiesNodeType.ITEM, SyspNotesSpeedBase.DOMINANT, notesSpeedBaseItemS,
+                notesSpeedBaseItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESIMAGENUM, PropertiesNodeType.INT, "40", "3", "1000", NotesCountItemS, NotesCountItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_DIMENSION, PropertiesNodeType.ITEM, "1280*768", WinSizeItemS, WinSizeItemD));
         nodes.add(new PropertiesNode(SYSP_RENDERER_WINSIZE, PropertiesNodeType.ITEM, "1280*720", WinSizeItemS, WinSizeItemO));
@@ -320,29 +322,28 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_AUTOMAX, PropertiesNodeType.INT, "2", "1", "4"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_BPM, PropertiesNodeType.DOUBLE, "160.0", "60.0", "1000.0"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_SEC, PropertiesNodeType.DOUBLE, "5.0", "3.0", "15.0"));
-        
-        
+
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
-        
+
         reset();
-        
+
         if (Utility.isWindows()) {
             generalFontName = "Meiryo";
         }
         else {
             generalFontName = Font.SANS_SERIF;
         }
-        
+
         osInfo = new OsInfoWrapper();
         graphMonScheduler = new GraphMonitorScheduler();
     }
-    
+
     public void reset() {
         for (PropertiesNode node : getNodes()) {
             node.reset();
         }
-        
-        // GPUなしはVRAMを使用しない 
+
+        // GPUなしはVRAMを使用しない
         boolean hasExtGPU = false;
         List<String> gpus = Utility.getGpuList();
         for (String s : gpus) {
@@ -357,21 +358,21 @@ public class SystemProperties {
             setData(SYSP_RENDERER_NOTES_COLOR_BITS, "rgb565");
         }
     }
-    
+
     private static MonitorPainter lightAnalyMonitor = new AnalyzeMonitorPainter();
     private static Map<SyspMonitorType, MonitorPainter> monitorPainters = new HashMap<SyspMonitorType, MonitorPainter>() {
         {
             put(SyspMonitorType.NONE, new NoneMonitorPainter());
-            //put(SyspMonitorType.TYPE1, new AnalyzeMonitorPainter());
+            // put(SyspMonitorType.TYPE1, new AnalyzeMonitorPainter());
             put(SyspMonitorType.TYPE1, new GraphMonitorPainter());
             put(SyspMonitorType.TYPE2, new NotesCountMonitorPainter());
             put(SyspMonitorType.TYPE3, new ClassicalMonitorPainter());
         }
     };
-    
+
     private static Map<SyspSpectrumType, SpectrumPainter> spectrumPainters = new HashMap<SyspSpectrumType, SpectrumPainter>() {
         {
-            put(SyspSpectrumType.NONE, new NoneSpectrumPainter()); 
+            put(SyspSpectrumType.NONE, new NoneSpectrumPainter());
             put(SyspSpectrumType.LIGHTNING, new LightningSpectrumPainter());
             put(SyspSpectrumType.CURTAIN, new CurtainSpectrumPainter());
         }
@@ -398,10 +399,10 @@ public class SystemProperties {
         String str = props.getProperty(key);
         PropertiesNode node = getPropNode(key);
         if (node != null) {
-        	node.setObject(str);
+            node.setObject(str);
         }
     }
-    
+
     public void setData(String key, String param) {
         for (PropertiesNode node : getNodes()) {
             if (node.getKey().equalsIgnoreCase(key) == true) {
@@ -438,24 +439,24 @@ public class SystemProperties {
     }
 
     public void initialize() {
-    	
-    	if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
-	        if (KDMAPIW.IsKDMAPIAvailable()) {
-		        // KDMAPIの開始 
-		        KDMAPIW.InitializeKDMAPIStream();
-		        
-		        if (JMPCoreAccessor.getSoundManager().getMidiUnit().containsExternalReceiver(KDMAPI_NAME) == false) {
-		    		JMPCoreAccessor.getSoundManager().getMidiUnit().addExternalReceiver(KDMAPI_NAME, new OmniDirectReceiver());
-		    	}
-	        }
-    	}
-    	
+
+        if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
+            if (KDMAPIW.IsKDMAPIAvailable()) {
+                // KDMAPIの開始
+                KDMAPIW.InitializeKDMAPIStream();
+
+                if (JMPCoreAccessor.getSoundManager().getMidiUnit().containsExternalReceiver(KDMAPI_NAME) == false) {
+                    JMPCoreAccessor.getSoundManager().getMidiUnit().addExternalReceiver(KDMAPI_NAME, new OmniDirectReceiver());
+                }
+            }
+        }
+
         // TODO Dimはバグるため720p固定とする
         PropertiesNode dimNode = getPropNode(SYSP_RENDERER_DIMENSION);
         dimNode.setObject("1280*768");
-        
+
         graphMonScheduler.clearRingBuffer();
-        
+
         String sDimSize = (String) getData(SYSP_RENDERER_DIMENSION);
         if (sDimSize != null && sDimSize.isBlank() == false) {
             try {
@@ -482,7 +483,7 @@ public class SystemProperties {
             }
             else {
                 windowMaximized = false;
-                
+
                 try {
                     String[] parts = sWinSize.split("[x×*,]");
                     windowWidth = Integer.parseInt(parts[0].trim()); // 幅
@@ -506,64 +507,65 @@ public class SystemProperties {
             defKeyWidth = 120;
         }
         keyWidth = (int) ((double) defKeyWidth * dimOffset);
-        
+
         SyspImgInterpol sImgInterpol = (SyspImgInterpol) getData(SYSP_RENDERER_INTERPOLATION);
         switch (sImgInterpol) {
-            case BICUBIC:
-                imageInterpol = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
-                break;
-            case NEAREST_NEIGHBOR:
-                imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
-                break;
-            case BILINEAR:
-            default:
-                imageInterpol = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-                break;
-            
+        case BICUBIC:
+            imageInterpol = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+            break;
+        case NEAREST_NEIGHBOR:
+            imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
+            break;
+        case BILINEAR:
+        default:
+            imageInterpol = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+            break;
+
         }
-        
+
         int bmpFormat = BufferedImage.TYPE_INT_RGB;
         SyspColorBitsDepth depthType = (SyspColorBitsDepth) getData(SYSP_RENDERER_NOTES_COLOR_BITS);
         switch (depthType) {
-            case GRAY:
-                bmpFormat = BufferedImage.TYPE_BYTE_GRAY;
-                break;
-            case RGB_565:
-                bmpFormat = BufferedImage.TYPE_USHORT_565_RGB;
-                break;
-            case RGB_888:
-            default:
-                bmpFormat = BufferedImage.TYPE_INT_RGB;
-                break;
+        case GRAY:
+            bmpFormat = BufferedImage.TYPE_BYTE_GRAY;
+            break;
+        case RGB_565:
+            bmpFormat = BufferedImage.TYPE_USHORT_565_RGB;
+            break;
+        case RGB_888:
+        default:
+            bmpFormat = BufferedImage.TYPE_INT_RGB;
+            break;
         }
         LayoutManager.getInstance().setBmpFormat(bmpFormat);
-        
-        isVisibleRsrcMonitor = (boolean)getPropNode(SYSP_RENDERER_RSRCMONITOR_VISIBLE).getData();
-        
-        SyspMonitorType monType = (SyspMonitorType)getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData();
+
+        isVisibleRsrcMonitor = (boolean) getPropNode(SYSP_RENDERER_RSRCMONITOR_VISIBLE).getData();
+
+        SyspMonitorType monType = (SyspMonitorType) getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData();
         monitorPainter = monitorPainters.get(monType);
-        
-        boolean isInvalidateEffe = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
+
+        boolean isInvalidateEffe = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
         if (isInvalidateEffe == true) {
             LayoutManager.getInstance().invalidateEffectConfig();
-            
-            // ↓ キーボードの枠線がおかしくなるため軽量非推奨 
-            //imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR; //軽量補完に差し替え
+
+            // ↓ キーボードの枠線がおかしくなるため軽量非推奨
+            // imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
+            // //軽量補完に差し替え
             LayoutManager.getInstance().setBmpFormat(BufferedImage.TYPE_USHORT_565_RGB);
-            
+
             isVisibleRsrcMonitor = false;
-            
+
             if (monType == SyspMonitorType.TYPE1) {
                 monitorPainter = lightAnalyMonitor;
             }
         }
-        
-        isGPUAvailable = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_GPU);
-        useVramImage = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_VRAM_IMAGE);
 
-        boolean validIgnoreNotesOfAudio = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
-        int ignoreNotesLowestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
-        int ignoreNotesHighestOfAudio = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST);
+        isGPUAvailable = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_GPU);
+        useVramImage = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_VRAM_IMAGE);
+
+        boolean validIgnoreNotesOfAudio = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_VALID);
+        int ignoreNotesLowestOfAudio = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_LOWEST);
+        int ignoreNotesHighestOfAudio = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_AUDIO_HIGHEST);
         if (ignoreNotesLowestOfAudio > ignoreNotesHighestOfAudio) {
             validIgnoreNotesOfAudio = false;
         }
@@ -572,10 +574,10 @@ public class SystemProperties {
             ignoreNotesHighestOfAudio = 0;
         }
         JMPCoreAccessor.getSoundManager().getMidiUnit().setIgnoreNotesVelocityOfAudio(ignoreNotesLowestOfAudio, ignoreNotesHighestOfAudio);
-        
-        boolean validIgnoreNotesOfRender = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID);
-        int ignoreNotesLowestOfRender = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST);
-        int ignoreNotesHighestOfRender = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST);
+
+        boolean validIgnoreNotesOfRender = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID);
+        int ignoreNotesLowestOfRender = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_LOWEST);
+        int ignoreNotesHighestOfRender = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_HIGHEST);
         if (ignoreNotesLowestOfRender > ignoreNotesHighestOfRender) {
             validIgnoreNotesOfRender = false;
         }
@@ -584,98 +586,98 @@ public class SystemProperties {
             ignoreNotesHighestOfRender = 0;
         }
         JMPCoreAccessor.getSoundManager().getMidiUnit().setIgnoreNotesVelocityOfMonitor(ignoreNotesLowestOfRender, ignoreNotesHighestOfRender);
-        
-        int usageRamMidi = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF);
-        JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageRamOfMidiEventBuffer((double)usageRamMidi / 100.0);
-        
+
+        int usageRamMidi = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_BUF);
+        JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageRamOfMidiEventBuffer((double) usageRamMidi / 100.0);
+
         // MIDI解析スレッド数を指定
-        int usageThCountMidi = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD);
+        int usageThCountMidi = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_ANALYZE_THREAD);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageAnalyzeThreadCount(usageThCountMidi);
-        
+
         // MIDI抽出スレッド数を指定
-        int usageThCountMidiEx = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD);
+        int usageThCountMidiEx = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_AUDIO_USAGE_MIDI_EXTRACT_THREAD);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setUsageExtractThreadCount(usageThCountMidiEx);
-        
+
         SyspPolyCalc polyCalc = (SyspPolyCalc) getData(SYSP_RENDERER_POLYPHONY_CALC);
         switch (polyCalc) {
-            case CHANNEL:
-                JMPCoreAccessor.getSoundManager().getMidiUnit().setPolyphonyCalcMethod(IMidiUnit.POLY_CALC_METHOD_CHANNEL);
-                break;
-            case TRACK:
-            default:
-                JMPCoreAccessor.getSoundManager().getMidiUnit().setPolyphonyCalcMethod(IMidiUnit.POLY_CALC_METHOD_TRACK);
-                break;
+        case CHANNEL:
+            JMPCoreAccessor.getSoundManager().getMidiUnit().setPolyphonyCalcMethod(IMidiUnit.POLY_CALC_METHOD_CHANNEL);
+            break;
+        case TRACK:
+        default:
+            JMPCoreAccessor.getSoundManager().getMidiUnit().setPolyphonyCalcMethod(IMidiUnit.POLY_CALC_METHOD_TRACK);
+            break;
         }
-        
-        int iSpectAmp = (int)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_SPECTRUM_AMP);
-        spectAmp = (double)iSpectAmp / 100.0;
-        
+
+        int iSpectAmp = (int) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_SPECTRUM_AMP);
+        spectAmp = (double) iSpectAmp / 100.0;
+
         SyspNumOfKey numOfKeys = (SyspNumOfKey) getPropNode(SYSP_RENDERER_KEYRANGE_COUNT).getData();
         switch (numOfKeys) {
-		case AUTO:
-			viewportIndex = -1;
-			break;
-		case FULL:
-			viewportIndex = 0;
-			break;
-		case LARGE:
-			viewportIndex = 1;
-			break;
-		case KEYS_88:
-			viewportIndex = 2;
-			break;
-		case KEYS_76:
-			viewportIndex = 3;
-			break;
-		default:
-			viewportIndex = 0;
-			break;
-		}
-        
-        double keyRangeResSec = (double)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_KEYRANGE_RES_SEC);
+        case AUTO:
+            viewportIndex = -1;
+            break;
+        case FULL:
+            viewportIndex = 0;
+            break;
+        case LARGE:
+            viewportIndex = 1;
+            break;
+        case KEYS_88:
+            viewportIndex = 2;
+            break;
+        case KEYS_76:
+            viewportIndex = 3;
+            break;
+        default:
+            viewportIndex = 0;
+            break;
+        }
+
+        double keyRangeResSec = (double) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_KEYRANGE_RES_SEC);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setRenderedNoteResolutionSec(keyRangeResSec);
-        double keyRangeResBaseBPM = (double)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_KEYRANGE_RES_BPM);
+        double keyRangeResBaseBPM = (double) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_KEYRANGE_RES_BPM);
         JMPCoreAccessor.getSoundManager().getMidiUnit().setRenderedNoteResolutionBaseBPM(keyRangeResBaseBPM);
-        
-        boolean debugMode = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
+
+        boolean debugMode = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_DEBUGMODE);
         JMPCoreAccessor.getSystemManager().setCommonRegisterValue(ISystemManager.COMMON_REGKEY_NO_DEBUGMODE, debugMode ? "true" : "false");
-        
+
         SyspAudioFunc audioFunc = (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData();
         if (audioFunc == SyspAudioFunc.MIDISYSTEM) {
-        	// Midi System(WinMM) 
-        	ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
+            // Midi System(WinMM)
+            ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
             scheduler1.schedule(() -> {
-            	String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
+                String synthKey = getData(SystemProperties.SYSP_AUDIO_SYNTH).toString();
                 JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, synthKey);
             }, 200, TimeUnit.MILLISECONDS);
         }
         else {
-        	// KDMAPI 
+            // KDMAPI
             ScheduledExecutorService scheduler1 = Executors.newScheduledThreadPool(1);
             scheduler1.schedule(() -> {
-            	// KDMAPIの登録 
+                // KDMAPIの登録
                 JMPCoreAccessor.getDataManager().setConfigParam(IDataManager.CFG_KEY_MIDIOUT, KDMAPI_NAME);
                 System.out.println(JMPCoreAccessor.getDataManager().getConfigParam(IDataManager.CFG_KEY_MIDIOUT));
             }, 200, TimeUnit.MILLISECONDS);
         }
-        
+
         // ファイルロードを予約する
         ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
         scheduler2.schedule(() -> {
             SystemProperties.getInstance().preloadAudioFiles();
         }, 400, TimeUnit.MILLISECONDS);
     }
-    
+
     public void exitForRenderWindow() {
-    	// 描画画面の終了 
-    	if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
-	        if (KDMAPIW.IsKDMAPIAvailable()) {
-	        	KDMAPIW.ResetKDMAPIStream();
-		        KDMAPIW.TerminateKDMAPIStream();
-	        }
-    	}
+        // 描画画面の終了
+        if (SyspAudioFunc.KDMAPI == (SyspAudioFunc) getPropNode(SYSP_AUDIO_FUNCTION).getData()) {
+            if (KDMAPIW.IsKDMAPIAvailable()) {
+                KDMAPIW.ResetKDMAPIStream();
+                KDMAPIW.TerminateKDMAPIStream();
+            }
+        }
     }
-    
+
     public void exit() {
         osInfo.exit();
         graphMonScheduler.exit();
@@ -740,7 +742,7 @@ public class SystemProperties {
         }
         return (SyspKeyFocusFunc) getPropNode(SYSP_RENDERER_KEY_FOCUS_FUNC).getData();
     }
-    
+
     public SyspLayerOrder getLayerOrder() {
         return (SyspLayerOrder) getPropNode(SYSP_RENDERER_LAYERORDER).getData();
     }
@@ -748,7 +750,7 @@ public class SystemProperties {
     public SyspMonitorType getMonitorType() {
         return (SyspMonitorType) getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData();
     }
-    
+
     public SyspWinEffect getWinEffect() {
         return (SyspWinEffect) getPropNode(SYSP_RENDERER_WINEFFECT).getData();
     }
@@ -768,7 +770,7 @@ public class SystemProperties {
     public int getWindowHeight() {
         return windowHeight;
     }
-    
+
     public boolean isWindowMaximized() {
         return windowMaximized;
     }
@@ -788,7 +790,7 @@ public class SystemProperties {
     public List<File> getPreloadFiles() {
         return preloadFiles;
     }
-    
+
     public boolean isGhostNotes(int velocity) {
         return JMPCoreAccessor.getSoundManager().getMidiUnit().isGhostNotesOfMonitor(velocity);
     }
@@ -796,23 +798,23 @@ public class SystemProperties {
     public boolean isGpuAvailable() {
         return isGPUAvailable;
     }
-    
+
     public MonitorPainter getMonitorPainter() {
         return monitorPainter;
     }
-    
+
     public boolean isVisibleRsrcMonitor() {
         return isVisibleRsrcMonitor;
     }
-    
+
     public double getNotesSpeed() {
-        return (double)getPropNode(SYSP_RENDERER_NOTESSPEED).getData();
+        return (double) getPropNode(SYSP_RENDERER_NOTESSPEED).getData();
     }
 
     public String getGeneralFontName() {
         return generalFontName;
     }
-    
+
     public OsInfoWrapper getOsInfo() {
         return osInfo;
     }
@@ -820,31 +822,31 @@ public class SystemProperties {
     public Object getImageInterpol() {
         return imageInterpol;
     }
-    
+
     public boolean isViewReverse() {
         return (boolean) getPropNode(SYSP_RENDERER_MODE_REVERSE).getData();
     }
-    
+
     public SpectrumPainter getSpectrumPainter() {
-        return spectrumPainters.get((SyspSpectrumType)getPropNode(SYSP_RENDERER_SPECTRUM_TYPE).getData());
+        return spectrumPainters.get((SyspSpectrumType) getPropNode(SYSP_RENDERER_SPECTRUM_TYPE).getData());
     }
-    
+
     public SyspSpectrumPosition getSpectrumPosition() {
-        return (SyspSpectrumPosition)getPropNode(SYSP_RENDERER_SPECTRUM_POS).getData();
+        return (SyspSpectrumPosition) getPropNode(SYSP_RENDERER_SPECTRUM_POS).getData();
     }
-    
+
     public double getSpectrumAmp() {
         return spectAmp;
     }
-    
+
     public SyspNotesSpeedBase getNotesSpeedBase() {
-        return (SyspNotesSpeedBase)getPropNode(SYSP_RENDERER_NOTESSPEEDBASE).getData();
+        return (SyspNotesSpeedBase) getPropNode(SYSP_RENDERER_NOTESSPEEDBASE).getData();
     }
-    
+
     public boolean isAvailavleGpu() {
         return isGPUAvailable;
     }
-    
+
     public GraphMonitorScheduler getGraphMonScheduler() {
         return graphMonScheduler;
     }
@@ -852,12 +854,12 @@ public class SystemProperties {
     public boolean isUseVramImage() {
         return useVramImage;
     }
-    
+
     public int getViewportNum() {
         return viewportIndex;
     }
-    
+
     public int getViewportMax() {
-    	return (int)getPropNode(SYSP_RENDERER_KEYRANGE_AUTOMAX).getData();
+        return (int) getPropNode(SYSP_RENDERER_KEYRANGE_AUTOMAX).getData();
     }
 }

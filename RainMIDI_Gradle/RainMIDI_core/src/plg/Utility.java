@@ -17,14 +17,13 @@ import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 
 public class Utility {
-	
-	public static final String APP_DIR_NAME = "RainMIDI";
+
+    public static final String APP_DIR_NAME = "RainMIDI";
 
     /**
      * HTMLカラーコードをAWTカラーインスタンスに変換
      *
-     * @param code
-     *            HTMLカラーコード
+     * @param code HTMLカラーコード
      * @return カラー
      */
     public static Color convertCodeToHtmlColor(String code) throws NumberFormatException {
@@ -42,12 +41,11 @@ public class Utility {
 
         return Color.decode("#" + value.trim());
     }
-    
+
     /**
      * 拡張子付きのファイル名の取得
      *
-     * @param path
-     *            パス
+     * @param path パス
      * @return 拡張子付きファイル名
      */
     public static String getFileNameAndExtension(String path) {
@@ -58,8 +56,7 @@ public class Utility {
     /**
      * 拡張子付きのファイル名の取得
      *
-     * @param file
-     *            ファイル
+     * @param file ファイル
      * @return 拡張子付きファイル名
      */
     public static String getFileNameAndExtension(File file) {
@@ -76,8 +73,7 @@ public class Utility {
     /**
      * 拡張子無しのファイル名取得
      *
-     * @param path
-     *            パス
+     * @param path パス
      * @return 拡張子無しファイル名
      */
     public static String getFileNameNotExtension(String path) {
@@ -88,8 +84,7 @@ public class Utility {
     /**
      * 拡張子無しのファイル名取得
      *
-     * @param file
-     *            ファイル
+     * @param file ファイル
      * @return 拡張子無しファイル名
      */
     public static String getFileNameNotExtension(File file) {
@@ -109,8 +104,7 @@ public class Utility {
     /**
      * 拡張子を取得
      *
-     * @param path
-     *            パス
+     * @param path パス
      * @return 拡張子
      */
     public static String getExtension(String path) {
@@ -121,15 +115,14 @@ public class Utility {
     /**
      * 拡張子を取得
      *
-     * @param file
-     *            ファイル
+     * @param file ファイル
      * @return 拡張子
      */
     public static String getExtension(File file) {
         String ex = "";
         try {
             String name = getFileNameAndExtension(file);
-            
+
             int such = name.lastIndexOf(".");
             if (such != -1) {
                 String s = name.substring(such);
@@ -147,10 +140,8 @@ public class Utility {
     /**
      * 拡張子チェック
      *
-     * @param path
-     *            ファイルパス
-     * @param exStr
-     *            一致するか判定する拡張子(ex: checkExtension("C:/text.txt", "txt"))
+     * @param path  ファイルパス
+     * @param exStr 一致するか判定する拡張子(ex: checkExtension("C:/text.txt", "txt"))
      * @return 結果(一致：true)
      */
     public static boolean checkExtension(String path, String exStr) {
@@ -161,10 +152,8 @@ public class Utility {
     /**
      * 拡張子チェック
      *
-     * @param f
-     *            ファイル
-     * @param exStr
-     *            一致するか判定する拡張子
+     * @param f     ファイル
+     * @param exStr 一致するか判定する拡張子
      * @return 結果(一致：true)
      */
     public static boolean checkExtension(File f, String exStr) {
@@ -177,10 +166,8 @@ public class Utility {
     /**
      * 拡張子チェック(複数指定可能)
      *
-     * @param f
-     *            ファイル
-     * @param exStr
-     *            一致するか判定する拡張子
+     * @param f     ファイル
+     * @param exStr 一致するか判定する拡張子
      * @return 結果(一致：true)
      */
     public static boolean checkExtensions(File f, String... exStr) {
@@ -197,11 +184,9 @@ public class Utility {
     /**
      * 拡張子チェック(複数指定可能)
      *
-     * @param path
-     *            ファイルパス
-     * @param exStr
-     *            一致するか判定する拡張子(ex: checkExtension("C:/text.txt", "txt", "csv",
-     *            "ini"))
+     * @param path  ファイルパス
+     * @param exStr 一致するか判定する拡張子(ex: checkExtension("C:/text.txt", "txt", "csv",
+     *              "ini"))
      * @return 結果(一致：true)
      */
     public static boolean checkExtensions(String path, String... exStr) {
@@ -214,7 +199,7 @@ public class Utility {
         }
         return ret;
     }
-    
+
     public static boolean isGpuAvailable() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
@@ -223,7 +208,7 @@ public class Utility {
         VolatileImage vi = gc.createCompatibleVolatileImage(1, 1);
         return vi != null && vi.getCapabilities().isAccelerated();
     }
-    
+
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
     public static boolean isWindows() {
@@ -237,32 +222,27 @@ public class Utility {
     public static boolean isLinux() {
         return OS.contains("nux") || OS.contains("nix");
     }
-    
+
     private static List<String> gpus_cache = null;
-    
+
     // GPU一覧取得
     public static List<String> getGpuList() {
-        
+
         if (gpus_cache != null) {
             return gpus_cache;
         }
         gpus_cache = new ArrayList<>();
-        
+
         if (!isWindows()) {
-            // Windows以外非対応 
+            // Windows以外非対応
             return gpus_cache;
         }
 
         try {
-            Process process = new ProcessBuilder(
-                    "powershell",
-                    "-Command",
-                    "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name"
-            ).start();
+            Process process = new ProcessBuilder("powershell", "-Command", "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name")
+                    .start();
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream())
-            );
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -274,26 +254,26 @@ public class Utility {
 
             process.waitFor();
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             gpus_cache.clear();
             e.printStackTrace();
         }
 
         return gpus_cache;
     }
-    
+
     // 内蔵GPUか判定
     public static boolean isIntegratedGPU(String gpuName) {
-        if (gpuName == null) return false;
+        if (gpuName == null)
+            return false;
 
         gpuName = gpuName.toLowerCase();
 
-        return gpuName.contains("intel")
-            || gpuName.contains("uhd")
-            || gpuName.contains("iris");
+        return gpuName.contains("intel") || gpuName.contains("uhd") || gpuName.contains("iris");
     }
 
-    // 内蔵GPUのみか 
+    // 内蔵GPUのみか
     public static boolean hasIntegratedGPUOnry(List<String> gpus) {
         for (String gpu : gpus) {
             if (!isIntegratedGPU(gpu)) {
@@ -302,13 +282,13 @@ public class Utility {
         }
         return true;
     }
-    
+
     public static Path getAppConfigDirectory() {
         String userHome = System.getProperty("user.home");
         Path configPath;
 
         if (isWindows()) {
-        	// Windows: C:/Users/username/AppData/Roaming
+            // Windows: C:/Users/username/AppData/Roaming
             String appData = System.getenv("APPDATA");
             if (appData != null) {
                 configPath = Paths.get(appData).resolve(APP_DIR_NAME);
@@ -318,26 +298,28 @@ public class Utility {
             }
         }
         else {
-        	// サポート外OSはカレントフォルダに生成。設定の引継ぎ不可  
-            configPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(
-            		ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+            // サポート外OSはカレントフォルダに生成。設定の引継ぎ不可
+            configPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
         }
         return configPath;
     }
-    
+
     public static double calcEasedZoomInOut(double x) {
-		double eased;
-		if (x == 0.0) {
-		    eased = 0.0;
-		} else if (x == 1.0) {
-		    eased = 1.0;
-		} else if (x < 0.5) {
-		    // 徐々に加速する（Ease-In）
-		    eased = Math.pow(2, 20 * x - 10) / 2.0;
-		} else {
-		    // 徐々に減速する（Ease-Out）
-		    eased = (2.0 - Math.pow(2, -20 * x + 10)) / 2.0;
-		}
-		return eased;
+        double eased;
+        if (x == 0.0) {
+            eased = 0.0;
+        }
+        else if (x == 1.0) {
+            eased = 1.0;
+        }
+        else if (x < 0.5) {
+            // 徐々に加速する（Ease-In）
+            eased = Math.pow(2, 20 * x - 10) / 2.0;
+        }
+        else {
+            // 徐々に減速する（Ease-Out）
+            eased = (2.0 - Math.pow(2, -20 * x + 10)) / 2.0;
+        }
+        return eased;
     }
 }

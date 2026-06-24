@@ -14,10 +14,11 @@ import plg.Utility;
 
 public class AnalyzeMonitorPainter extends MonitorPainter {
     private static final DecimalFormat DF = new DecimalFormat("0.0");
-    
+
     private Font info1Font = null;
     private StringBuilder sb = new StringBuilder();
     private static final int FONT_SIZE = 28;
+
     public AnalyzeMonitorPainter() {
         if (Utility.isWindows()) {
             info1Font = new Font("Calibri", Font.PLAIN, FONT_SIZE);
@@ -31,7 +32,7 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
     public void paintMonitor(Graphics g, MonitorData info) {
         INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        
+
         int sx = 10;
         int sy = FONT_SIZE + 2;
         int sh = FONT_SIZE;
@@ -134,7 +135,7 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.setColor(topStrColor);
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
-        
+
         sb.setLength(0);
         val1 = info.fps;
         sb.append("FPS: ").append(val1);

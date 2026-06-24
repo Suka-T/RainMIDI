@@ -28,7 +28,7 @@ public class NotesCountMonitorPainter extends MonitorPainter {
     @Override
     public void paintMonitor(Graphics g, MonitorData info) {
         INotesMonitor notesMonitor = JMPCoreAccessor.getSoundManager().getNotesMonitor();
-        //IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        // IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
 
         int sx = 0;
         int sy = 65;

@@ -44,7 +44,7 @@ public class ImagerWorkerManager {
         }
         return null;
     }
-    
+
     public void waitForRenderingFin() {
         try {
             // 全てのワーカーのレンダリングが終わるまで待つ
@@ -52,7 +52,8 @@ public class ImagerWorkerManager {
             do {
                 workerCnt = 0;
                 for (ImageWorker w : workers) {
-                    if (w.isExec() == false) workerCnt++;
+                    if (w.isExec() == false)
+                        workerCnt++;
                 }
                 Thread.sleep(10);
             } while (workers.length > workerCnt);
@@ -61,7 +62,7 @@ public class ImagerWorkerManager {
             e.printStackTrace();
         }
     }
-    
+
     public void firstRender(int leftMeas, int dispMeas, int flipCount) {
         int offsetLeftMeas = Math.abs(leftMeas);
         int flipMergin = -(flipCount);
@@ -73,11 +74,11 @@ public class ImagerWorkerManager {
             workers[i].makeImage();
         }
         currentWorkerIndex = 0;
-        
+
         // 全てのワーカーのレンダリングが終わるまで待つ
         waitForRenderingFin();
     }
-    
+
     public void reset(int leftMeas, int dispMeas, int flipCount) {
         int offsetLeftMeas = Math.abs(leftMeas);
         int flipMergin = -(flipCount);
@@ -87,7 +88,7 @@ public class ImagerWorkerManager {
             workers[i].setLeftMeasTh(-(flipLine));
             workers[i].disposeImage();
             workers[i].makeImage();
-            
+
             if (3 < workers.length) {
                 while (workers[i].isExec()) {
                     try {
@@ -116,21 +117,21 @@ public class ImagerWorkerManager {
         // nextNotesThread.copyTrackCacheFrom(nextCache);
         nextNotesThread.makeImage();
     }
-    
+
     public void dispose() {
         for (int i = 0; i < workers.length; i++) {
             workers[i].dispose();
         }
     }
-    
+
     public void forcedEnd() {
         for (int i = 0; i < workers.length; i++) {
             workers[i].forcedEnd();
         }
-        
+
         // 全てのワーカーのレンダリングが終わるまで待つ
         waitForRenderingFin();
-        
+
         for (int i = 0; i < workers.length; i++) {
             workers[i].clearForcedEnd();
         }

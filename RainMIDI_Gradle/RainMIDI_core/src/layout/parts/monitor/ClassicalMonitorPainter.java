@@ -15,6 +15,7 @@ public class ClassicalMonitorPainter extends MonitorPainter {
 
     private Font info3Font = null;
     private StringBuilder sb = new StringBuilder();
+
     public ClassicalMonitorPainter() {
         if (Utility.isWindows()) {
             info3Font = new Font("Calibri", Font.PLAIN, 28);
@@ -27,7 +28,7 @@ public class ClassicalMonitorPainter extends MonitorPainter {
     @Override
     public void paintMonitor(Graphics g, MonitorData info) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        
+
         int sx = 0;
         int sy = 30;
         int sh = 28;

@@ -13,12 +13,13 @@ public class ColorInfo {
     protected Color effeColor = null;
     protected Color bgRevColor = null;
     protected Color bgRev2Color = null;
-    
-    // グラデーション描画の高速化対応 
+
+    // グラデーション描画の高速化対応
     protected Paint gradPainter = null;
 
     protected List<Color> gradColor = null;
     protected int gradSize = -1;
+
     public ColorInfo(Color bgColor, Color bdColor) {
         this.bgColor = bgColor;
         this.bdColor = bdColor;
@@ -30,7 +31,7 @@ public class ColorInfo {
         this.bgRev2Color = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.WHITE : Color.BLACK;
         createShadowColor();
     }
-    
+
     public ColorInfo(Color bgColor, Color bdColor, Color effeColor) {
         this.bgColor = bgColor;
         this.bdColor = bdColor;
@@ -42,47 +43,47 @@ public class ColorInfo {
         this.bgRev2Color = ((bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue()) / 3) >= 128 ? Color.WHITE : Color.BLACK;
         createShadowColor();
     }
-    
+
     private void createShadowColor() {
         double borderOffset = 0.5;
         int r = this.bgColor.getRed();
         int g = this.bgColor.getGreen();
         int b = this.bgColor.getBlue();
-        //int a = this.bgColor.getAlpha();
+        // int a = this.bgColor.getAlpha();
         r = (int) ((double) r * borderOffset);
         g = (int) ((double) g * borderOffset);
         b = (int) ((double) b * borderOffset);
         this.shadowColor = new Color(r, g, b);
     }
-    
+
     public Color getBgColor() {
         return bgColor;
     }
-    
+
     public Color getBdColor() {
         return bdColor;
     }
-    
+
     public Color getEffeColor() {
         return effeColor;
     }
-    
+
     public Color getBgRevColor() {
         return bgRevColor;
     }
-    
+
     public Color getBgRev2Color() {
         return bgRev2Color;
     }
-    
+
     public Color getGradColorBegin() {
         return getGradColor(0);
     }
-    
+
     public Color getGradColorEnd() {
         return getGradColor(gradSize - 1);
     }
-    
+
     public Color getGradColor(int index) {
         if (gradSize == -1) {
             return bgColor;
@@ -92,7 +93,7 @@ public class ColorInfo {
         }
         return gradColor.get(index);
     }
-    
+
     public void createGrad(int size) {
         int bgR = bgColor.getRed();
         int bgG = bgColor.getGreen();
@@ -105,11 +106,8 @@ public class ColorInfo {
         int spanR = (bdR - bgR) / size;
         int spanG = (bdG - bgG) / size;
         int spanB = (bdB - bgB) / size;
-        
-        gradPainter = new LinearGradientPaint(0f, 0f, 0f, (float)size, 
-                new float[] { 0f, 1f },
-                new Color[] { bgColor, shadowColor }
-        );
+
+        gradPainter = new LinearGradientPaint(0f, 0f, 0f, (float) size, new float[] { 0f, 1f }, new Color[] { bgColor, shadowColor });
 
         int i = 0;
         gradColor.clear();
@@ -122,7 +120,7 @@ public class ColorInfo {
         }
         gradSize = size;
     }
-    
+
     public Paint getGradPainter() {
         return gradPainter;
     }

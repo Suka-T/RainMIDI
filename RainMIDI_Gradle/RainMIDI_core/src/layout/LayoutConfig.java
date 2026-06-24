@@ -37,7 +37,7 @@ public class LayoutConfig {
     public static final String LC_KEYBOARD_DESIGN = "keyboard.design";
     public static final String LC_COLLISION_EFFECT_IN = "collision.effect.in";
     public static final String LC_COLLISION_EFFECT_OUT = "collision.effect.out";
-    
+
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
             put(LC_PLAYER_BGCOLOR, "Renderer background color");
@@ -77,47 +77,54 @@ public class LayoutConfig {
     public static enum ENotesDesign {
         Normal, Normal3D, Flat, Arc, Frame;
     }
+
     private static Object[] ENotesDesignO = { ENotesDesign.Normal, ENotesDesign.Normal3D, ENotesDesign.Flat, ENotesDesign.Arc, ENotesDesign.Frame };
     private static String[] ENotesDesignS = { "normal", "normal3d", "flat", "arc", "frame" };
 
     public static enum ECursorType {
         Keyboard, Line;
     }
+
     private static Object[] ECursorTypeO = { ECursorType.Keyboard, ECursorType.Line };
     private static String[] ECursorTypeS = { "keyboard", "line" };
 
     public static enum EColorRule {
         Channel, Track;
     }
+
     private static Object[] EColorRuleO = { EColorRule.Channel, EColorRule.Track };
     private static String[] EColorRuleS = { "channel", "track" };
 
     public static enum EColorAsign {
         Inherit, Asign, None;
     }
+
     private static Object[] EColorAsignO = { EColorAsign.Inherit, EColorAsign.Asign, EColorAsign.None };
     private static String[] EColorAsignS = { "inherit", "asign", "none" };
 
     private static Object[] CursorPosO = { -1 };
     private static String[] CursorPosS = { "top" };
-    
+
     public static enum EKeyboardDesign {
         Default, Simple, Smart;
     }
+
     private static Object[] EKeyboardDesignO = { EKeyboardDesign.Default, EKeyboardDesign.Simple, EKeyboardDesign.Smart };
     private static String[] EKeyboardDesignS = { "default", "simple", "smart" };
-    
+
     public static enum EColEffect {
         None, Simple, Color;
     }
+
     private static Object[] EColEffectInO = { EColEffect.None, EColEffect.Simple };
     private static String[] EColEffectInS = { "none", "simple" };
     private static Object[] EColEffectOutO = { EColEffect.None, EColEffect.Simple, EColEffect.Color };
     private static String[] EColEffectOutS = { "none", "simple", "color" };
-    
+
     public static enum ETickbarDesign {
         Normal, Glow;
     }
+
     private static Object[] ETickbarDesignO = { ETickbarDesign.Normal, ETickbarDesign.Glow };
     private static String[] ETickbarDesignS = { "normal", "glow" };
 
@@ -162,7 +169,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_COLLISION_EFFECT_OUT, PropertiesNodeType.ITEM, EColEffect.Color, EColEffectOutS, EColEffectOutO));
         definication();
     }
-    
+
     public void definication() {
         // ロードする文字列
         String propertiesString = "";
@@ -175,9 +182,9 @@ public class LayoutConfig {
             e.printStackTrace();
         }
     }
-    
+
     public void invalidateEffectConfig() {
-        // エフェクト有の設定を無効化する 
+        // エフェクト有の設定を無効化する
         getPropNode(LC_CURSOR_LINE).setObject("normal");
         getPropNode(LC_COLLISION_EFFECT_IN).setObject("none");
         getPropNode(LC_COLLISION_EFFECT_OUT).setObject("none");
@@ -185,11 +192,11 @@ public class LayoutConfig {
             getPropNode(LC_KEYBOARD_DESIGN).setObject("default");
         }
     }
-    
+
     public List<PropertiesNode> getNodes() {
         return nodes;
     }
-    
+
     private PropertiesNode getPropNode(String key) {
         for (PropertiesNode nd : nodes) {
             if (nd.getKey().equalsIgnoreCase(key)) {
@@ -203,10 +210,10 @@ public class LayoutConfig {
         String str = props.getProperty(key);
         PropertiesNode node = getPropNode(key);
         if (node != null) {
-        	node.setObject(str);
+            node.setObject(str);
         }
     }
-    
+
     public Object getData(String key) {
         PropertiesNode node = getPropNode(key);
         if (node == null) {
@@ -214,7 +221,7 @@ public class LayoutConfig {
         }
         return node.getData();
     }
-    
+
     public void setData(String key, String param) {
         for (PropertiesNode node : getNodes()) {
             if (node.getKey().equalsIgnoreCase(key) == true) {
@@ -235,7 +242,7 @@ public class LayoutConfig {
             setPropObject(props, nd.getKey());
         }
     }
-    
+
     public void write(File file) throws FileNotFoundException, IOException {
         Properties props = new Properties();
         for (PropertiesNode nd : nodes) {
@@ -243,8 +250,8 @@ public class LayoutConfig {
         }
         props.store(new FileOutputStream(file), "");
     }
-    
+
     public void initialize() {
-        
+
     }
 }

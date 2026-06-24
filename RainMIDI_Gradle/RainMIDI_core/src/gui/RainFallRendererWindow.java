@@ -49,121 +49,121 @@ public class RainFallRendererWindow extends RendererWindow {
             int midiNo = 127 - i;
             int key = midiNo % 12;
             switch (key) {
-                case 0:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (int) (keyHeight / 1.5) + 1;
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 5:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (int) (keyHeight / 1.5) + 1;
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 7:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 3;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (keyHeight / 2);
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 9:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 3;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (keyHeight / 3);
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 2:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (keyHeight / 2.5) - 0;
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 4:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + keyHeight / 3) - 3;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 11:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = (hakkenHeight + (int) (keyHeight / 1.5)) - 5;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 1:
-                case 3:
-                case 6:
-                case 8:
-                case 10:
-                    aKokken[kkCnt] = new BlackKeyParts();
-                    aKokken[kkCnt].x = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
-                    aKokken[kkCnt].y = hitEffectPosY[i];
-                    aKokken[kkCnt].width = kkWidth;
-                    aKokken[kkCnt].height = keyHeight;
-                    aKokken[kkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
-                    aKokken[kkCnt].orgY = hitEffectPosY[i];
-                    aKokken[kkCnt].orgWidth = kkWidth;
-                    aKokken[kkCnt].orgHeight = keyHeight;
-                    aKokken[kkCnt].midiNo = midiNo;
-                    kkCnt++;
-                    break;
-                default:
-                    break;
+            case 0:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (int) (keyHeight / 1.5) + 1;
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 5:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (int) (keyHeight / 1.5) + 1;
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 7:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 3;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (keyHeight / 2);
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 9:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 3;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (keyHeight / 3);
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 2:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + keyHeight / 2) - 4;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (keyHeight / 2.5) - 0;
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 4:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + keyHeight / 3) - 3;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 11:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = (hakkenHeight + (int) (keyHeight / 1.5)) - 5;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 1:
+            case 3:
+            case 6:
+            case 8:
+            case 10:
+                aKokken[kkCnt] = new BlackKeyParts();
+                aKokken[kkCnt].x = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
+                aKokken[kkCnt].y = hitEffectPosY[i];
+                aKokken[kkCnt].width = kkWidth;
+                aKokken[kkCnt].height = keyHeight;
+                aKokken[kkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
+                aKokken[kkCnt].orgY = hitEffectPosY[i];
+                aKokken[kkCnt].orgWidth = kkWidth;
+                aKokken[kkCnt].orgHeight = keyHeight;
+                aKokken[kkCnt].midiNo = midiNo;
+                kkCnt++;
+                break;
+            default:
+                break;
             }
         }
     }
@@ -194,8 +194,8 @@ public class RainFallRendererWindow extends RendererWindow {
 
         // 回転の中心に移動（ウィンドウの中心）
         lotG2d.translate(panelW / 2.0, panelH / 2.0);
-        
-        // 反転設定 
+
+        // 反転設定
         if (SystemProperties.getInstance().isViewReverse() == true) {
             lotG2d.rotate(Math.toRadians(90));
         }
@@ -223,39 +223,39 @@ public class RainFallRendererWindow extends RendererWindow {
     protected int getEffectWidth(int dir) {
         return (dir < 0) ? 3 : 4;
     }
-    
+
     @Override
     public void updateViewport() {
-    	int paneWidth = getContentPane().getWidth();
+        int paneWidth = getContentPane().getWidth();
         viewportManager.updateOffs(paneWidth, getOrgHeight(), measCellHeight);
     }
-    
+
     @Override
     protected void copyFromScreenImage(Graphics g) {
-    	int paneWidth = getContentPane().getWidth();
+        int paneWidth = getContentPane().getWidth();
         int paneHeight = getContentPane().getHeight();
-        
+
         int curS1 = viewportManager.getOffsetCoordS();
         int curE2 = viewportManager.getOffsetCoordE();
         int cX2 = paneWidth - curE2 - 1;
         int cW = cX2 - curS1 + 1;
-        int cH = (int)((double)paneHeight * ((double)cW / (double)paneWidth));
-        
+        int cH = (int) ((double) paneHeight * ((double) cW / (double) paneWidth));
+
         int clipX = curS1;
         int clipY = 0;
         if (SystemProperties.getInstance().isViewReverse() == false) {
-        	clipY = paneHeight - cH;
+            clipY = paneHeight - cH;
         }
         else {
-        	clipY = 0;
+            clipY = 0;
         }
         int clipW = cW;
         int clipH = cH;
-        
-    	int dX1 = clipX;
-    	int dY1 = clipY;
-    	int dX2 = clipX + clipW - 1;
-    	int dY2 = clipY + clipH - 1;
-    	g.drawImage(bufferScreenImage, 0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), dX1, dY1, dX2, dY2, null);
+
+        int dX1 = clipX;
+        int dY1 = clipY;
+        int dX2 = clipX + clipW - 1;
+        int dY2 = clipY + clipH - 1;
+        g.drawImage(bufferScreenImage, 0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), dX1, dY1, dX2, dY2, null);
     }
 }

@@ -26,11 +26,12 @@ public class Normal3dNotesPainter extends NotesPainter {
 //                g2d.setTransform(oldTx);
 //            }
 //            else {
-                for (; i < context.iH; i++) {
-                    //g2d.setColor(layout.LayoutManager.getInstance().getNotesGradation(context.colorIndex, i));
-                    g2d.setColor(LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradColor(i));
-                    g2d.drawLine(context.iX, context.iY + i, context.iX + context.iW - 1, context.iY + i);
-                }
+            for (; i < context.iH; i++) {
+                // g2d.setColor(layout.LayoutManager.getInstance().getNotesGradation(context.colorIndex,
+                // i));
+                g2d.setColor(LayoutManager.getInstance().getNotesColor(context.colorIndex).getGradColor(i));
+                g2d.drawLine(context.iX, context.iY + i, context.iX + context.iW - 1, context.iY + i);
+            }
 //            }
             g2d.setColor(context.bdColor);
             g2d.drawRect(context.iX, context.iY, context.iW, context.iH);

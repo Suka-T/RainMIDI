@@ -62,7 +62,7 @@ public class LayoutManager {
             put(EKeyboardDesign.Smart, new SmartKeyboardPainter());
         }
     };
-    
+
     private static Map<LayoutConfig.EColEffect, CollisionEffectPainter> cePainters = new HashMap<LayoutConfig.EColEffect, CollisionEffectPainter>() {
         {
             put(EColEffect.None, new NoneCollisionEffectPainter());
@@ -70,7 +70,7 @@ public class LayoutManager {
             put(EColEffect.Color, new ColorCollisionEffectPainter());
         }
     };
-    
+
     private static Map<LayoutConfig.ETickbarDesign, TickbarPainter> tickBarPainters = new HashMap<LayoutConfig.ETickbarDesign, TickbarPainter>() {
         {
             put(ETickbarDesign.Normal, new NormalTickbarPainter());
@@ -84,9 +84,9 @@ public class LayoutManager {
     private ColorInfo pbColor = null;
 
     private Canvas rootCanvas = null;
-    
+
     private int bmpFormat = BufferedImage.TYPE_INT_RGB;
-    
+
     private long volumeVisibleTime = -1;
 
     // 現在のレイアウト設定
@@ -150,7 +150,7 @@ public class LayoutManager {
         for (int i = 0; i < notesColorNum; i++) {
             notesColorInfos.add(new ColorInfo(notesColor.get(i), notesBorderColor.get(i)));
         }
-        
+
         cursorColor = new ColorInfo( //
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_COLOR)), //
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_COLOR)), //
@@ -172,9 +172,9 @@ public class LayoutManager {
     public void initializeConfig() {
         layout.definication();
     }
-    
+
     public void initializeClassic() {
-    	// Classic Design
+        // Classic Design
         layout.definication();
         layout.setData(LayoutConfig.LC_NOTES_DESIGN, "normal3d");
         layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "default");
@@ -182,24 +182,24 @@ public class LayoutManager {
         layout.setData(LayoutConfig.LC_COLLISION_EFFECT_OUT, "none");
         layout.setData(LayoutConfig.LC_CURSOR_LINE, "normal");
     }
-    
+
     public void initializeConfigLight() {
-    	initializeClassic();
+        initializeClassic();
     }
-    
+
     public void invalidateEffectConfig() {
         layout.invalidateEffectConfig();
     }
 
     public void read(File f) throws IOException {
         if (f.exists() == true) {
-        	layout.definication(); // 差分以外をデフォルトにする 
+            layout.definication(); // 差分以外をデフォルトにする
             layout.read(f);
         }
     }
-    
+
     public void write(File f) throws IOException {
-    	layout.write(f);
+        layout.write(f);
     }
 
     public ColorInfo getNotesColor(int index) {
@@ -254,11 +254,11 @@ public class LayoutManager {
         LayoutConfig.ENotesDesign notesDesign = (LayoutConfig.ENotesDesign) layout.getData(LayoutConfig.LC_NOTES_DESIGN);
         if (JMPCoreAccessor.getSoundManager().getMidiUnit().isRenderingOnlyMode() == true) {
             switch (notesDesign) {
-                case Frame:
-                    notesDesign = ENotesDesign.Normal;
-                    break;
-                default:
-                    break;
+            case Frame:
+                notesDesign = ENotesDesign.Normal;
+                break;
+            default:
+                break;
             }
         }
         return notesPainters.get(notesDesign);
@@ -268,12 +268,12 @@ public class LayoutManager {
         LayoutConfig.EKeyboardDesign kbDesign = (LayoutConfig.EKeyboardDesign) layout.getData(LayoutConfig.LC_KEYBOARD_DESIGN);
         if (mode == SyspViewMode.SIDE_FLOW) {
             switch (kbDesign) {
-                case LayoutConfig.EKeyboardDesign.Default:
-                    // SideFlowはDefault非対応 
-                    kbDesign = LayoutConfig.EKeyboardDesign.Simple;
-                    break;
-                default:
-                    break;
+            case LayoutConfig.EKeyboardDesign.Default:
+                // SideFlowはDefault非対応
+                kbDesign = LayoutConfig.EKeyboardDesign.Simple;
+                break;
+            default:
+                break;
             }
         }
         return kbPainters.get(kbDesign);
@@ -307,29 +307,29 @@ public class LayoutManager {
     public void setBmpFormat(int bmpFormat) {
         this.bmpFormat = bmpFormat;
     }
-    
+
     public void setVolumeVisibleTime() {
         volumeVisibleTime = System.currentTimeMillis();
     }
-    
+
     public void clearVolumeVisibleTime() {
         volumeVisibleTime = -1;
     }
-    
+
     public long getVolumeVisibleTime() {
         return volumeVisibleTime;
     }
-    
+
     public CollisionEffectPainter getCollisionEffectPainterIn() {
         LayoutConfig.EColEffect effe = (LayoutConfig.EColEffect) layout.getData(LayoutConfig.LC_COLLISION_EFFECT_IN);
         return cePainters.get(effe);
     }
-    
+
     public CollisionEffectPainter getCollisionEffectPainterOut() {
         LayoutConfig.EColEffect effe = (LayoutConfig.EColEffect) layout.getData(LayoutConfig.LC_COLLISION_EFFECT_OUT);
         return cePainters.get(effe);
     }
-    
+
     public TickbarPainter getTickbarPainter() {
         LayoutConfig.ETickbarDesign type = (LayoutConfig.ETickbarDesign) layout.getData(LayoutConfig.LC_CURSOR_LINE);
         return tickBarPainters.get(type);

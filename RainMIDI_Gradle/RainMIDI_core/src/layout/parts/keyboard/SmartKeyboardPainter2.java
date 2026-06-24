@@ -13,17 +13,17 @@ public class SmartKeyboardPainter2 extends KeyboardPainter {
 
     public SmartKeyboardPainter2() {
     }
-    
+
     private int getTrimedX(int x, int width) {
         return x + (width - getTrimedWidth(width));
     }
-    
+
     private int getTrimedWidth(int width) {
-        return (int) ((double) width/* * 0.8*/);
+        return (int) ((double) width/* * 0.8 */);
     }
-    
+
     private void drawWhiteKeyImpl(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
         int trimedX = getTrimedX(parts.orgX, parts.orgWidth);
         int trimedWidth = getTrimedWidth(parts.orgWidth);
         int keyWidth = getTrimedWidth(getKeyboardWidth());
@@ -36,12 +36,12 @@ public class SmartKeyboardPainter2 extends KeyboardPainter {
         int i = 0;
         g.setColor(Color.WHITE);
         for (; i < effeW; i++) {
-            alpha = 1.0f - ((float)(i + 1) / (float)effeW);
+            alpha = 1.0f - ((float) (i + 1) / (float) effeW);
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
             g2d.drawLine(effeX - i, effeY1, effeX - i, effeY2);
         }
         g2d.setComposite(AlphaComposite.SrcOver);
-        
+
 //        if (isPush) {
 //            i = 0;
 //            effeX = trimedX + trimedWidth - 1;
@@ -55,28 +55,28 @@ public class SmartKeyboardPainter2 extends KeyboardPainter {
 //            g2d.setComposite(AlphaComposite.SrcOver);
 //        }
     }
-    
+
     private void drawBlackKeyImpl(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
         int trimedX = getTrimedX(parts.orgX, parts.orgWidth);
         int trimedWidth = getTrimedWidth(parts.orgWidth);
         int keyWidth = getTrimedWidth(getKeyboardWidth());
         float alpha = 1.0f;
         int effeX = trimedX + trimedWidth - 1;
         int effeW = keyWidth;
-        int effeW2 = (int)((double)keyWidth * 0.7);
+        int effeW2 = (int) ((double) keyWidth * 0.7);
         int effeY1 = parts.orgY;
         int effeH = parts.orgHeight;
         int effeY2 = effeY1 + effeH - 1;
         int i = 0;
         for (; i < effeW; i++) {
-            alpha = 1.0f - ((float)(i + 1) / (float)effeW);
+            alpha = 1.0f - ((float) (i + 1) / (float) effeW);
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
             g.setColor(i < effeW2 ? Color.DARK_GRAY : Color.WHITE);
             g2d.drawLine(effeX - i, effeY1, effeX - i, effeY2);
         }
         g2d.setComposite(AlphaComposite.SrcOver);
-        
+
 //        if (isPush) {
 //            i = 0;
 //            effeX = trimedX + trimedWidth - 1;

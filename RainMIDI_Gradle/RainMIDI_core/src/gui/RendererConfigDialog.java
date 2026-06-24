@@ -98,25 +98,25 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private static final String USAGE_MIDI_ANA_HIG = "8";
     private static final String USAGE_MIDI_EXT_HIG = "6";
     private static final String NOTESIMAGE_BITS_HIG = "rgb888";
-    
+
     private static final String WORKNUM_MAX = "8";
     private static final String NOTESIMAGENUM_MAX = "120";
     private static final String USAGE_MIDIRAM_MAX = "50";
     private static final String USAGE_MIDI_ANA_MAX = "24";
     private static final String USAGE_MIDI_EXT_MAX = "24";
     private static final String NOTESIMAGE_BITS_MAX = "rgb888";
-    
+
     private static final String NOTES_SPEED_SLOW = "0.4";
     private static final String NOTES_SPEED_NORM = "1.0";
     private static final String NOTES_SPEED_FAST = "2.0";
     private static final String NOTES_SPEED_VFAST = "4.0";
-    
+
     private static final Map<String, String> SWAP_VIEWMODE_ITEM = new HashMap<String, String>() {
-    	{
-    		put("Rain Fall", "rain_fall");
-    		put("Side Flow", "side_flow");
-    		put("Counter Only", "monitor_only");
-    	}
+        {
+            put("Rain Fall", "rain_fall");
+            put("Side Flow", "side_flow");
+            put("Counter Only", "monitor_only");
+        }
     };
 
     private static final long serialVersionUID = 1L;
@@ -129,7 +129,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JTabbedPane tabbedPane;
 
     private AbstractRenderPlugin targetPlg;
-    
+
     private boolean existsNewVersion;
 
     List<String> synthItemKeys = new ArrayList<String>();
@@ -137,7 +137,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
     List<String> systemItemKeys = new ArrayList<String>();
     List<String> designItemKeys = new ArrayList<String>();
-    
+
     private Map<String, Component> tabMap = new HashMap<>();
 
     // ユーザー非公開キー
@@ -285,23 +285,21 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
      */
     public RendererConfigDialog(AbstractRenderPlugin plg) {
         setResizable(false);
-        List<Image> icons = List.of(
-                new ImageIcon(RendererConfigDialog.class.getResource("/icon/app16.png")).getImage(),
+        List<Image> icons = List.of(new ImageIcon(RendererConfigDialog.class.getResource("/icon/app16.png")).getImage(),
                 new ImageIcon(RendererConfigDialog.class.getResource("/icon/app32.png")).getImage(),
                 new ImageIcon(RendererConfigDialog.class.getResource("/icon/app48.png")).getImage(),
-                new ImageIcon(RendererConfigDialog.class.getResource("/icon/app256.png")).getImage()
-            );
+                new ImageIcon(RendererConfigDialog.class.getResource("/icon/app256.png")).getImage());
 
         this.setIconImages(icons);
-        
+
         initialized.set(false);
-        
+
         this.setTransferHandler(new DropFileHandler());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 commit();
-                
+
                 try {
                     targetPlg.writeSystemProp();
                 }
@@ -311,7 +309,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                
+
                 setVisible(false);
                 if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
                     AbstractRenderPlugin.PluginInstance.exitStdPlg();
@@ -390,11 +388,11 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 spinnerIgnoreHigh.setBounds(364, 89, 58, 20);
                 audioSummaryPanel.add(spinnerIgnoreHigh);
                 spinnerIgnoreHigh.setModel(new SpinnerNumberModel(20, 1, 127, 1));
-                
+
                 lblVolumeLabel = new JLabel("Volume");
                 lblVolumeLabel.setBounds(12, 119, 72, 26);
                 audioSummaryPanel.add(lblVolumeLabel);
-                
+
                 sliderVolume = new JSlider();
                 sliderVolume.addMouseListener(new MouseAdapter() {
                     @Override
@@ -405,41 +403,41 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     public void stateChanged(ChangeEvent arg0) {
                         if (!initialized.get())
                             return; // 初期化中は無視
-                        
-                        float fPos = (float)sliderVolume.getValue() / (float)sliderVolume.getMaximum();
+
+                        float fPos = (float) sliderVolume.getValue() / (float) sliderVolume.getMaximum();
                         JMPCoreAccessor.getSoundManager().setLineVolume(fPos);
                     }
                 });
                 sliderVolume.setMaximum(1000);
                 sliderVolume.setBounds(96, 119, 435, 26);
                 audioSummaryPanel.add(sliderVolume);
-                
+
                 lblAudioEngin = new JLabel("Render");
                 lblAudioEngin.setBounds(12, 21, 72, 13);
                 audioSummaryPanel.add(lblAudioEngin);
-                
+
                 rdbtnAudioEnginMidiSystem = new JRadioButton("MIDI System");
                 buttonGroup_6.add(rdbtnAudioEnginMidiSystem);
                 rdbtnAudioEnginMidiSystem.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		setSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION, "midisys");
-                		updateControlStatus();
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION, "midisys");
+                        updateControlStatus();
+                    }
                 });
                 rdbtnAudioEnginMidiSystem.setBounds(96, 17, 113, 21);
                 audioSummaryPanel.add(rdbtnAudioEnginMidiSystem);
-                
+
                 rdbtnAudioEnginKDMAPI = new JRadioButton("KDMAPI");
                 buttonGroup_6.add(rdbtnAudioEnginKDMAPI);
                 rdbtnAudioEnginKDMAPI.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		setSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION, "kdmapi");
-                		updateControlStatus();
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION, "kdmapi");
+                        updateControlStatus();
+                    }
                 });
                 rdbtnAudioEnginKDMAPI.setBounds(213, 17, 113, 21);
                 audioSummaryPanel.add(rdbtnAudioEnginKDMAPI);
-                
+
                 lblMidiDevice = new JLabel("Midi Device");
                 lblMidiDevice.setBounds(12, 44, 72, 13);
                 audioSummaryPanel.add(lblMidiDevice);
@@ -473,7 +471,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 btnLoadLayoutButton.addActionListener(this);
                 btnLoadLayoutButton.setBounds(12, 27, 121, 26);
                 layoutSummaryPanel.add(btnLoadLayoutButton);
-                
+
                 chckbxInvalidateEffect = new JCheckBox("Invalidate Effect");
                 chckbxInvalidateEffect.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -482,7 +480,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 chckbxInvalidateEffect.setBounds(281, 30, 136, 21);
                 layoutSummaryPanel.add(chckbxInvalidateEffect);
-                
+
                 chckbxNoUseVRAM = new JCheckBox("No use VRAM");
                 chckbxNoUseVRAM.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -561,7 +559,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 buttonGroup.add(rdbtnPerfHighButton);
                 rdbtnPerfHighButton.setBounds(330, 73, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfHighButton);
-                
+
                 rdbtnPerfMaxButton = new JRadioButton("Max !!");
                 rdbtnPerfMaxButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -665,7 +663,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 chckbxIgnoreNotesValid.setBounds(96, 188, 149, 21);
                 systemSummaryPanel.add(chckbxIgnoreNotesValid);
-                
+
                 rdbtnNotesSpeedSlow = new JRadioButton("Slow");
                 rdbtnNotesSpeedSlow.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -675,7 +673,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 buttonGroup_4.add(rdbtnNotesSpeedSlow);
                 rdbtnNotesSpeedSlow.setBounds(96, 96, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedSlow);
-                
+
                 rdbtnNotesSpeedNormal = new JRadioButton("Normal");
                 rdbtnNotesSpeedNormal.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -685,7 +683,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 buttonGroup_4.add(rdbtnNotesSpeedNormal);
                 rdbtnNotesSpeedNormal.setBounds(213, 96, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedNormal);
-                
+
                 rdbtnNotesSpeedFast = new JRadioButton("Fast");
                 rdbtnNotesSpeedFast.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -695,7 +693,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 buttonGroup_4.add(rdbtnNotesSpeedFast);
                 rdbtnNotesSpeedFast.setBounds(330, 96, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedFast);
-                
+
                 rdbtnNotesSpeedVeryFast = new JRadioButton("Very Fast");
                 rdbtnNotesSpeedVeryFast.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -705,7 +703,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 buttonGroup_4.add(rdbtnNotesSpeedVeryFast);
                 rdbtnNotesSpeedVeryFast.setBounds(447, 96, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedVeryFast);
-                
+
                 chckbxViewReverse = new JCheckBox("View Reverse");
                 chckbxViewReverse.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -714,7 +712,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 chckbxViewReverse.setBounds(223, 46, 103, 21);
                 systemSummaryPanel.add(chckbxViewReverse);
-                
+
                 chckbxRsrcMonitorVisible = new JCheckBox("Show CPU/RAM Graph");
                 chckbxRsrcMonitorVisible.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -723,19 +721,19 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 chckbxRsrcMonitorVisible.setBounds(96, 165, 241, 21);
                 systemSummaryPanel.add(chckbxRsrcMonitorVisible);
-                
+
                 lblLanguage = new JLabel("Language");
                 lblLanguage.setBounds(254, 23, 72, 13);
                 systemSummaryPanel.add(lblLanguage);
-                
+
                 comboBoxLanguage = new JComboBox<String>();
                 comboBoxLanguage.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         if (!initialized.get())
                             return; // 初期化中は無視
-                        
+
                         setSystemTableParam(SystemProperties.SYSP_MISC_LANGUAGE, (String) comboBoxLanguage.getSelectedItem());
-                        
+
                         String key = SystemProperties.SYSP_MISC_LANGUAGE;
                         String param = (String) comboBoxLanguage.getSelectedItem();
                         for (PropertiesNode node : SystemProperties.getInstance().getNodes()) {
@@ -744,7 +742,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                                 break;
                             }
                         }
-                        
+
                         initialized.set(false);
                         updateLanguage();
                         updateSynthItem();
@@ -755,61 +753,61 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 comboBoxLanguage.setBounds(330, 19, 113, 21);
                 systemSummaryPanel.add(comboBoxLanguage);
-                
+
                 lblNumOfKeysLabel = new JLabel("Key Range");
                 lblNumOfKeysLabel.setBounds(12, 215, 72, 13);
                 systemSummaryPanel.add(lblNumOfKeysLabel);
-                
+
                 rdbtnNumOfKeysAuto = new JRadioButton("Auto");
                 rdbtnNumOfKeysAuto.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "auto");
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "auto");
+                    }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeysAuto);
                 rdbtnNumOfKeysAuto.setBounds(96, 211, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeysAuto);
-                
+
                 rdbtnNumOfKeys128Keys = new JRadioButton("128 Keys");
                 rdbtnNumOfKeys128Keys.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "full");
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "full");
+                    }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeys128Keys);
                 rdbtnNumOfKeys128Keys.setBounds(213, 211, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeys128Keys);
-                
+
                 rdbtnNumOfKeys88Keys = new JRadioButton("88 Keys");
                 rdbtnNumOfKeys88Keys.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "88");
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "88");
+                    }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeys88Keys);
                 rdbtnNumOfKeys88Keys.setBounds(330, 211, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeys88Keys);
-                
+
                 rdbtnNumOfKeys76Keys = new JRadioButton("76 Keys");
                 rdbtnNumOfKeys76Keys.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "76");
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_KEYRANGE_COUNT, "76");
+                    }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeys76Keys);
                 rdbtnNumOfKeys76Keys.setBounds(447, 211, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeys76Keys);
-                
+
                 comboBoxViewMode = new JComboBox<String>();
                 comboBoxViewMode.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-                		String v = SWAP_VIEWMODE_ITEM.get((String) comboBoxViewMode.getSelectedItem());
-                		setSystemTableParam(SystemProperties.SYSP_RENDERER_MODE, v);
-                	}
+                    public void actionPerformed(ActionEvent e) {
+                        String v = SWAP_VIEWMODE_ITEM.get((String) comboBoxViewMode.getSelectedItem());
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_MODE, v);
+                    }
                 });
                 comboBoxViewMode.setBounds(96, 46, 113, 21);
                 systemSummaryPanel.add(comboBoxViewMode);
-                
+
                 btnShowExpertSettings = new JButton("Show Expert Settings");
                 btnShowExpertSettings.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -823,24 +821,19 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                             tabbedPane.insertTab("Expert 1", null, tabMap.get("Expert 1"), null, 1);
                             tabbedPane.insertTab("Expert 2", null, tabMap.get("Expert 2"), null, 2);
                             tabbedPane.setSelectedComponent(tabMap.get("Expert 1"));
-                            
+
                             updateLanguage();
                         }
                     }
                 });
                 btnShowExpertSettings.setBounds(439, 523, 157, 21);
                 panel.add(btnShowExpertSettings);
-                
+
                 btnInitializeSettings = new JButton("Initialize Settings");
                 btnInitializeSettings.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        int result = JOptionPane.showConfirmDialog(
-                                RendererConfigDialog.this,
-                                "Are you sure to execute?",
-                                "Initialize Settings",
-                                JOptionPane.OK_CANCEL_OPTION,
-                                JOptionPane.QUESTION_MESSAGE
-                            );
+                        int result = JOptionPane.showConfirmDialog(RendererConfigDialog.this, "Are you sure to execute?", "Initialize Settings",
+                                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                         if (result == JOptionPane.OK_OPTION) {
                             // 編集を確定
                             if (rendererTable.isEditing()) {
@@ -927,7 +920,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 }
             });
-            
+
             JScrollPane scrollPane = new JScrollPane(editorPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -952,7 +945,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         }
 
         initialized.set(true);
-        
+
         tabMap.put("Settings", summaryPanel);
         tabMap.put("Expert 1", rendererPanel);
         tabMap.put("Expert 2", layoutPanel);
@@ -971,7 +964,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         }
         lblSynthDesc.setText(description);
     }
-    
+
     public void updateAbout(String langCode) {
         // HTMLコンテンツの作成
         if (this.targetPlg != null) {
@@ -987,7 +980,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     }
 
     public void updateAbout() {
-        SyspLanguage sLang = (SyspLanguage)SystemProperties.getInstance().getData(SystemProperties.SYSP_MISC_LANGUAGE);
+        SyspLanguage sLang = (SyspLanguage) SystemProperties.getInstance().getData(SystemProperties.SYSP_MISC_LANGUAGE);
         updateAbout(I18n.convertSyspLangToLocaleSuffix(sLang));
     }
 
@@ -1002,7 +995,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             }
         }
     }
-    
+
     public String getSystemTableParam(String key) {
         if (rendererTable.isEditing()) {
             rendererTable.getCellEditor().stopCellEditing();
@@ -1010,7 +1003,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         for (int i = 0; i < rendererModel.getRowCount(); i++) {
             String skey = (String) systemItemKeys.get(i);
             if (skey.equals(key)) {
-                return (String)rendererModel.getValueAt(i, 1);
+                return (String) rendererModel.getValueAt(i, 1);
             }
         }
         return "";
@@ -1028,10 +1021,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
         comboBoxWindowSize.removeAllItems();
         comboBoxLanguage.removeAllItems();
-        
+
         comboBoxViewMode.removeAllItems();
         for (String k : SWAP_VIEWMODE_ITEM.keySet()) {
-        	comboBoxViewMode.addItem(k);
+            comboBoxViewMode.addItem(k);
         }
 
         int i = 0;
@@ -1048,30 +1041,30 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 comboBoxWindowSize.setSelectedItem(node.getDataString());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_MODE)) {
-            	String swapName = "";
+                String swapName = "";
                 for (String k : SWAP_VIEWMODE_ITEM.keySet()) {
-                	String v = SWAP_VIEWMODE_ITEM.get(k);
-                	if (v.equals(node.getDataString())) {
-                		swapName = k;
-                		break;
-                	}
+                    String v = SWAP_VIEWMODE_ITEM.get(k);
+                    if (v.equals(node.getDataString())) {
+                        swapName = k;
+                        break;
+                    }
                 }
                 comboBoxViewMode.setSelectedItem(swapName);
             }
             else if (keyName.equals(SystemProperties.SYSP_AUDIO_FUNCTION)) {
-            	String audioFunc = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).getDataString();
-            	if (audioFunc.equals("midisys")) {
+                String audioFunc = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).getDataString();
+                if (audioFunc.equals("midisys")) {
                     rdbtnAudioEnginMidiSystem.setSelected(true);
                 }
                 else if (audioFunc.equals("kdmapi")) {
-                	rdbtnAudioEnginKDMAPI.setSelected(true);
+                    rdbtnAudioEnginKDMAPI.setSelected(true);
                 }
             }
             else if (keyName.equals(SystemProperties.SYSP_MISC_LANGUAGE)) {
                 for (String s : node.getItemArray()) {
                     comboBoxLanguage.addItem(s);
                 }
-                
+
                 DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboBoxLanguage.getModel();
                 for (int j = 0; j < model.getSize(); j++) {
                     String item = model.getElementAt(j).toString();
@@ -1161,10 +1154,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 spinnerIgnoreHigh.setValue((int) node.getData());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT)) {
-                chckbxInvalidateEffect.setSelected((boolean)node.getData());
+                chckbxInvalidateEffect.setSelected((boolean) node.getData());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_USE_GPU)) {
-                chckbxNoUseVRAM.setSelected(!((boolean)node.getData()));
+                chckbxNoUseVRAM.setSelected(!((boolean) node.getData()));
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_MODE_REVERSE)) {
                 chckbxViewReverse.setSelected((boolean) node.getData());
@@ -1187,10 +1180,10 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     rdbtnNumOfKeys76Keys.setSelected(true);
                 }
                 else {
-                	rdbtnNumOfKeysAuto.setSelected(false);
-                	rdbtnNumOfKeys128Keys.setSelected(false);
-                	rdbtnNumOfKeys88Keys.setSelected(false);
-                	rdbtnNumOfKeys76Keys.setSelected(false);
+                    rdbtnNumOfKeysAuto.setSelected(false);
+                    rdbtnNumOfKeys128Keys.setSelected(false);
+                    rdbtnNumOfKeys88Keys.setSelected(false);
+                    rdbtnNumOfKeys76Keys.setSelected(false);
                 }
             }
 
@@ -1297,20 +1290,20 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
         updateSynthDescription();
     }
-    
+
     public void updateControlStatus() {
         String engine = getSystemTableParam(SystemProperties.SYSP_AUDIO_FUNCTION);
         if (engine.equals("midisys")) {
-        	comboBoxSynth.setVisible(true);
-        	lblSynthDesc.setVisible(true);
-        	lblMidiDevice.setVisible(true);
+            comboBoxSynth.setVisible(true);
+            lblSynthDesc.setVisible(true);
+            lblMidiDevice.setVisible(true);
         }
         else if (engine.equals("kdmapi")) {
-        	comboBoxSynth.setVisible(false);
-        	lblSynthDesc.setVisible(false);
-        	lblMidiDevice.setVisible(false);
+            comboBoxSynth.setVisible(false);
+            lblSynthDesc.setVisible(false);
+            lblMidiDevice.setVisible(false);
         }
-        
+
         rdbtnAudioEnginKDMAPI.setEnabled(KDMAPIW.IsKDMAPIAvailable());
     }
 
@@ -1321,22 +1314,22 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         }
         super.setVisible(b);
     }
-    
+
     private void updateLanguage() {
-        
-        SyspLanguage sLang = (SyspLanguage)SystemProperties.getInstance().getData(SystemProperties.SYSP_MISC_LANGUAGE);
+
+        SyspLanguage sLang = (SyspLanguage) SystemProperties.getInstance().getData(SystemProperties.SYSP_MISC_LANGUAGE);
         I18n.setLocale(sLang);
-        
-        ((TitledBorder)audioSummaryPanel.getBorder()).setTitle(I18n.t("border.audio"));
-        ((TitledBorder)layoutSummaryPanel.getBorder()).setTitle(I18n.t("border.design"));
-        ((TitledBorder)systemSummaryPanel.getBorder()).setTitle(I18n.t("border.system"));
-        
+
+        ((TitledBorder) audioSummaryPanel.getBorder()).setTitle(I18n.t("border.audio"));
+        ((TitledBorder) layoutSummaryPanel.getBorder()).setTitle(I18n.t("border.design"));
+        ((TitledBorder) systemSummaryPanel.getBorder()).setTitle(I18n.t("border.system"));
+
         okButton.setText(I18n.t("button.launch"));
         btnLoadToPlayButton.setText(I18n.t("button.selectAndPlay"));
         btnLoadLayoutButton.setText(I18n.t("button.loadDesign"));
         btnInitializeSettings.setText(I18n.t("button.initSettings"));
         btnShowExpertSettings.setText(I18n.t("button.showExpertSettings"));
-        
+
         lblVolumeLabel.setText(I18n.t("label.volume"));
         lblHigh.setText(I18n.t("label.highest"));
         lblLow.setText(I18n.t("label.lowest"));
@@ -1350,14 +1343,14 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         lblNumOfKeysLabel.setText(I18n.t("label.keyRange"));
         lblAudioEngin.setText(I18n.t("label.audioEngine"));
         lblMidiDevice.setText(I18n.t("label.MIDIReceiver"));
-        
+
         chckbxIgnoreInBetween.setText(I18n.t("chckbx.ignoreAudioIn"));
         chckbxViewReverse.setText(I18n.t("chckbx.viewReverse"));
         chckbxRsrcMonitorVisible.setText(I18n.t("chckbx.showRsrcGraph"));
         chckbxNoUseVRAM.setText(I18n.t("chckbx.noUseVRAM"));
         chckbxInvalidateEffect.setText(I18n.t("chckbx.invalidateEffect"));
         chckbxIgnoreNotesValid.setText(I18n.t("chckbx.invisibleGhostNotes"));
-        
+
         rdbtnPerfLowButton.setText(I18n.t("rdbtn.low"));
         rdbtnPerfMidButton.setText(I18n.t("rdbtn.middle"));
         rdbtnPerfHighButton.setText(I18n.t("rdbtn.high"));
@@ -1376,43 +1369,47 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         rdbtnNumOfKeys128Keys.setText(I18n.t("rdbtn.128keys"));
         rdbtnNumOfKeys88Keys.setText(I18n.t("rdbtn.88keys"));
         rdbtnNumOfKeys76Keys.setText(I18n.t("rdbtn.76keys"));
-        
+
         int tabIndex = tabbedPane.indexOfComponent(summaryPanel);
-        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.summary"));
+        if (tabIndex != -1)
+            tabbedPane.setTitleAt(tabIndex, I18n.t("tab.summary"));
         tabIndex = tabbedPane.indexOfComponent(rendererPanel);
-        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.expert1"));
+        if (tabIndex != -1)
+            tabbedPane.setTitleAt(tabIndex, I18n.t("tab.expert1"));
         tabIndex = tabbedPane.indexOfComponent(layoutPanel);
-        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.expert2"));
+        if (tabIndex != -1)
+            tabbedPane.setTitleAt(tabIndex, I18n.t("tab.expert2"));
         tabIndex = tabbedPane.indexOfComponent(aboutPanel);
-        if (tabIndex != -1) tabbedPane.setTitleAt(tabIndex, I18n.t("tab.about") + (existsNewVersion ? " 【New】" : ""));
+        if (tabIndex != -1)
+            tabbedPane.setTitleAt(tabIndex, I18n.t("tab.about") + (existsNewVersion ? " 【New】" : ""));
     }
-    
+
     public void initializeView() {
-        
+
         existsNewVersion = VersionChecker.existsLatestVersion();
-        
+
         initialized.set(false);
         isCommitClose = false;
         if (Utility.isGpuAvailable() == false) {
             SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_RENDERER_USE_GPU).setObject("false");
         }
         if (!Utility.isWindows()) {
-        	SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).setObject("midisys");
+            SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).setObject("midisys");
         }
         updateLanguage();
         updateItem();
         updateSynthItem();
         updateAbout();
         updateControlStatus();
-        
-        int cur = (int)(JMPCoreAccessor.getSoundManager().getLineVolume() * (float)sliderVolume.getMaximum());
+
+        int cur = (int) (JMPCoreAccessor.getSoundManager().getLineVolume() * (float) sliderVolume.getMaximum());
         sliderVolume.setValue(cur);
-        
+
         initialized.set(true);
     }
-    
+
     private void commitSystem() {
-    	if (rendererTable.isEditing()) {
+        if (rendererTable.isEditing()) {
             rendererTable.getCellEditor().stopCellEditing();
         }
         for (int i = 0; i < rendererModel.getRowCount(); i++) {
@@ -1426,9 +1423,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             }
         }
     }
-    
+
     private void commitLayout() {
-    	if (designTable.isEditing()) {
+        if (designTable.isEditing()) {
             designTable.getCellEditor().stopCellEditing();
         }
         for (int i = 0; i < designModel.getRowCount(); i++) {
@@ -1444,8 +1441,8 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     }
 
     private void commit() {
-    	commitSystem();
-    	commitLayout();
+        commitSystem();
+        commitLayout();
     }
 
     @Override
@@ -1453,74 +1450,75 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         String cmd = e.getActionCommand();
 
         switch (cmd) {
-            case "LOAD_LAYOUT": {
-            	commitLayout(); // 先に変更を決定する
-            	
-                try {
-                	Path folder = Utility.getAppConfigDirectory();
-                    Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
-					LayoutManager.getInstance().write(fullPath.toFile());
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-            	
-            	DesignViewer designViewer = new DesignViewer(this);
-            	designViewer.setLocationRelativeTo(this);
-            	designViewer.setTitle(I18n.t("button.loadDesign"));
-            	designViewer.openDialog();
-            	
-            	if (designViewer.isCommit()) {
-            		updateDesignItems();
-            	}
-                break;
+        case "LOAD_LAYOUT": {
+            commitLayout(); // 先に変更を決定する
+
+            try {
+                Path folder = Utility.getAppConfigDirectory();
+                Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
+                LayoutManager.getInstance().write(fullPath.toFile());
             }
-            case "LOAD_TO_PLAY": {
-                JFileChooser chooser = new JFileChooser();
-
-                // 複数選択を許可
-                chooser.setMultiSelectionEnabled(true);
-
-                String path = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_DEFAULT_PATH).getDataString();
-                File dir = new File(path);
-                if (path.isEmpty() == false) {
-                    if (dir.exists() && dir.isDirectory()) {
-                        chooser.setCurrentDirectory(dir);
-                    }
-                }
-
-                // ダイアログを開く
-                SystemProperties.getInstance().getPreloadFiles().clear();
-                int result = chooser.showOpenDialog(null);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File[] files = chooser.getSelectedFiles(); // 複数ファイル
-                    for (File f : files) {
-                        SystemProperties.getInstance().getPreloadFiles().add(f);
-                        setSystemTableParam(SystemProperties.SYSP_FILE_DEFAULT_PATH, f.getParent());
-                    }
-                    setVisible(false);
-
-                    commit();
-                    isCommitClose = true;
-                }
-                break;
+            catch (IOException e1) {
+                e1.printStackTrace();
             }
-            case "DEF_LAYOUT":
-            	LayoutManager.getInstance().initializeConfig();
-            	updateDesignItems();
-                break;
-            case "OK":
-                SystemProperties.getInstance().getPreloadFiles().clear();
+
+            DesignViewer designViewer = new DesignViewer(this);
+            designViewer.setLocationRelativeTo(this);
+            designViewer.setTitle(I18n.t("button.loadDesign"));
+            designViewer.openDialog();
+
+            if (designViewer.isCommit()) {
+                updateDesignItems();
+            }
+            break;
+        }
+        case "LOAD_TO_PLAY": {
+            JFileChooser chooser = new JFileChooser();
+
+            // 複数選択を許可
+            chooser.setMultiSelectionEnabled(true);
+
+            String path = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_FILE_DEFAULT_PATH).getDataString();
+            File dir = new File(path);
+            if (path.isEmpty() == false) {
+                if (dir.exists() && dir.isDirectory()) {
+                    chooser.setCurrentDirectory(dir);
+                }
+            }
+
+            // ダイアログを開く
+            SystemProperties.getInstance().getPreloadFiles().clear();
+            int result = chooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File[] files = chooser.getSelectedFiles(); // 複数ファイル
+                for (File f : files) {
+                    SystemProperties.getInstance().getPreloadFiles().add(f);
+                    setSystemTableParam(SystemProperties.SYSP_FILE_DEFAULT_PATH, f.getParent());
+                }
+                setVisible(false);
+
                 commit();
                 isCommitClose = true;
-                setVisible(false);
-                break;
-            case "Cancel":
-                SystemProperties.getInstance().getPreloadFiles().clear();
-                isCommitClose = false;
-                setVisible(false);
-                break;
+            }
+            break;
         }
-        
+        case "DEF_LAYOUT":
+            LayoutManager.getInstance().initializeConfig();
+            updateDesignItems();
+            break;
+        case "OK":
+            SystemProperties.getInstance().getPreloadFiles().clear();
+            commit();
+            isCommitClose = true;
+            setVisible(false);
+            break;
+        case "Cancel":
+            SystemProperties.getInstance().getPreloadFiles().clear();
+            isCommitClose = false;
+            setVisible(false);
+            break;
+        }
+
         if (isCommitClose) {
             targetPlg.startRendererWindow();
         }

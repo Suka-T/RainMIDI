@@ -9,7 +9,7 @@ import layout.parts.SpectrumPainter;
 public class CurtainSpectrumPainter extends SpectrumPainter {
 
     private final Color curtainColor = new Color(0, 220, 255, 140);
-    
+
     public CurtainSpectrumPainter() {
     }
 

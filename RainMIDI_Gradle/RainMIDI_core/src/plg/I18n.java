@@ -1,4 +1,5 @@
 package plg;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -10,9 +11,9 @@ public class I18n {
     public static void setLocale(Locale locale) {
         bundle = ResourceBundle.getBundle("messages", locale);
     }
-    
+
     public static void setLocale(SyspLanguage syspLang) {
-    	setLocale(convertSyspLangToLocale(syspLang));
+        setLocale(convertSyspLangToLocale(syspLang));
     }
 
     public static String t(String key) {
@@ -23,23 +24,23 @@ public class I18n {
             return "****";
         }
     }
-    
+
     public static Locale convertSyspLangToLocale(SyspLanguage syspLang) {
         switch (syspLang) {
         case ENGLISH:
-        	return Locale.ENGLISH;
+            return Locale.ENGLISH;
         case JAPANESE:
-        	return Locale.JAPANESE;
+            return Locale.JAPANESE;
         case CHINESE:
-        	return Locale.CHINESE;
+            return Locale.CHINESE;
         case AUTO:
         default:
-        	return Locale.getDefault();
-	    }
+            return Locale.getDefault();
+        }
     }
-    
+
     public static String convertSyspLangToLocaleSuffix(SyspLanguage syspLang) {
-    	Locale locale = convertSyspLangToLocale(syspLang);
-    	return locale.getLanguage();
+        Locale locale = convertSyspLangToLocale(syspLang);
+        return locale.getLanguage();
     }
 }

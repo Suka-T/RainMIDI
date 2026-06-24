@@ -42,7 +42,7 @@ public class NotesImageWorker extends ImageWorker {
     private NoteOnCache[][] noteOnEvents = null;
     private List<Integer> pbBufferX = null;
     private List<Integer> pbBufferY = null;
-    
+
     private NotesPainter notesPainter = null;
     private NotesPainter.Context nContext = null;
 
@@ -58,7 +58,7 @@ public class NotesImageWorker extends ImageWorker {
         }
         pbBufferX = new ArrayList<Integer>();
         pbBufferY = new ArrayList<Integer>();
-        
+
         notesPainter = LayoutManager.getInstance().getNotesPainter();
         nContext = notesPainter.newContext();
     }
@@ -84,12 +84,12 @@ public class NotesImageWorker extends ImageWorker {
 
     @Override
     public int getImageWidth() {
-        double notesWidthDiff = (double)window.getMeasCellWidth() / (double)SystemProperties.CNT_NOTES_WIDTH;
+        double notesWidthDiff = (double) window.getMeasCellWidth() / (double) SystemProperties.CNT_NOTES_WIDTH;
         if (notesWidthDiff < 0) {
             notesWidthDiff = 1.0;
         }
         int width = getWidth() * SystemProperties.getInstance().getNotesImageCount();
-        int offset = (int)((double)getWidth() / 2.0 * notesWidthDiff);
+        int offset = (int) ((double) getWidth() / 2.0 * notesWidthDiff);
         return width + offset;
     }
 
@@ -135,8 +135,8 @@ public class NotesImageWorker extends ImageWorker {
     private long mpEndTick = 0;
     private int offsetCoordX = 0;
     private int topOffset = 0;
-    
-    // インナー関数 
+
+    // インナー関数
     private MappedParseFunc mpFunc = new MappedParseFunc() {
 
         @Override
@@ -148,22 +148,24 @@ public class NotesImageWorker extends ImageWorker {
             int command = statusByte & 0xF0;
             int channel = statusByte & 0x0F;
             if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON) && (data2 > 0)) {
-                if (data1 >= 128) return; // 不正なMidiNoを保護 
-                
+                if (data1 >= 128)
+                    return; // 不正なMidiNoを保護
+
                 if (SystemProperties.getInstance().isGhostNotes(data2) == false) {
-                    if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する 
+                    if (noteOnEvents[channel][data1].tick == -1) { // 連続したNoteONは無視する
                         noteOnEvents[channel][data1].tick = tick;
                     }
                 }
             }
             else if ((command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_OFF)
                     || (command == MidiByte.Status.Channel.ChannelVoice.Fst.NOTE_ON && data2 <= 0)) {
-                
-                if (data1 >= 128) return; // 不正なMidiNoを保護 
-                
+
+                if (data1 >= 128)
+                    return; // 不正なMidiNoを保護
+
                 // Note OFF
                 paintNt(nContext, trk, leftMeasTh, tick, channel, data1, data2);
-                
+
                 noteOnEvents[channel][data1].init();
             }
             else {
@@ -173,17 +175,17 @@ public class NotesImageWorker extends ImageWorker {
         @Override
         public void metaMessage(int trk, long tick, int type, byte[] metaData, int length) {
         }
-        
+
         @Override
         public boolean interrupt() {
             return isExec() == false || doForcedEnd() == true;
         }
     };
-    
+
     @Override
     protected boolean calcViewport() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        
+
         offsetCoordX = LayoutManager.getInstance().getTickBarPosition();
         int offsetCoordXtoMeas = offsetCoordX / window.getMeasCellWidth();
         int offsetCoordXtoTick = offsetCoordXtoMeas * midiUnit.getResolution();
@@ -193,13 +195,13 @@ public class NotesImageWorker extends ImageWorker {
         long vpLenTick = (totalMeasCount * midiUnit.getResolution());
         vpStartTick = absLeftMeas * midiUnit.getResolution() - offsetCoordXtoTick;
         vpEndTick = vpStartTick + vpLenTick + (offsetCoordXtoTick * 2);
-        
+
         mpStartTick = vpStartTick - vpLenTick;
         if (mpStartTick < 0) {
             mpStartTick = 0;
         }
         mpEndTick = vpEndTick + vpLenTick;
-        
+
         boolean ret = true;
         long tLength = midiUnit.getTickLength();
         if (tLength < mpStartTick || mpEndTick < 0) {
@@ -254,7 +256,7 @@ public class NotesImageWorker extends ImageWorker {
             trkEnd = -1;
             trkDir = -1;
         }
-        
+
         System.out.println("render notes: " + mpStartTick + "-" + mpEndTick);
 
         for (int trkIndex = trkBegin; trkIndex != trkEnd; trkIndex += trkDir) {
@@ -278,7 +280,7 @@ public class NotesImageWorker extends ImageWorker {
             catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
             if (doForcedEnd()) {
                 break;
             }
@@ -295,7 +297,7 @@ public class NotesImageWorker extends ImageWorker {
             // 無効データは何もしない
             return;
         }
-        
+
         // 描画開始
         int startMeas = (int) ((double) startEvent / (double) midiUnit.getResolution()) + leftMeas;
         int startOffset = (int) ((double) startEvent % (double) midiUnit.getResolution());

@@ -7,7 +7,8 @@ import layout.parts.CollisionEffectPainter;
 
 public class NoneCollisionEffectPainter extends CollisionEffectPainter {
 
-    public NoneCollisionEffectPainter() {}
+    public NoneCollisionEffectPainter() {
+    }
 
     @Override
     public void paintIn(Graphics g, int x, int y, int keySize, Color focusColor, Color defColor) {

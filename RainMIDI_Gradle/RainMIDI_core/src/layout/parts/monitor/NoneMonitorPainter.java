@@ -6,8 +6,10 @@ import layout.parts.MonitorPainter;
 
 public class NoneMonitorPainter extends MonitorPainter {
 
-    public NoneMonitorPainter() {}
+    public NoneMonitorPainter() {
+    }
 
     @Override
-    public void paintMonitor(Graphics g, MonitorData info) {}
+    public void paintMonitor(Graphics g, MonitorData info) {
+    }
 }

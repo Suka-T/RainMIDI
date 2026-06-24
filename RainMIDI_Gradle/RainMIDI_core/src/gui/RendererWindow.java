@@ -82,9 +82,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public static final int NEXT_FLIP_COUNT = 0;
 
     public static final int HIT_EFFECT_STEPS = 16;
-    
-    private static final BasicStroke GRAPH_BORDER_STROKE = new BasicStroke(
-            1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+    private static final BasicStroke GRAPH_BORDER_STROKE = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke GRAPH_FRAMEBORDER_STROKE = new BasicStroke(2.0f);
     private static Color GRAPH_BG_COLOR = new Color(0, 0, 0, 100);
 
@@ -137,18 +136,18 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private Font msgFont = null;
     private Font msgFontS = null;
     private Font msgFontSS = null;
-    private  Font graphFont = null;
-    private  Font graphTitleFont = null;
-    
+    private Font graphFont = null;
+    private Font graphTitleFont = null;
+
     protected FrameLimiter frameLimiter = null;
 
     private long debugRenderTime = 0;
-    
+
     private final int dummySpectSamples = 256;
     private float[] dummySpectWave = new float[dummySpectSamples];
-    //private float phase = 0f;
+    // private float phase = 0f;
     private float[] noiseBuf = new float[dummySpectSamples];
-    
+
     protected ViewportManager viewportManager;
 
     public int getOrgWidth() {
@@ -174,7 +173,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             }
 
             JMPCoreAccessor.getSoundManager().removeMidiSequence();
-            
+
             SystemProperties.getInstance().exitForRenderWindow();
 
             AbstractRenderPlugin.PluginInstance.launch();
@@ -186,15 +185,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
      */
     public RendererWindow(int winW, int winH, boolean maximized) {
         this.setTitle("Rain MIDI");
-        List<Image> icons = List.of(
-                new ImageIcon(RendererWindow.class.getResource("/icon/app16.png")).getImage(),
+        List<Image> icons = List.of(new ImageIcon(RendererWindow.class.getResource("/icon/app16.png")).getImage(),
                 new ImageIcon(RendererWindow.class.getResource("/icon/app32.png")).getImage(),
                 new ImageIcon(RendererWindow.class.getResource("/icon/app48.png")).getImage(),
-                new ImageIcon(RendererWindow.class.getResource("/icon/app256.png")).getImage()
-            );
+                new ImageIcon(RendererWindow.class.getResource("/icon/app256.png")).getImage());
 
         this.setIconImages(icons);
-        
+
         this.setTransferHandler(new DropFileHandler());
         addWindowListener(new WindowAdapter() {
             @Override
@@ -206,7 +203,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         setLocation(10, 10);
         getContentPane().setPreferredSize(new Dimension(winW, winH));
         pack();
-        
+
         if (maximized) {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
@@ -276,7 +273,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             float alpha = (1.0f - ((float) j / 16.0f)) * 0.9f;
             hitEffeSteps[j] = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
         }
-        
+
         frameLimiter = new FrameLimiter();
         frameLimiter.setFps(SystemProperties.getInstance().getFixedFps());
     }
@@ -306,70 +303,70 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int midiNo = 127 - i;
             int key = midiNo % 12;
             switch (key) {
-                case 0:
-                case 5:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = hakkenHeight;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (keyHeight / 2);
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 7:
-                case 9:
-                case 2:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = hakkenHeight + keyHeight / 2;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].y -= (keyHeight / 2);
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 4:
-                case 11:
-                    aHakken[hkCnt] = new WhiteKeyParts();
-                    aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].y = hitEffectPosY[i];
-                    aHakken[hkCnt].width = hkWidth;
-                    aHakken[hkCnt].height = hakkenHeight;
-                    aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
-                    aHakken[hkCnt].orgY = hitEffectPosY[i];
-                    aHakken[hkCnt].orgWidth = hkWidth;
-                    aHakken[hkCnt].orgHeight = keyHeight;
-                    aHakken[hkCnt].midiNo = midiNo;
-                    hkCnt++;
-                    break;
-                case 1:
-                case 3:
-                case 6:
-                case 8:
-                case 10:
-                    aKokken[kkCnt] = new BlackKeyParts();
-                    aKokken[kkCnt].x = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
-                    aKokken[kkCnt].y = hitEffectPosY[i];
-                    aKokken[kkCnt].width = kkWidth;
-                    aKokken[kkCnt].height = keyHeight;
-                    aKokken[kkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
-                    aKokken[kkCnt].orgY = hitEffectPosY[i];
-                    aKokken[kkCnt].orgWidth = kkWidth;
-                    aKokken[kkCnt].orgHeight = keyHeight;
-                    aKokken[kkCnt].midiNo = midiNo;
-                    kkCnt++;
-                    break;
-                default:
-                    break;
+            case 0:
+            case 5:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = hakkenHeight;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (keyHeight / 2);
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 7:
+            case 9:
+            case 2:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = hakkenHeight + keyHeight / 2;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].y -= (keyHeight / 2);
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 4:
+            case 11:
+                aHakken[hkCnt] = new WhiteKeyParts();
+                aHakken[hkCnt].x = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].y = hitEffectPosY[i];
+                aHakken[hkCnt].width = hkWidth;
+                aHakken[hkCnt].height = hakkenHeight;
+                aHakken[hkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - hkWidth;
+                aHakken[hkCnt].orgY = hitEffectPosY[i];
+                aHakken[hkCnt].orgWidth = hkWidth;
+                aHakken[hkCnt].orgHeight = keyHeight;
+                aHakken[hkCnt].midiNo = midiNo;
+                hkCnt++;
+                break;
+            case 1:
+            case 3:
+            case 6:
+            case 8:
+            case 10:
+                aKokken[kkCnt] = new BlackKeyParts();
+                aKokken[kkCnt].x = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
+                aKokken[kkCnt].y = hitEffectPosY[i];
+                aKokken[kkCnt].width = kkWidth;
+                aKokken[kkCnt].height = keyHeight;
+                aKokken[kkCnt].orgX = LayoutManager.getInstance().getTickBarPosition() - kkWidth;
+                aKokken[kkCnt].orgY = hitEffectPosY[i];
+                aKokken[kkCnt].orgWidth = kkWidth;
+                aKokken[kkCnt].orgHeight = keyHeight;
+                aKokken[kkCnt].midiNo = midiNo;
+                kkCnt++;
+                break;
+            default:
+                break;
             }
         }
     }
@@ -394,7 +391,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 imageWorkerMgr.start();
 
                 adjustTickBar();
-                
+
                 viewportManager.start();
             }
         }
@@ -409,7 +406,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                
+
                 viewportManager.stop();
 
                 imageWorkerMgr.stop();
@@ -420,7 +417,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public int getFPS() {
         return fps;
     }
-    
+
     @Override
     public void run() {
         final long frameInterval = delayNano; // 1フレームあたりナノ秒
@@ -438,17 +435,17 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
                 if (elapsed >= frameInterval) {
                     // もし大幅に処理落ちしていた場合、時間を追いつかせる（追いつき処理）
-                    // これにより、重いフレームがあっても全体の再生速度が引きずられるのを防ぐ 
-                	int maxCatchup = 2;
-                	int catchupCount = 0;
-                	
-                	while (elapsed >= frameInterval && catchupCount < maxCatchup) {
-                	    lastTime += frameInterval;
-                	    elapsed -= frameInterval;
-                	    catchupCount++;
-                	}
-                	
-                	// もし2回追いついてもまだ現在時刻に追いついていない（大遅刻している）場合
+                    // これにより、重いフレームがあっても全体の再生速度が引きずられるのを防ぐ
+                    int maxCatchup = 2;
+                    int catchupCount = 0;
+
+                    while (elapsed >= frameInterval && catchupCount < maxCatchup) {
+                        lastTime += frameInterval;
+                        elapsed -= frameInterval;
+                        catchupCount++;
+                    }
+
+                    // もし2回追いついてもまだ現在時刻に追いついていない（大遅刻している）場合
                     // lastTimeが過去に置き去りになるのを防ぐため、現在の時間でリセットして仕切り直す
                     if (elapsed >= frameInterval) {
                         lastTime = now;
@@ -457,22 +454,25 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                     // 描画処理を実行（追いつきが発生していても、描画は現在の最新状態で1回だけ行う）
                     if (isAvailableGpu) {
                         render();
-                    } else {
+                    }
+                    else {
                         renderSoft();
                     }
                     frameCount++;
-                } else {
+                }
+                else {
                     // 次のフレームまでの待ち時間を計算
                     long sleepNanos = frameInterval - elapsed;
-                    
+
                     // 1ミリ秒以上の余裕があるときだけ、1回だけ高精度にスリープする
                     if (sleepNanos >= sleepThresholdNanos) {
                         LockSupport.parkNanos(sleepNanos - (sleepThresholdNanos / 2));
-                    } else {
+                    }
+                    else {
                         // 1ミリ秒未満の極めてわずかな隙間は、あえてスレッドを休ませず
                         // CPUの実行権を少しだけ譲る（Thread.onSpinWait）ことで、ナノ秒単位の超高精度なタイミングを作ります
-                        //Thread.onSpinWait();
-                    	Thread.yield(); // CPU負荷軽減のためyieldにする 
+                        // Thread.onSpinWait();
+                        Thread.yield(); // CPU負荷軽減のためyieldにする
                     }
                 }
 
@@ -481,7 +481,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 if (currentNow - fpsCounterTime >= TimeUnit.SECONDS.toNanos(1)) {
                     fps = frameCount;
                     frameCount = 0;
-                    //fpsCounterTime = currentNow;
+                    // fpsCounterTime = currentNow;
                     fpsCounterTime += TimeUnit.SECONDS.toNanos(1);
                 }
             }
@@ -550,34 +550,36 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         strategy.show();
     }
-    
+
     protected void renderSoft() {
         int width = getWidth();
         int height = getHeight();
 
         if (backBuffer == null || backBufferWidth != width || backBufferHeight != height) {
             if (backBufferGrapics != null) {
-            	backBufferGrapics.dispose();
+                backBufferGrapics.dispose();
             }
-            
+
             backBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             backBufferGrapics = backBuffer.createGraphics();
-            
+
             backBufferWidth = backBuffer.getWidth();
             backBufferHeight = backBuffer.getHeight();
         }
 
         try {
             paintDisplay(backBufferGrapics);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace(); // 描画中の例外でループが止まるのを防ぐ
         }
 
         Graphics2D screen = (Graphics2D) canvas.getGraphics();
         if (screen != null) {
-            try {                
+            try {
                 screen.drawImage(backBuffer, 0, 0, null);
-            } finally {
+            }
+            finally {
                 screen.dispose(); // 取得したGraphicsは必ず使い捨てる
             }
         }
@@ -586,10 +588,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public void init() {
         imageWorkerMgr = new ImagerWorkerManager(this, getOrgWidth(), getOrgHeight(), useVramNotesImage);
         viewportManager = new ViewportManager();
-        
+
         updateViewport();
     }
-    
+
     public void prepareLoadFile() {
         SystemProperties.getInstance().getGraphMonScheduler().lockCount();
         SystemProperties.getInstance().getGraphMonScheduler().clearRingBuffer();
@@ -602,15 +604,15 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
 
         debugRenderTime = 0;
-        
+
         isFirstRendering = true;
 
         setLeftMeas(0);
         resetPage();
-        
+
         SystemProperties.getInstance().getGraphMonScheduler().clearRingBuffer();
         SystemProperties.getInstance().getGraphMonScheduler().releaseCount();
-        
+
         isFirstRendering = false;
     }
 
@@ -626,13 +628,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private StringBuilder sb = new StringBuilder(64); // 初期容量を指定
-    //protected volatile VolatileImage orgScreenImage = null;
+    // protected volatile VolatileImage orgScreenImage = null;
     protected volatile Image orgScreenImage = null;
     protected volatile Graphics orgScreenGraphic = null;
-    
+
     protected volatile Image bufferScreenImage = null;
     protected volatile Graphics bufferScreenGraphic = null;
-    
+
     protected int bufferScreenImageWidth = -1;
     protected int bufferScreenImageHeight = -1;
 
@@ -648,7 +650,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             topStrFlip = (topStrFlip + 1) % topStrs.length;
             topStrCnt = 0;
         }
-        
+
         if (frameLimiter.isEventted30()) {
             topStrCnt++;
         }
@@ -657,80 +659,81 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected void copyFromNotesImage(Graphics g) {
         Dimension dim = this.getContentPane().getSize();
-        
+
         if (SystemProperties.getInstance().isViewReverse() == false) {
-        	Graphics2D lotG2d = (Graphics2D) g;
+            Graphics2D lotG2d = (Graphics2D) g;
 
-        	// 1. 元状態の保存
-        	AffineTransform oldTransform = lotG2d.getTransform();
+            // 1. 元状態の保存
+            AffineTransform oldTransform = lotG2d.getTransform();
 
-        	// 2. レンダリングヒントの設定
-        	lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
-        	lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        	lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            // 2. レンダリングヒントの設定
+            lotG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol());
+            lotG2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            lotG2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
-        	int panelW = getContentPane().getWidth();
-        	int panelH = getContentPane().getHeight();
-        	int imgW = orgScreenImage.getWidth(null);
-        	int imgH = orgScreenImage.getHeight(null);
+            int panelW = getContentPane().getWidth();
+            int panelH = getContentPane().getHeight();
+            int imgW = orgScreenImage.getWidth(null);
+            int imgH = orgScreenImage.getHeight(null);
 
-        	// 3. 行列計算を一発で組み立てる
-        	AffineTransform tx = new AffineTransform();
+            // 3. 行列計算を一発で組み立てる
+            AffineTransform tx = new AffineTransform();
 
-        	// 現在の仕様（180度回転 + Y軸反転）の座標変換を1つの数式にまとめる
-        	// ウィンドウ中心への移動と、画像サイズに合わせたスケーリングを同時に行う
-        	double scaleX = (double) panelW / imgW;
-        	double scaleY = (double) panelH / imgH;
+            // 現在の仕様（180度回転 + Y軸反転）の座標変換を1つの数式にまとめる
+            // ウィンドウ中心への移動と、画像サイズに合わせたスケーリングを同時に行う
+            double scaleX = (double) panelW / imgW;
+            double scaleY = (double) panelH / imgH;
 
-        	tx.translate(panelW / 2.0, panelH / 2.0);
-        	tx.scale(scaleX, -scaleY);
-        	tx.rotate(Math.toRadians(180)); // 180度は Math.PI でもOK
-        	tx.translate(-imgW / 2.0, -imgH / 2.0);
+            tx.translate(panelW / 2.0, panelH / 2.0);
+            tx.scale(scaleX, -scaleY);
+            tx.rotate(Math.toRadians(180)); // 180度は Math.PI でもOK
+            tx.translate(-imgW / 2.0, -imgH / 2.0);
 
-        	// 4. 変換行列を適用して描画
-        	lotG2d.transform(tx);
-        	lotG2d.drawImage(orgScreenImage, 0, 0, null);
+            // 4. 変換行列を適用して描画
+            lotG2d.transform(tx);
+            lotG2d.drawImage(orgScreenImage, 0, 0, null);
 
-        	// 5. 元状態に戻す
-        	lotG2d.setTransform(oldTransform);
+            // 5. 元状態に戻す
+            lotG2d.setTransform(oldTransform);
         }
         else {
-            g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(null), orgScreenImage.getHeight(null), null);
+            g.drawImage(orgScreenImage, 0, 0, (int) dim.getWidth(), (int) dim.getHeight(), 0, 0, orgScreenImage.getWidth(null), orgScreenImage.getHeight(null),
+                    null);
         }
     }
-    
+
     protected void updateViewport() {
-    	int paneHeight = getContentPane().getHeight();
+        int paneHeight = getContentPane().getHeight();
         viewportManager.updateOffs(paneHeight, getOrgHeight(), measCellHeight);
     }
-    
+
     protected void copyFromScreenImage(Graphics g) {
-    	int paneWidth = getContentPane().getWidth();
+        int paneWidth = getContentPane().getWidth();
         int paneHeight = getContentPane().getHeight();
-        
+
         int curS1 = viewportManager.getOffsetCoordE();
         int curE2 = viewportManager.getOffsetCoordS();
         int cY1 = curS1;
         int cY2 = paneHeight - curE2 - 1;
         int cH = cY2 - curS1 + 1;
-        int cW = (int)((double)paneWidth * ((double)cH / (double)paneHeight));
-        
+        int cW = (int) ((double) paneWidth * ((double) cH / (double) paneHeight));
+
         int clipX = 0;
         if (SystemProperties.getInstance().isViewReverse() == false) {
-        	clipX = paneWidth - cW;
+            clipX = paneWidth - cW;
         }
         else {
-        	clipX = 0;
+            clipX = 0;
         }
         int clipY = cY1;
         int clipW = cW;
         int clipH = cH;
-        
-    	int dX1 = clipX;
-    	int dY1 = clipY;
-    	int dX2 = clipX + clipW - 1;
-    	int dY2 = clipY + clipH - 1;
-    	g.drawImage(bufferScreenImage, 0, 0, bufferScreenImageWidth - 1, bufferScreenImageHeight - 1, dX1, dY1, dX2, dY2, null);
+
+        int dX1 = clipX;
+        int dY1 = clipY;
+        int dX2 = clipX + clipW - 1;
+        int dY2 = clipY + clipH - 1;
+        g.drawImage(bufferScreenImage, 0, 0, bufferScreenImageWidth - 1, bufferScreenImageHeight - 1, dX1, dY1, dX2, dY2, null);
     }
 
     private double angle = 0;
@@ -750,15 +753,15 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
 
         if (armColor == null) {
-        	armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
-        	spinR = (float) armColor.getRed() / 255.0f;
-        	spinG = (float) armColor.getGreen() / 255.0f;
-        	spinB = (float) armColor.getBlue() / 255.0f;
-        	
-        	for (int i = 0; i < 12; i++) {
-        		float alpha = (i + 1) / 12f;
-        		armColors[i] = new Color(spinR, spinG, spinB, alpha);
-        	}
+            armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
+            spinR = (float) armColor.getRed() / 255.0f;
+            spinG = (float) armColor.getGreen() / 255.0f;
+            spinB = (float) armColor.getBlue() / 255.0f;
+
+            for (int i = 0; i < 12; i++) {
+                float alpha = (i + 1) / 12f;
+                armColors[i] = new Color(spinR, spinG, spinB, alpha);
+            }
         }
 
         g2d.translate(w / 2, h / 2);
@@ -777,7 +780,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         g2d.rotate(-angle);
         g2d.translate(-w / 2, -h / 2);
     }
-    
+
     public void paintVolume(Graphics g) {
         g.setFont(msgFontS);
         g.setColor(LayoutManager.getInstance().getPlayerColor().getBgRevColor());
@@ -789,7 +792,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int volConX = (paneWidth - volConWidth) / 2;
         int volConY = (paneHeight - volConHeight) / 2 + 125;
         if (volumeControl.isVisible()) {
-        	sb.setLength(0);
+            sb.setLength(0);
             sb.append("Volume: ");
             int stringWidth = fm.stringWidth(sb.toString());
             int stringHeight = fm.getHeight();
@@ -800,57 +803,57 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         volumeControl.setLocation(volConX, volConY, volConWidth, volConHeight);
         volumeControl.paint(g);
     }
-    
+
     public void renderMidiNotesDisplay(Graphics g) {
-    	Graphics2D g2 = (Graphics2D) g;
-    	
-    	int paneWidth = getContentPane().getWidth();
-	    int paneHeight = getContentPane().getHeight();
-        
+        Graphics2D g2 = (Graphics2D) g;
+
+        int paneWidth = getContentPane().getWidth();
+        int paneHeight = getContentPane().getHeight();
+
         /* ノーツ描画 */
         GraphicsConfiguration gc = getGraphicsConfiguration();
         if (isAvailableGpu) {
-            VolatileImage vi = (VolatileImage)orgScreenImage;
+            VolatileImage vi = (VolatileImage) orgScreenImage;
             if (vi == null || vi.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
                 orgScreenImage = LayoutManager.getInstance().createDisplayImage(getOrgWidth(), getOrgHeight());
-                orgScreenGraphic = ((VolatileImage)orgScreenImage).createGraphics();
+                orgScreenGraphic = ((VolatileImage) orgScreenImage).createGraphics();
             }
         }
         else {
-            BufferedImage bi = (BufferedImage)orgScreenImage;
+            BufferedImage bi = (BufferedImage) orgScreenImage;
             if (bi == null) {
                 orgScreenImage = LayoutManager.getInstance().createBufferdImage(getOrgWidth(), getOrgHeight());
-                orgScreenGraphic = ((BufferedImage)orgScreenImage).createGraphics();
+                orgScreenGraphic = ((BufferedImage) orgScreenImage).createGraphics();
             }
         }
 
         boolean updateBuffer = false;
         if (bufferScreenImage == null) {
-        	updateBuffer = true;
+            updateBuffer = true;
         }
-        else if (bufferScreenImageWidth != paneWidth || bufferScreenImageHeight != paneHeight){
-        	updateBuffer = true;
+        else if (bufferScreenImageWidth != paneWidth || bufferScreenImageHeight != paneHeight) {
+            updateBuffer = true;
         }
-        
+
         if (isAvailableGpu) {
-        	VolatileImage vi = (VolatileImage)bufferScreenImage;
+            VolatileImage vi = (VolatileImage) bufferScreenImage;
             if (vi == null || vi.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
-            	updateBuffer = true;
+                updateBuffer = true;
             }
         }
-        
+
         if (updateBuffer == true) {
-        	updateViewport();
-            
+            updateViewport();
+
             if (isAvailableGpu) {
-            	bufferScreenImage = LayoutManager.getInstance().createDisplayImage(paneWidth, paneHeight);
-            	bufferScreenGraphic = ((VolatileImage)bufferScreenImage).createGraphics();
+                bufferScreenImage = LayoutManager.getInstance().createDisplayImage(paneWidth, paneHeight);
+                bufferScreenGraphic = ((VolatileImage) bufferScreenImage).createGraphics();
             }
             else {
                 bufferScreenImage = LayoutManager.getInstance().createBufferdImage(paneWidth, paneHeight);
-            	bufferScreenGraphic = ((BufferedImage)bufferScreenImage).createGraphics();
+                bufferScreenGraphic = ((BufferedImage) bufferScreenImage).createGraphics();
             }
-            
+
             bufferScreenImageWidth = bufferScreenImage.getWidth(null);
             bufferScreenImageHeight = bufferScreenImage.getHeight(null);
         }
@@ -864,7 +867,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         bg2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
         copyFromNotesImage(bg2);
-        
+
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         copyFromScreenImage(g2);
@@ -872,17 +875,18 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private MonitorData monitorInfo = new MonitorData();
+
     public void paintDisplay(Graphics g) {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         frameLimiter.frameEvent();
-	    int paneWidth = getContentPane().getWidth();
-	    int paneHeight = getContentPane().getHeight();
-	    
+        int paneWidth = getContentPane().getWidth();
+        int paneHeight = getContentPane().getHeight();
+
         Graphics2D g2 = (Graphics2D) g;
         g.clearRect(0, 0, paneWidth, paneHeight);
 
         renderMidiNotesDisplay(g);
-        
+
         // スペクトラム表示
         spectrumPainter.paintSpectram(g, paneWidth, paneHeight, dummySpectWave, noiseBuf, dummySpectSamples);
 
@@ -957,7 +961,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
             g.drawString(sb.toString(), strX, strY + 20);
-            
+
             volumeControl.setVisible(true);
         }
         else if (imageWorkerMgr.getNotesImage() == null || isFirstRendering == true) {
@@ -997,7 +1001,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             strX = (paneWidth - stringWidth) / 2;
             strY = (paneHeight - stringHeight) / 2 + 38;
             g.drawString(sb.toString(), strX, strY + (fsize / 2));
-            
+
             drawSpinner((Graphics2D) g);
             volumeControl.setVisible(false);
         }
@@ -1043,7 +1047,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             g.setColor(Color.GREEN);
             g.drawString(sb.toString(), strX, strY);
         }
-        
+
         if (LayoutManager.getInstance().getVolumeVisibleTime() != -1) {
             long current = System.currentTimeMillis();
             long elapsed = current - LayoutManager.getInstance().getVolumeVisibleTime();
@@ -1055,27 +1059,27 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 volumeControl.setVisible(true);
             }
         }
-        
+
         paintVolume(g);
 
         paintWindowEffect(g);
-        
+
         if (SystemProperties.getInstance().isVisibleRsrcMonitor()) {
             OsInfoWrapper osInfo = SystemProperties.getInstance().getOsInfo();
-            
+
             Graphics2D gGrap = (Graphics2D) g.create();
             gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
+
             Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
             Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
-            
+
             int grapW = 100;
             int grapH = 60;
             int grapX = this.getWidth() - grapW - 30;
             int grapY = 10;
             int gwRes = 0;
             float[] data;
-            
+
             if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
                 grapX = 120;
                 grapY = 216;
@@ -1114,9 +1118,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
             gGrap.setColor(Color.WHITE);
             gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
-            
+
             grapY += grapH + 28;
-            
+
             // RAM
             sb.setLength(0);
             sb.append("RAM");
@@ -1150,7 +1154,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
             gGrap.setColor(Color.WHITE);
             gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
-            
+
         }
 
         monitorInfo.fps = getFPS();
@@ -1164,13 +1168,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     }
 
     private LinearGradientPaint topVigPaint = null;
+
     protected void paintWindowEffect(Graphics g) {
         int w = getContentPane().getWidth();
         int h = getContentPane().getHeight();
 
         if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.CIRCLE_VIGNETTE) {
             Graphics2D effeG2 = (Graphics2D) g.create();
-            
+
             effeG2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             effeG2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
@@ -1183,39 +1188,27 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             float radius = (float) (Math.sqrt(w * w + h * h) / 2.0);
 
             float[] colorF = new float[] { 0.0f, 0.3f, 0.65f, 0.85f, 1.0f };
-            Color[] colorGrad = new Color[] { 
-                new Color(r, g2, b, 0),   // 中央30%までは完全透明
-                new Color(r, g2, b, 0),   // 30%地点（ここから色が乗り始める）
-                new Color(r, g2, b, 70),  // 65%地点：画面の中間層もほんのり暗く包む
-                new Color(r, g2, b, 160), // 85%地点：かなり色が濃くなる
-                new Color(r, g2, b, 240)  // 四隅（最外周）：ほぼ不透明に近い濃さに
+            Color[] colorGrad = new Color[] { new Color(r, g2, b, 0), // 中央30%までは完全透明
+                    new Color(r, g2, b, 0), // 30%地点（ここから色が乗り始める）
+                    new Color(r, g2, b, 70), // 65%地点：画面の中間層もほんのり暗く包む
+                    new Color(r, g2, b, 160), // 85%地点：かなり色が濃くなる
+                    new Color(r, g2, b, 240) // 四隅（最外周）：ほぼ不透明に近い濃さに
             };
 
-            RadialGradientPaint paint = new RadialGradientPaint(
-                new Point(w / 2, h / 2), 
-                radius, 
-                colorF, 
-                colorGrad
-            );
+            RadialGradientPaint paint = new RadialGradientPaint(new Point(w / 2, h / 2), radius, colorF, colorGrad);
 
             effeG2.setPaint(paint);
             effeG2.fillRect(0, 0, w, h); // 画面全体を塗る
-            
+
             effeG2.dispose();
         }
         else if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.TOP_VIGNETTE) {
             float darkHeight = h * 0.4f; // 上40%を暗く
 
             if (topVigPaint == null) {
-                topVigPaint = new LinearGradientPaint(
-                    0, 0,
-                    0, darkHeight,
-                    new float[]{0f, 1f},
-                    new Color[]{
-                        new Color(0, 0, 0, 180), // 上：かなり暗い
-                        new Color(0, 0, 0, 0)    // 下：透明
-                    }
-                );
+                topVigPaint = new LinearGradientPaint(0, 0, 0, darkHeight, new float[] { 0f, 1f }, new Color[] { new Color(0, 0, 0, 180), // 上：かなり暗い
+                        new Color(0, 0, 0, 0) // 下：透明
+                });
             }
 
             Graphics2D effeG2 = (Graphics2D) g.create();
@@ -1281,7 +1274,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int bgrgb = LayoutManager.getInstance().getPlayerColor().getBgColor().getRGB();
             int bdrgb = LayoutManager.getInstance().getPlayerColor().getBdColor().getRGB();
             if ((0 <= effePickX && effePickX < notesImg.getWidth(null)) && (0 <= effePickY && effePickY < notesImg.getHeight(null))) {
-                rgb = ((BufferedImage)notesImg).getRGB(effePickX, effePickY);
+                rgb = ((BufferedImage) notesImg).getRGB(effePickX, effePickY);
 
                 for (int i = 0; i < LayoutManager.getInstance().getNotesColorSize(); i++) {
                     Color bc = LayoutManager.getInstance().getNotesColor(i).getBdColor();
@@ -1363,9 +1356,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int tickX = (int) ((double) relPosTick * (double) getMeasCellWidth() / (double) midiUnit.getResolution());
             g.drawImage(notesImg, -tickX, 0, null);
         }
-        
+
         int rgb = -1;
-        
+
         // ストロークを戻す
         g2d.setStroke(DEFAULT_STROKE);
 
@@ -1408,11 +1401,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 keyboardPainter.paintKeyparts(g2d, aKokken[i], keyBgColor, Color.LIGHT_GRAY, isPush, KindOfKey.BLACK);
             }
         }
-        
+
         /* 衝突エフェクト描画 */
         CollisionEffectPainter colEffePainterIn = LayoutManager.getInstance().getCollisionEffectPainterIn();
         CollisionEffectPainter colEffePainterOut = LayoutManager.getInstance().getCollisionEffectPainterOut();
-        
+
         int tickBarPosition = LayoutManager.getInstance().getTickBarPosition();
         if (tickBarPosition > 0 && validNotesImg == true) {
             Color hitEffectColor = LayoutManager.getInstance().getCursorColor().getEffeColor();
@@ -1438,7 +1431,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 }
             }
         }
-        
+
         /* Tickbar描画 */
         Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
         tickbarPainter.paintLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, getOrgHeight(), csrColor);
@@ -1446,23 +1439,23 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     public void resetPage() {
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-        
+
         double fbpm = 120.0;
         switch (SystemProperties.getInstance().getNotesSpeedBase()) {
-            case AVERAGE:
-                fbpm = midiUnit.getAverageTempoInBPM();
-                break;
-            case MEDIAN:
-                fbpm = midiUnit.getMedianTempoInBPM();
-                break;
-            case FIRST:
-                fbpm = midiUnit.getFirstTempoInBPM();
-                break;
-            case DOMINANT:
-            default:
-                fbpm = midiUnit.getDominantTempoInBPM();
-                break;
-            
+        case AVERAGE:
+            fbpm = midiUnit.getAverageTempoInBPM();
+            break;
+        case MEDIAN:
+            fbpm = midiUnit.getMedianTempoInBPM();
+            break;
+        case FIRST:
+            fbpm = midiUnit.getFirstTempoInBPM();
+            break;
+        case DOMINANT:
+        default:
+            fbpm = midiUnit.getDominantTempoInBPM();
+            break;
+
         }
         double baseBpm = 140.0 * SystemProperties.getInstance().getNotesSpeed(); // NotesSpeed
                                                                                  // =
@@ -1474,10 +1467,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else if (newCellWidth > SystemProperties.MAX_NOTES_WIDTH) {
             newCellWidth = SystemProperties.MAX_NOTES_WIDTH;
         }
-        
-        // 半端に動作しているワーカーを終了させる 
+
+        // 半端に動作しているワーカーを終了させる
         imageWorkerMgr.forcedEnd();
-        
+
         setMeasCellWidth(newCellWidth);
 
         calcDispMeasCount();
@@ -1533,7 +1526,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        //umbrellaUI.mouseClicked(e);
+        // umbrellaUI.mouseClicked(e);
     }
 
     @Override
@@ -1544,7 +1537,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else {
             currentControl = umbrellaUI;
         }
-        
+
         if (currentControl != null) {
             currentControl.mousePressed(e);
         }

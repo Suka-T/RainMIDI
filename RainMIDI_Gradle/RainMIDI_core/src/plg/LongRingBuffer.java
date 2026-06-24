@@ -6,7 +6,7 @@ public class LongRingBuffer {
     private int head = 0;
     private int curent = 0;
     private final int size;
-    
+
     private long peekMax = 0;
     private long peekMin = 0;
 
@@ -25,24 +25,24 @@ public class LongRingBuffer {
 
     // スナップショット作成（計算用の重い処理を分離）
     public synchronized void updateSnapshot() {
-    	int i;
-    	long val = 0;
-    	long max = 0;
+        int i;
+        long val = 0;
+        long max = 0;
         long min = 0;
         for (i = 0; i < size; i++) {
-        	val = buffer[(head + i) % size];
-        	if (val < min) {
-        		min = val;
-        	}
-        	if (val > max) {
-        		max = val;
-        	}
+            val = buffer[(head + i) % size];
+            if (val < min) {
+                min = val;
+            }
+            if (val > max) {
+                max = val;
+            }
             displaySnapshot[i] = buffer[(head + i) % size];
         }
         peekMax = max;
         peekMin = min;
     }
-    
+
     public synchronized void clear() {
         for (int i = 0; i < size; i++) {
             buffer[i] = 0;
@@ -57,11 +57,11 @@ public class LongRingBuffer {
         return buffer[curent];
     }
 
-	public long getPeekMax() {
-		return peekMax;
-	}
+    public long getPeekMax() {
+        return peekMax;
+    }
 
-	public long getPeekMin() {
-		return peekMin;
-	}
+    public long getPeekMin() {
+        return peekMin;
+    }
 }

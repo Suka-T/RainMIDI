@@ -5,12 +5,12 @@ import java.awt.Graphics;
 import layout.parts.monitor.MonitorData;
 
 public abstract class MonitorPainter {
-    
+
     public MonitorPainter() {
     }
 
     public void initialize() {
-        
+
     }
 
     public void formatWithCommas(long number, StringBuilder out) {
@@ -33,8 +33,7 @@ public abstract class MonitorPainter {
             buffer[--index] = (char) ('0' + (number % 10));
             number /= 10;
             digitCount++;
-        }
-        while (number > 0);
+        } while (number > 0);
 
         if (negative) {
             buffer[--index] = '-';
@@ -42,6 +41,6 @@ public abstract class MonitorPainter {
 
         out.append(buffer, index, buffer.length - index);
     }
-    
+
     public abstract void paintMonitor(Graphics g, MonitorData info);
 }
