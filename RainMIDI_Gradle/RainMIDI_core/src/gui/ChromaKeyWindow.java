@@ -5,11 +5,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JColorChooser;
+
 import jlib.core.JMPCoreAccessor;
 
 public class ChromaKeyWindow extends RendererWindow {
 	
 	private static final Color[] backColorLst = new Color[] {
+			new Color(128, 128, 128), // Open Color Choose
 			new Color(0, 255, 0), // Green
 			new Color(0, 0, 255), // Blue
 			new Color(0, 255, 255), // Cyan
@@ -81,7 +84,15 @@ public class ChromaKeyWindow extends RendererWindow {
     @Override
     public void mouseReleased(MouseEvent e) {
     	if (colorIndex != -1) {
-    		backColor = backColorLst[colorIndex];
+    		if (colorIndex == 0) {
+                Color selectedColor = JColorChooser.showDialog(this, "Select BackColor", backColor);
+                if (selectedColor != null) {
+                	backColor = selectedColor;
+                }
+    		}
+    		else {
+    			backColor = backColorLst[colorIndex];
+    		}
     		colorIndex = -1;
     	}
     	else {
