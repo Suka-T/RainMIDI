@@ -9,7 +9,7 @@ import jlib.midi.IMidiUnit;
 
 public class ViewportManager {
 	
-	private static final int DEFAULT_TRANS_COUNT = 45;
+	private static final int DEFAULT_TRANS_COUNT = 100;
 	private ScheduledExecutorService scheduler = null;
 	
 	protected int maxViewport = 2;

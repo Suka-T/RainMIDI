@@ -173,8 +173,8 @@ public class GraphMonitorPainter extends MonitorPainter {
         // データの点と点を線で結ぶ
         grapX = sx;
         grapY = sy - 10;
-        data = graphMonSche.getNpsSnapshot();
         dataMax = graphMonSche.getNpsPeekMax();
+        data = graphMonSche.getNpsSnapshot();
         sb.setLength(0);
         drawGraph(gGrap, sb, grapX, grapY, grapW, grapH, data, dataMax, "NPS", Color.CYAN);
         
@@ -192,8 +192,8 @@ public class GraphMonitorPainter extends MonitorPainter {
             // データの点と点を線で結ぶ2
             grapX = sx;
             grapY = sy + sh - 10;
-            data = graphMonSche.getPolySnapshot();
             dataMax = graphMonSche.getPolyPeekMax();
+            data = graphMonSche.getPolySnapshot();
             sb.setLength(0);
             drawGraph(gGrap, sb, grapX, grapY, grapW, grapH, data, dataMax, "POLY", Color.PINK);
 
