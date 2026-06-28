@@ -491,54 +491,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
     }
 
-//    @Override
-//    public void run() {
-//        final long frameInterval = delayNano; // 1フレームあたりナノ秒
-//        long lastTime = System.nanoTime();
-//        long fpsCounterTime = lastTime;
-//        int frameCount = 0;
-//
-//        while (running) {
-//            try {
-//                long now = System.nanoTime();
-//                long elapsed = now - lastTime;
-//
-//                if (elapsed >= frameInterval) {
-//                    if (isAvailableGpu) {
-//                        render(); // 描画処理
-//                    }
-//                    else {
-//                        renderSoft(); // ソフトレンダリング
-//                    }
-//                    frameCount++;
-//                    lastTime += frameInterval;
-//
-//                    // FPS計測（1秒ごと）
-//                    if (now - fpsCounterTime >= TimeUnit.SECONDS.toNanos(1)) {
-//                        fps = frameCount;
-//                        frameCount = 0;
-//                        fpsCounterTime = now;
-//                    }
-//                }
-//                else {
-//                    // 次フレームまで余裕があればスリープ
-//                    long sleepNanos = frameInterval - elapsed;
-//                    if (sleepNanos > 0) {
-//                        long sleepMillis = sleepNanos / 1_000_000;
-//                        int sleepNanoRemainder = (int) (sleepNanos % 1_000_000);
-//                        if (sleepMillis > 0)
-//                            Thread.sleep(sleepMillis);
-//                        if (sleepNanoRemainder > 0)
-//                            LockSupport.parkNanos(sleepNanoRemainder);
-//                    }
-//                }
-//            }
-//            catch (Throwable e) {
-//                JMPCoreAccessor.getSystemManager().errorHandle(e);
-//            }
-//        }
-//    }
-
     protected void render() {
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
         try {
@@ -882,7 +834,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int paneWidth = getContentPane().getWidth();
         int paneHeight = getContentPane().getHeight();
 
-        Graphics2D g2 = (Graphics2D) g;
         g.clearRect(0, 0, paneWidth, paneHeight);
 
         renderMidiNotesDisplay(g);
@@ -1163,8 +1114,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         monitorPainter.paintMonitor(g, monitorInfo);
         umbrellaUI.paint(g);
-
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     private LinearGradientPaint topVigPaint = null;

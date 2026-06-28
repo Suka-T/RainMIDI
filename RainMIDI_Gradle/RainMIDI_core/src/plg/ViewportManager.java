@@ -88,18 +88,26 @@ public class ViewportManager {
             scheduler = null;
         }
     }
+    
+    private int getRenderedNoteRange() {
+        IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        int viewport = midiUnit.getRenderedNoteRange(midiUnit.getTickPosition());
+        if (!JMPCoreAccessor.getSoundManager().isPlay()) {
+            // 停止中はビューポートを引く 
+            viewport = 0;
+        }
+        return viewport;
+    }
 
     private void updateStats() {
         try {
-            IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
-
             if (updateOffsFlag == true) {
                 updateOffsImpl(curPanelWidth, curOrgWidth, curMeasCellHeight);
                 updateOffsFlag = false;
             }
 
             if (defViewport == -1) {
-                curViewport = midiUnit.getRenderedNoteRange(midiUnit.getTickPosition());
+                curViewport = getRenderedNoteRange();
                 if (curViewport > maxViewport) {
                     curViewport = maxViewport;
                 }
