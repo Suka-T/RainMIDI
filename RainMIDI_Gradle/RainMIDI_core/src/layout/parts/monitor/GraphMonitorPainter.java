@@ -67,8 +67,8 @@ public class GraphMonitorPainter extends MonitorPainter {
         Graphics2D gGrap = (Graphics2D) g;
         gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-        Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
+        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
         g.setFont(info1Font);
 
         sb.setLength(0);

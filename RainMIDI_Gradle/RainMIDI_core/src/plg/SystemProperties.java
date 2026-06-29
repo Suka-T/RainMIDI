@@ -17,6 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+
 import jlib.core.IDataManager;
 import jlib.core.ISoundManager;
 import jlib.core.ISystemManager;
@@ -82,6 +84,8 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_KEYRANGE_AUTOMAX = "renderer.keyRange.autoCountMax";
     public static final String SYSP_RENDERER_KEYRANGE_RES_SEC = "renderer.keyRange.resolutionSec";
     public static final String SYSP_RENDERER_KEYRANGE_RES_BPM = "renderer.keyRange.resolutionBaseBPM";
+    public static final String SYSP_RENDERER_CUSTOM_BGIMAGE_VALID = "renderer.custom.bgImage.valid";
+    public static final String SYSP_RENDERER_CUSTOM_BGIMAGE_PATH = "renderer.custom.bgImage.path";
 
     public static final String SYSP_DEBUGMODE = "debugMode";
 
@@ -127,6 +131,9 @@ public class SystemProperties {
             put(SYSP_RENDERER_KEYRANGE_AUTOMAX, "Key Range Auto Viewport Max[1 - 4]");
             put(SYSP_RENDERER_KEYRANGE_RES_BPM, "Key Range Resolution Time BaseBPM");
             put(SYSP_RENDERER_KEYRANGE_RES_SEC, "Key Range Resolution Time(sec)");
+            put(SYSP_RENDERER_CUSTOM_BGIMAGE_VALID, "Custom Background Image Valid");
+            put(SYSP_RENDERER_CUSTOM_BGIMAGE_PATH, "Custom Background Image Path");
+            
             put(SYSP_DEBUGMODE, "Debug mode enable");
         }
     };
@@ -277,6 +284,8 @@ public class SystemProperties {
     private GraphMonitorScheduler graphMonScheduler = null;
 
     private int viewportIndex = 0;
+    
+    private BufferedImage customBgImage = null;
 
     private SystemProperties() {
         nodes = new ArrayList<>();
@@ -322,6 +331,8 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_AUTOMAX, PropertiesNodeType.INT, "2", "1", "4"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_BPM, PropertiesNodeType.DOUBLE, "160.0", "60.0", "1000.0"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_SEC, PropertiesNodeType.DOUBLE, "5.0", "3.0", "15.0"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_CUSTOM_BGIMAGE_VALID, PropertiesNodeType.BOOLEAN, "false"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_CUSTOM_BGIMAGE_PATH, PropertiesNodeType.STRING, "res/Rainchan.jpg"));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
 
@@ -495,6 +506,21 @@ public class SystemProperties {
                 }
             }
         }
+        
+        boolean isValidCustomImage = (boolean) getData(SystemProperties.SYSP_RENDERER_CUSTOM_BGIMAGE_VALID);
+        if (isValidCustomImage) {
+            String customImagePath = (String) getData(SystemProperties.SYSP_RENDERER_CUSTOM_BGIMAGE_PATH);
+            try {
+                File file = new File(customImagePath);
+                customBgImage = ImageIO.read(file);
+            }
+            catch (IOException e) {
+                customBgImage = null;
+            }
+        }
+        else {
+            customBgImage = null;
+        }
 
         SyspViewMode viewDir = (SyspViewMode) getData(SYSP_RENDERER_MODE);
         int defKeyWidth = 50;
@@ -536,6 +562,10 @@ public class SystemProperties {
         default:
             bmpFormat = BufferedImage.TYPE_INT_RGB;
             break;
+        }
+        
+        if (customBgImage != null) {
+            bmpFormat = BufferedImage.TYPE_INT_ARGB;
         }
         LayoutManager.getInstance().setBmpFormat(bmpFormat);
 
@@ -861,5 +891,9 @@ public class SystemProperties {
 
     public int getViewportMax() {
         return (int) getPropNode(SYSP_RENDERER_KEYRANGE_AUTOMAX).getData();
+    }
+
+    public BufferedImage getCustomBgImage() {
+        return customBgImage;
     }
 }

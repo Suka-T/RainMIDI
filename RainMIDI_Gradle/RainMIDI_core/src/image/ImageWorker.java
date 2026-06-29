@@ -144,6 +144,15 @@ public class ImageWorker implements Runnable {
                 }
             }
 
+            if (SystemProperties.getInstance().getCustomBgImage() != null) {
+                if (useVolatileImg) {
+                    LayoutManager.getInstance().clearVolatileImage((VolatileImage)offScreenImage);
+                }
+                else {
+                    LayoutManager.getInstance().clearBufferedImage((BufferedImage)offScreenImage);
+                }
+            }
+
             offScreenGraphic.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
             offScreenGraphic.fillRect(0, 0, getImageWidth(), getImageHeight());
 

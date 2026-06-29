@@ -218,6 +218,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private final ButtonGroup buttonGroup_6 = new ButtonGroup();
     private JLabel lblMidiDevice;
     private JComboBox<String> comboBoxViewMode;
+    private JButton btnBgImageButton;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -319,7 +320,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher v" + AbstractRenderPlugin.APP_VERSION);
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 670);
+        setBounds(100, 100, 643, 689);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -463,7 +464,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 layoutSummaryPanel.setLayout(null);
                 layoutSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "Design", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                layoutSummaryPanel.setBounds(12, 177, 584, 77);
+                layoutSummaryPanel.setBounds(12, 177, 584, 101);
                 panel.add(layoutSummaryPanel);
 
                 btnLoadLayoutButton = new JButton("Design Change");
@@ -489,12 +490,32 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 });
                 chckbxNoUseVRAM.setBounds(141, 30, 136, 21);
                 layoutSummaryPanel.add(chckbxNoUseVRAM);
+                
+                btnBgImageButton = new JButton("Background Change");
+                btnBgImageButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String bgImagePath = getSystemTableParam(SystemProperties.SYSP_RENDERER_CUSTOM_BGIMAGE_PATH);
+                        String bgImageValid = getSystemTableParam(SystemProperties.SYSP_RENDERER_CUSTOM_BGIMAGE_VALID);
+                        String bgImageEffect = getSystemTableParam(SystemProperties.SYSP_RENDERER_WINEFFECT);
+                        BgImageSelectDialog bgDialog = new BgImageSelectDialog(RendererConfigDialog.this);
+                        bgDialog.setLocationRelativeTo(RendererConfigDialog.this);
+                        bgDialog.showDialog(bgImageValid.equals("true") ? true : false, bgImagePath, bgImageEffect);
+                        
+                        if (bgDialog.isCommit()) {
+                            setSystemTableParam(SystemProperties.SYSP_RENDERER_CUSTOM_BGIMAGE_PATH, bgDialog.getPath());
+                            setSystemTableParam(SystemProperties.SYSP_RENDERER_CUSTOM_BGIMAGE_VALID, bgDialog.getValidState() ? "true" : "false");
+                            setSystemTableParam(SystemProperties.SYSP_RENDERER_WINEFFECT, bgDialog.getEffect());
+                        }
+                    }
+                });
+                btnBgImageButton.setBounds(12, 63, 153, 26);
+                layoutSummaryPanel.add(btnBgImageButton);
 
                 systemSummaryPanel = new JPanel();
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 264, 584, 249);
+                systemSummaryPanel.setBounds(12, 286, 584, 249);
                 panel.add(systemSummaryPanel);
 
                 lblWindowSizeLabel = new JLabel("Window Size");
@@ -826,7 +847,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(439, 523, 157, 21);
+                btnShowExpertSettings.setBounds(441, 545, 157, 21);
                 panel.add(btnShowExpertSettings);
 
                 btnInitializeSettings = new JButton("Initialize Settings");
@@ -849,7 +870,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 523, 140, 21);
+                btnInitializeSettings.setBounds(12, 545, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -1329,6 +1350,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         btnLoadLayoutButton.setText(I18n.t("button.loadDesign"));
         btnInitializeSettings.setText(I18n.t("button.initSettings"));
         btnShowExpertSettings.setText(I18n.t("button.showExpertSettings"));
+        btnBgImageButton.setText(I18n.t("tab.bgImageSelect"));
 
         lblVolumeLabel.setText(I18n.t("label.volume"));
         lblHigh.setText(I18n.t("label.highest"));

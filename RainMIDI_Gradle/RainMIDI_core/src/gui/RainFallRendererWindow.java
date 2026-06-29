@@ -256,6 +256,10 @@ public class RainFallRendererWindow extends RendererWindow {
         int dY1 = clipY;
         int dX2 = clipX + clipW - 1;
         int dY2 = clipY + clipH - 1;
-        g.drawImage(bufferScreenImage, 0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), dX1, dY1, dX2, dY2, null);
+        g.drawImage(bufferScreenImage, 
+                0, 0, bufferScreenImage.getWidth(null), bufferScreenImage.getHeight(null), 
+                dX1, dY1, dX2, dY2,
+                null
+                );
     }
 }

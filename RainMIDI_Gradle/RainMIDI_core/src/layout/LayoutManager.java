@@ -1,7 +1,9 @@
 package layout;
 
+import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -81,7 +83,10 @@ public class LayoutManager {
     private List<ColorInfo> notesColorInfos = null;
     private ColorInfo cursorColor = null;
     private ColorInfo playerColor = null;
+    private ColorInfo playerImplColor = null;
+    private ColorInfo playerTransColor = null;
     private ColorInfo pbColor = null;
+    private ColorInfo fontColor = null;
 
     private Canvas rootCanvas = null;
 
@@ -107,7 +112,50 @@ public class LayoutManager {
 
     public VolatileImage createDisplayImage(int width, int height) {
         GraphicsConfiguration gc = rootCanvas.getGraphicsConfiguration();
-        return gc.createCompatibleVolatileImage(width, height, Transparency.OPAQUE);
+        
+        int tp = Transparency.OPAQUE;
+        switch (getBmpFormat()) {
+        case BufferedImage.TYPE_INT_ARGB:
+            tp = Transparency.TRANSLUCENT;
+            break;
+        default:
+            break;
+        }
+        return gc.createCompatibleVolatileImage(width, height, tp);
+    }
+    
+    public void clearVolatileImage(VolatileImage vImage) {
+        Graphics2D g2d = vImage.createGraphics();
+        try {
+            // 合成規則を「元の色を無視して上書き（Src）」に設定
+            g2d.setComposite(AlphaComposite.Src);
+            
+            // 透明な黒（アルファ値 0）で全体を塗りつぶす
+            g2d.setColor(new Color(0, 0, 0, 0));
+            g2d.fillRect(0, 0, vImage.getWidth(), vImage.getHeight());
+        } finally {
+            g2d.dispose(); // グラフィックスリソースを確実に解放
+        }
+    }
+    
+    public void clearBufferedImage(BufferedImage bImage) {
+        // 念のため、画像が透過（アルファチャンネル）をサポートしているかチェック
+        if (!bImage.getColorModel().hasAlpha()) {
+            System.err.println("警告: このBufferedImageは透過に対応していません。");
+            // TYPE_INT_ARGB などで作成されている必要があります
+        }
+
+        Graphics2D g2d = bImage.createGraphics();
+        try {
+            // 合成規則を「元の色を無視して上書き（Src）」に設定
+            g2d.setComposite(AlphaComposite.Src);
+            
+            // 透明な黒（アルファ値 0）で全体を塗りつぶす
+            g2d.setColor(new Color(0, 0, 0, 0));
+            g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
+        } finally {
+            g2d.dispose(); // グラフィックスリソースを確実に解放
+        }
     }
 
     public BufferedImage createBufferdImage(int width, int height) {
@@ -157,16 +205,30 @@ public class LayoutManager {
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_CURSOR_EFFE_COLOR))//
         );
 
-        playerColor = new ColorInfo( //
+        playerTransColor = new ColorInfo( //
+                new Color(0, 0, 0, 0), //
+                new Color(0, 0, 0, 0) //
+        ); //
+        
+        playerImplColor = new ColorInfo( //
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PLAYER_BGCOLOR)), //
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PLAYER_BDCOLOR)) //
         ); //
+        
+        if (SystemProperties.getInstance().getCustomBgImage() != null) {
+            playerColor = playerTransColor;
+        }
+        else {
+            playerColor = playerImplColor;
+        }
 
         pbColor = new ColorInfo(//
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR)), //
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR)), //
                 Utility.convertCodeToHtmlColor((String) layout.getData(LayoutConfig.LC_PB_COLOR)) //
         ); //
+        
+        fontColor = new ColorInfo(playerImplColor.getBgRevColor(), playerImplColor.getBgColor());
     }
 
     public void initializeConfig() {
@@ -333,5 +395,9 @@ public class LayoutManager {
     public TickbarPainter getTickbarPainter() {
         LayoutConfig.ETickbarDesign type = (LayoutConfig.ETickbarDesign) layout.getData(LayoutConfig.LC_CURSOR_LINE);
         return tickBarPainters.get(type);
+    }
+
+    public ColorInfo getFontColor() {
+        return fontColor;
     }
 }

@@ -32,8 +32,8 @@ public class ClassicalMonitorPainter extends MonitorPainter {
         int sx = 0;
         int sy = 30;
         int sh = 28;
-        Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-        Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
+        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
         long val1, val2;
         int width;
         String text;

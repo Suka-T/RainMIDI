@@ -69,6 +69,7 @@ import plg.SystemProperties.SyspKeyFocusFunc;
 import plg.SystemProperties.SyspLayerOrder;
 import plg.SystemProperties.SyspMonitorType;
 import plg.SystemProperties.SyspWinEffect;
+import plg.Utility;
 import plg.ViewportManager;
 
 public class RendererWindow extends JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, Runnable {
@@ -685,7 +686,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         int dY1 = clipY;
         int dX2 = clipX + clipW - 1;
         int dY2 = clipY + clipH - 1;
-        g.drawImage(bufferScreenImage, 0, 0, bufferScreenImageWidth - 1, bufferScreenImageHeight - 1, dX1, dY1, dX2, dY2, null);
+        g.drawImage(bufferScreenImage,
+                0, 0, bufferScreenImageWidth, bufferScreenImageHeight,
+                dX1, dY1, dX2, dY2,
+                null);
     }
 
     private double angle = 0;
@@ -750,7 +754,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int stringHeight = fm.getHeight();
             int strX = volConX - stringWidth;
             int strY = volConY + (stringHeight / 2);
-            g.drawString(sb.toString(), strX, strY);
+            
+            Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+            Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+            Utility.drawStringShadow(g, strX, strY, sb.toString(), topStrColor, backStrColor);
         }
         volumeControl.setLocation(volConX, volConY, volConWidth, volConHeight);
         volumeControl.paint(g);
@@ -758,6 +765,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     public void renderMidiNotesDisplay(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
         int paneWidth = getContentPane().getWidth();
         int paneHeight = getContentPane().getHeight();
@@ -809,19 +818,28 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             bufferScreenImageWidth = bufferScreenImage.getWidth(null);
             bufferScreenImageHeight = bufferScreenImage.getHeight(null);
         }
+        
+        Graphics2D bg2 = (Graphics2D) bufferScreenGraphic;
+        if (SystemProperties.getInstance().getCustomBgImage() != null) {
+            if (isAvailableGpu) {
+                LayoutManager.getInstance().clearVolatileImage((VolatileImage)orgScreenImage);
+                LayoutManager.getInstance().clearVolatileImage((VolatileImage)bufferScreenImage);
+            }
+            else {
+                LayoutManager.getInstance().clearBufferedImage((BufferedImage)orgScreenImage);
+                LayoutManager.getInstance().clearBufferedImage((BufferedImage)bufferScreenImage);
+            }
+            g.drawImage(SystemProperties.getInstance().getCustomBgImage(), 0, 0, paneWidth, paneHeight, null);
+            paintWindowEffect(g);
+        }
 
         paintContents(orgScreenGraphic);
-
-        Graphics2D bg2 = (Graphics2D) bufferScreenGraphic;
 
         // 補間方法を設定
         bg2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
         bg2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-
         copyFromNotesImage(bg2);
 
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, SystemProperties.getInstance().getImageInterpol()); // バイリニア補間
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         copyFromScreenImage(g2);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
@@ -840,6 +858,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         // スペクトラム表示
         spectrumPainter.paintSpectram(g, paneWidth, paneHeight, dummySpectWave, noiseBuf, dummySpectSamples);
+        
+        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
 
         if (JMPCoreAccessor.getSystemManager().getStatus(ISystemManager.SYSTEM_STATUS_ID_FILE_LOADING) == true && isFirstRendering == false) {
             int fsize = 28;
@@ -855,7 +876,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             stringHeight = fm.getHeight();
             int strX = (paneWidth - stringWidth) / 2;
             int strY = (paneHeight - stringHeight) / 2 + 20;
-            g.drawString(sb.toString(), strX, strY - (fsize / 2));
+            Utility.drawStringShadow(g, strX, strY - (fsize / 2), sb.toString(), topStrColor, backStrColor);
             sb.setLength(0);
             sb.append("Now loading");
             stringWidth = fm.stringWidth(sb.toString());
@@ -869,7 +890,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             cnt++;
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
-            g.drawString(sb.toString(), strX, strY + (fsize / 2));
+            Utility.drawStringShadow(g, strX, strY + (fsize / 2), sb.toString(), topStrColor, backStrColor);
             strY += fsize;
 
             if (midiUnit.isProgressNowAnalyzing() == true) {
@@ -882,14 +903,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
                 sb.append("NOTES: ").append(midiUnit.getProgressNotesCount());
                 stringWidth = fm.stringWidth(sb.toString());
                 strX = (paneWidth - stringWidth) / 2;
-                g.drawString(sb.toString(), strX, strY + (fsize / 2));
+                Utility.drawStringShadow(g, strX, strY + (fsize / 2), sb.toString(), topStrColor, backStrColor);
                 strY += fsize + 2;
 
                 sb.setLength(0);
                 sb.append("TRACK: ").append(midiUnit.getProgressFinTrackNum()).append("/").append(midiUnit.getNumOfTrack());
                 stringWidth = fm.stringWidth(sb.toString());
                 strX = (paneWidth - stringWidth) / 2;
-                g.drawString(sb.toString(), strX, strY + (fsize / 2));
+                Utility.drawStringShadow(g, strX, strY + (fsize / 2), sb.toString(), topStrColor, backStrColor);
                 strY += fsize + 2;
             }
             drawSpinner((Graphics2D) g);
@@ -905,13 +926,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int stringHeight = fm.getHeight();
             int strX = (paneWidth - stringWidth) / 2;
             int strY = (paneHeight - stringHeight) / 2;
-            g.drawString(sb.toString(), strX, strY - 20);
+            Utility.drawStringShadow(g, strX, strY - 20, sb.toString(), topStrColor, backStrColor);
             sb.setLength(0);
             sb.append("Drag and Drop your MIDI or MIDI & AUDIO files here.");
             stringWidth = fm.stringWidth(sb.toString());
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
-            g.drawString(sb.toString(), strX, strY + 20);
+            Utility.drawStringShadow(g, strX, strY + 20, sb.toString(), topStrColor, backStrColor);
 
             volumeControl.setVisible(true);
         }
@@ -935,13 +956,13 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int stringHeight = fm.getHeight();
             int strX = (paneWidth - stringWidth) / 2;
             int strY = (paneHeight - stringHeight) / 2 + 20;
-            g.drawString(sb.toString(), strX, strY - (fsize / 2));
+            Utility.drawStringShadow(g, strX, strY - 20, sb.toString(), topStrColor, backStrColor);
             sb.setLength(0);
             sb.append("Rendering now");
             stringWidth = fm.stringWidth(sb.toString());
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
-            g.drawString(sb.toString(), strX, strY + (fsize / 2));
+            Utility.drawStringShadow(g, strX, strY + 34, sb.toString(), topStrColor, backStrColor);
 
             g.setFont(msgFontS);
             sb.setLength(0);
@@ -951,7 +972,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             stringHeight = fm.getHeight();
             strX = (paneWidth - stringWidth) / 2;
             strY = (paneHeight - stringHeight) / 2 + 38;
-            g.drawString(sb.toString(), strX, strY + (fsize / 2));
+            Utility.drawStringShadow(g, strX, strY - (fsize / 2), sb.toString(), topStrColor, backStrColor);
 
             drawSpinner((Graphics2D) g);
             volumeControl.setVisible(false);
@@ -1013,16 +1034,11 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         paintVolume(g);
 
-        paintWindowEffect(g);
-
         if (SystemProperties.getInstance().isVisibleRsrcMonitor()) {
             OsInfoWrapper osInfo = SystemProperties.getInstance().getOsInfo();
 
             Graphics2D gGrap = (Graphics2D) g.create();
             gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-            Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
 
             int grapW = 100;
             int grapH = 60;
@@ -1116,8 +1132,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         umbrellaUI.paint(g);
     }
 
-    private LinearGradientPaint topVigPaint = null;
-
     protected void paintWindowEffect(Graphics g) {
         int w = getContentPane().getWidth();
         int h = getContentPane().getHeight();
@@ -1136,7 +1150,14 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             // 画面の対角線の半分を半径とする
             float radius = (float) (Math.sqrt(w * w + h * h) / 2.0);
 
-            float[] colorF = new float[] { 0.0f, 0.3f, 0.65f, 0.85f, 1.0f };
+            float[] colorF = {
+                    0.0f,
+                    0.05f,
+                    0.25f,
+                    0.55f,
+                    1.0f
+                };
+
             Color[] colorGrad = new Color[] { new Color(r, g2, b, 0), // 中央30%までは完全透明
                     new Color(r, g2, b, 0), // 30%地点（ここから色が乗り始める）
                     new Color(r, g2, b, 70), // 65%地点：画面の中間層もほんのり暗く包む
@@ -1154,11 +1175,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         else if (SystemProperties.getInstance().getWinEffect() == SyspWinEffect.TOP_VIGNETTE) {
             float darkHeight = h * 0.4f; // 上40%を暗く
 
-            if (topVigPaint == null) {
-                topVigPaint = new LinearGradientPaint(0, 0, 0, darkHeight, new float[] { 0f, 1f }, new Color[] { new Color(0, 0, 0, 180), // 上：かなり暗い
-                        new Color(0, 0, 0, 0) // 下：透明
-                });
-            }
+            LinearGradientPaint topVigPaint = new LinearGradientPaint(0, 0, 0, darkHeight, new float[] { 0f, 1f }, new Color[] { new Color(0, 0, 0, 180), // 上：かなり暗い
+                    new Color(0, 0, 0, 0) // 下：透明
+            });
 
             Graphics2D effeG2 = (Graphics2D) g.create();
             Paint old = effeG2.getPaint();
@@ -1279,8 +1298,10 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
     protected void paintContents(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
-        g.fillRect(0, 0, getOrgWidth(), getOrgHeight());
+        if (SystemProperties.getInstance().getCustomBgImage() == null) {
+            g.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
+            g.fillRect(0, 0, getOrgWidth(), getOrgHeight());
+        }
 
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
 

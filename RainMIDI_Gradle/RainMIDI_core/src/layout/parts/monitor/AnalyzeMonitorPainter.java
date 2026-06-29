@@ -36,8 +36,8 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         int sx = 10;
         int sy = FONT_SIZE + 2;
         int sh = FONT_SIZE;
-        Color backStrColor = LayoutManager.getInstance().getPlayerColor().getBgColor();
-        Color topStrColor = LayoutManager.getInstance().getPlayerColor().getBgRevColor();
+        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
         ;
         g.setFont(info1Font);
 

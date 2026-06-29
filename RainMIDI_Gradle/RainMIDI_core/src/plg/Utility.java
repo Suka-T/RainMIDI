@@ -1,9 +1,16 @@
 package plg;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.LinearGradientPaint;
+import java.awt.Paint;
+import java.awt.Point;
+import java.awt.RadialGradientPaint;
+import java.awt.RenderingHints;
 import java.awt.image.VolatileImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -321,5 +328,62 @@ public class Utility {
             eased = (2.0 - Math.pow(2, -20 * x + 10)) / 2.0;
         }
         return eased;
+    }
+    
+    public static void drawStringShadow(Graphics g, int x, int y, String str, Color fore, Color shadow) {
+        g.setColor(shadow);
+        g.drawString(str, x + 1, y + 1);
+        g.setColor(fore);
+        g.drawString(str, x, y);
+    }
+    
+    public static void drawEffectCircleVignette(Graphics g, int w, int h) {
+        Graphics2D effeG2 = (Graphics2D) g.create();
+
+        effeG2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        effeG2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        Color bc = Color.BLACK;
+        int r = bc.getRed();
+        int g2 = bc.getGreen();
+        int b = bc.getBlue();
+
+        // 画面の対角線の半分を半径とする
+        float radius = (float) (Math.sqrt(w * w + h * h) / 2.0);
+
+        float[] colorF = {
+                0.0f,
+                0.05f,
+                0.25f,
+                0.55f,
+                1.0f
+            };
+
+        Color[] colorGrad = new Color[] { new Color(r, g2, b, 0), // 中央30%までは完全透明
+                new Color(r, g2, b, 0), // 30%地点（ここから色が乗り始める）
+                new Color(r, g2, b, 70), // 65%地点：画面の中間層もほんのり暗く包む
+                new Color(r, g2, b, 160), // 85%地点：かなり色が濃くなる
+                new Color(r, g2, b, 240) // 四隅（最外周）：ほぼ不透明に近い濃さに
+        };
+
+        RadialGradientPaint paint = new RadialGradientPaint(new Point(w / 2, h / 2), radius, colorF, colorGrad);
+
+        effeG2.setPaint(paint);
+        effeG2.fillRect(0, 0, w, h); // 画面全体を塗る
+
+        effeG2.dispose();
+    }
+    
+    public static void drawEffectTopVignette(Graphics g, int w, int h) {
+        float darkHeight = h * 0.4f; // 上40%を暗く
+
+        LinearGradientPaint topVigPaint = new LinearGradientPaint(0, 0, 0, darkHeight, new float[] { 0f, 1f }, new Color[] { new Color(0, 0, 0, 180), // 上：かなり暗い
+                new Color(0, 0, 0, 0) // 下：透明
+        });
+        Graphics2D effeG2 = (Graphics2D) g.create();
+        Paint old = effeG2.getPaint();
+        effeG2.setPaint(topVigPaint);
+        effeG2.fillRect(0, 0, w, (int) darkHeight);
+        effeG2.setPaint(old);
     }
 }
