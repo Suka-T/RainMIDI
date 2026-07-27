@@ -11,14 +11,22 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
@@ -289,6 +297,10 @@ public class Utility {
         }
         return true;
     }
+    
+    public static Path getCurrentDataDirectory() {
+        return Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+    }
 
     public static Path getAppConfigDirectory() {
         String userHome = System.getProperty("user.home");
@@ -306,7 +318,7 @@ public class Utility {
         }
         else {
             // サポート外OSはカレントフォルダに生成。設定の引継ぎ不可
-            configPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_DATA_DIR, AbstractRenderPlugin.PluginInstance));
+            configPath = getCurrentDataDirectory();
         }
         return configPath;
     }
@@ -385,5 +397,110 @@ public class Utility {
         effeG2.setPaint(topVigPaint);
         effeG2.fillRect(0, 0, w, (int) darkHeight);
         effeG2.setPaint(old);
+    }
+    
+    public static BufferedImage tint(BufferedImage src, Color tintColor) {
+
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        BufferedImage dst = new BufferedImage(
+                width,
+                height,
+                BufferedImage.TYPE_INT_ARGB);
+
+        // 着色したい色のHueとSaturationを取得
+        float[] hsb = Color.RGBtoHSB(
+                tintColor.getRed(),
+                tintColor.getGreen(),
+                tintColor.getBlue(),
+                null);
+
+        float hue = hsb[0];
+        float saturation = hsb[1];
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+
+                int argb = src.getRGB(x, y);
+
+                int a = (argb >>> 24) & 0xff;
+                int r = (argb >>> 16) & 0xff;
+                int g = (argb >>> 8) & 0xff;
+                int b = argb & 0xff;
+
+                // 元画像の明るさ(Brightness)
+                float[] srcHSB = Color.RGBtoHSB(r, g, b, null);
+                float brightness = srcHSB[2];
+
+                // Hue・Saturationは指定色、Brightnessは元画像
+                int rgb = Color.HSBtoRGB(hue, saturation, brightness);
+
+                rgb = (a << 24) | (rgb & 0x00ffffff);
+
+                dst.setRGB(x, y, rgb);
+            }
+        }
+
+        return dst;
+    }
+    
+    public static void unzip(Path zipFile, Path outputDir) throws IOException {
+        Files.createDirectories(outputDir);
+
+        try (InputStream is = Files.newInputStream(zipFile);
+             ZipInputStream zis = new ZipInputStream(is)) {
+
+            ZipEntry entry;
+
+            while ((entry = zis.getNextEntry()) != null) {
+
+                String entryName = entry.getName();
+
+                // 最初のフォルダを除去
+                int index = entryName.indexOf('/');
+                if (index >= 0) {
+                    entryName = entryName.substring(index + 1);
+                }
+   
+                // ZIP内が空フォルダだけだった場合
+                if (entryName.isEmpty()) {
+                    continue;
+                }
+             
+                Path target = outputDir.resolve(entryName).normalize();
+
+                // Zip Slip対策
+                if (!target.startsWith(outputDir)) {
+                    throw new IOException("不正なZIPエントリ: " + entry.getName());
+                }
+
+                if (entry.isDirectory()) {
+                    Files.createDirectories(target);
+                } else {
+                    Files.createDirectories(target.getParent());
+                    Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                zis.closeEntry();
+            }
+        }
+    }
+    
+    public static void deleteDirectory(Path dir) throws IOException {
+        if (!Files.exists(dir)) {
+            return;
+        }
+
+        try (var stream = Files.walk(dir)) {
+            stream.sorted(Comparator.reverseOrder()) // 子→親の順
+                  .forEach(path -> {
+                      try {
+                          Files.delete(path);
+                      } catch (IOException e) {
+                          throw new RuntimeException(e);
+                      }
+                  });
+        }
     }
 }

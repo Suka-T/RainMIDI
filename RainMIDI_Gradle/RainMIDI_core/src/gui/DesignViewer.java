@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -103,6 +104,10 @@ public class DesignViewer extends JDialog {
                     return; // 初期化中は無視
 
                 Graphics2D g2d = (Graphics2D) g;
+                
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 LayoutManager lm = LayoutManager.getInstance();
 
@@ -278,8 +283,8 @@ public class DesignViewer extends JDialog {
             if (listOfFiles != null) {
                 for (File file : listOfFiles) {
                     if (file.isFile()) { // フォルダを除外してファイルのみ追加
-                        if (plg.Utility.checkExtension(file, "layout")) {
-                            comboBoxLayoutFile.addItem(Utility.getFileNameNotExtension(file));
+                        if (Utility.checkExtensions(file, "layout", "zip")) {
+                            comboBoxLayoutFile.addItem(file.getName());
                         }
                     }
                 }
@@ -301,15 +306,11 @@ public class DesignViewer extends JDialog {
 
     private void updateView() {
         if (comboBoxLayoutFile.getSelectedIndex() == 0) {
-            Path folder = Utility.getAppConfigDirectory();
-            Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
-            selectedLayoutFile = fullPath.toFile();
             try {
-                LayoutManager.getInstance().read(selectedLayoutFile);
+                selectedLayoutFile = LayoutManager.getInstance().readBackupLayout();
             }
             catch (IOException e1) {
                 selectedLayoutFile = null;
-                LayoutManager.getInstance().initializeConfig();
             }
         }
         else if (comboBoxLayoutFile.getSelectedIndex() == 1) {
@@ -325,7 +326,7 @@ public class DesignViewer extends JDialog {
         else {
             Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
             String fileNameStr = comboBoxLayoutFile.getSelectedItem().toString();
-            Path fullPath = folderPath.resolve(fileNameStr + ".layout");
+            Path fullPath = folderPath.resolve(fileNameStr);
             selectedLayoutFile = fullPath.toFile();
             try {
                 LayoutManager.getInstance().read(selectedLayoutFile);

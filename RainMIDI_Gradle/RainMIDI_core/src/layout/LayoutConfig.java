@@ -37,6 +37,7 @@ public class LayoutConfig {
     public static final String LC_KEYBOARD_DESIGN = "keyboard.design";
     public static final String LC_COLLISION_EFFECT_IN = "collision.effect.in";
     public static final String LC_COLLISION_EFFECT_OUT = "collision.effect.out";
+    public static final String LC_SKIN_NAME = "skin.name";
 
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
@@ -71,6 +72,7 @@ public class LayoutConfig {
             put(LC_KEYBOARD_DESIGN, "Keyboard design");
             put(LC_COLLISION_EFFECT_IN, "Collision effect in design");
             put(LC_COLLISION_EFFECT_OUT, "Collision effect out design");
+            put(LC_SKIN_NAME, "Skin file name");
         }
     };
 
@@ -106,11 +108,11 @@ public class LayoutConfig {
     private static String[] CursorPosS = { "top" };
 
     public static enum EKeyboardDesign {
-        Default, Simple, Smart;
+        Default, Simple, Smart, Skin;
     }
 
-    private static Object[] EKeyboardDesignO = { EKeyboardDesign.Default, EKeyboardDesign.Simple, EKeyboardDesign.Smart };
-    private static String[] EKeyboardDesignS = { "default", "simple", "smart" };
+    private static Object[] EKeyboardDesignO = { EKeyboardDesign.Default, EKeyboardDesign.Simple, EKeyboardDesign.Smart, EKeyboardDesign.Skin };
+    private static String[] EKeyboardDesignS = { "default", "simple", "smart", "skin" };
 
     public static enum EColEffect {
         None, Simple, Color;
@@ -167,6 +169,7 @@ public class LayoutConfig {
         nodes.add(new PropertiesNode(LC_KEYBOARD_DESIGN, PropertiesNodeType.ITEM, EKeyboardDesign.Smart, EKeyboardDesignS, EKeyboardDesignO));
         nodes.add(new PropertiesNode(LC_COLLISION_EFFECT_IN, PropertiesNodeType.ITEM, EColEffect.Simple, EColEffectInS, EColEffectInO));
         nodes.add(new PropertiesNode(LC_COLLISION_EFFECT_OUT, PropertiesNodeType.ITEM, EColEffect.Color, EColEffectOutS, EColEffectOutO));
+        nodes.add(new PropertiesNode(LC_SKIN_NAME, PropertiesNodeType.STRING, ""));
         definication();
     }
 
@@ -233,7 +236,9 @@ public class LayoutConfig {
 
     public void read(File file) throws FileNotFoundException, IOException {
         Properties props = new Properties();
-        props.load(new FileInputStream(file));
+        try (FileInputStream fis = new FileInputStream(file)) {
+            props.load(fis);
+        }
         read(props);
     }
 

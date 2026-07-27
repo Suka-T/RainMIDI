@@ -277,6 +277,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
         frameLimiter = new FrameLimiter();
         frameLimiter.setFps(SystemProperties.getInstance().getFixedFps());
+        
+        keyboardPainter.preload();
     }
 
     public int getKeyboardWidth() {

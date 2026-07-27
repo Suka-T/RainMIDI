@@ -40,6 +40,8 @@ public abstract class KeyboardPainter {
             }
         }
     }
+    
+    public void preload() {}
 
     protected abstract void paintWhiteKeyDefault(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush);
 

@@ -9,11 +9,16 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
@@ -31,6 +36,7 @@ import layout.parts.collisionEffect.NoneCollisionEffectPainter;
 import layout.parts.collisionEffect.SimpleCollisionEffectPainter;
 import layout.parts.keyboard.DefaultKeyboardPainter;
 import layout.parts.keyboard.SimpleKeyboardPainter;
+import layout.parts.keyboard.SkinKeyboardPainter;
 import layout.parts.keyboard.SmartKeyboardPainter;
 import layout.parts.notes.ArcNotesPainter;
 import layout.parts.notes.FlatNotesPainter;
@@ -39,12 +45,15 @@ import layout.parts.notes.Normal3dNotesPainter;
 import layout.parts.notes.NormalNotesPainter;
 import layout.parts.tickbar.GlowTickbarPainter;
 import layout.parts.tickbar.NormalTickbarPainter;
+import plg.AbstractRenderPlugin;
 import plg.PropertiesNode;
 import plg.SystemProperties;
 import plg.SystemProperties.SyspViewMode;
 import plg.Utility;
 
 public class LayoutManager {
+    public static final String BACKUP_FILE_NAME = "backup.layout";
+    
     public static final int DEFAULT_TICK_MEAS = 1;
 
     private static Map<LayoutConfig.ENotesDesign, NotesPainter> notesPainters = new HashMap<LayoutConfig.ENotesDesign, NotesPainter>() {
@@ -62,6 +71,7 @@ public class LayoutManager {
             put(EKeyboardDesign.Default, new DefaultKeyboardPainter());
             put(EKeyboardDesign.Simple, new SimpleKeyboardPainter());
             put(EKeyboardDesign.Smart, new SmartKeyboardPainter());
+            put(EKeyboardDesign.Skin, new SkinKeyboardPainter());
         }
     };
 
@@ -93,12 +103,19 @@ public class LayoutManager {
     private int bmpFormat = BufferedImage.TYPE_INT_RGB;
 
     private long volumeVisibleTime = -1;
+    
+    // キーボードスキンイメージ 
+    private BufferedImage whiteKeyImage = null;
+    private BufferedImage blackKeyImage = null;
+    private BufferedImage whiteKeyPressedImageOrg = null;
+    private BufferedImage blackKeyPressedImageOrg = null;
+    private Map<Integer, BufferedImage> whiteKeyPressedImage = null;
+    private Map<Integer, BufferedImage> blackKeyPressedImage = null;
 
     // 現在のレイアウト設定
     private LayoutConfig layout = new LayoutConfig();
 
     private static LayoutManager instance = new LayoutManager();
-
     private LayoutManager() {
     }
 
@@ -108,6 +125,45 @@ public class LayoutManager {
 
     public List<PropertiesNode> getNodes() {
         return layout.getNodes();
+    }
+    
+    public void writeBackupLayout() throws FileNotFoundException, IOException {
+        Path folder = Utility.getAppConfigDirectory();
+        Path fullPath = folder.resolve(BACKUP_FILE_NAME);
+        File backupLayoutFile = fullPath.toFile();
+
+        write(backupLayoutFile);
+    }
+    
+    public File readBackupLayout() throws FileNotFoundException, IOException {
+        Path folder = Utility.getAppConfigDirectory();
+        Path fullPath = folder.resolve(BACKUP_FILE_NAME);
+        File selectedLayoutFile = fullPath.toFile();
+        if (!selectedLayoutFile.exists()) {
+            return selectedLayoutFile;
+        }
+        
+        try {
+            read(selectedLayoutFile);
+        }
+        catch (IOException e1) {
+            selectedLayoutFile = null;
+            initializeConfig();
+        }
+        
+//        folder = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+//        String skinName = getSkinFileName();
+//        if (!skinName.isEmpty()) {
+//            Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+//            fullPath = folderPath.resolve(skinName);
+//            try {
+//                loadSkinFile(fullPath.toFile(), false);
+//            }
+//            catch (IOException e1) {
+//                initializeConfig();
+//            }
+//        }
+        return selectedLayoutFile;
     }
 
     public VolatileImage createDisplayImage(int width, int height) {
@@ -168,6 +224,18 @@ public class LayoutManager {
         List<Color> notesColor = new ArrayList<Color>();
         List<Color> notesBorderColor = new ArrayList<Color>();
         ISystemManager sm = JMPCoreAccessor.getSystemManager();
+        
+        String skinName = getSkinFileName();
+        if (!skinName.isEmpty()) {
+            Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+            Path fullPath = folderPath.resolve(skinName);
+            try {
+                loadSkinFile(fullPath.toFile(), false);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         EColorAsign colAsign = (EColorAsign) layout.getData(LayoutConfig.LC_NOTES_COLOR_ASIGN);
         int notesColorNum = (int) layout.getData(LayoutConfig.LC_NOTES_COLOR_NUM);
@@ -252,11 +320,89 @@ public class LayoutManager {
     public void invalidateEffectConfig() {
         layout.invalidateEffectConfig();
     }
+    
+    public void reloadSkin() {
+        String name = layout.getData(LayoutConfig.LC_SKIN_NAME).toString();
+        if (name.isEmpty()) {
+            return;
+        }
+        
+        Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+        Path zipPath = folderPath.resolve(name);
+        File f = zipPath.toFile();
+        if (f.exists()) {
+            try {
+                read(f);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void loadSkinFile(File zipFile, boolean doLoadLayout) throws IOException {
+        Path zipPath = Path.of(zipFile.getAbsolutePath());
+        
+        Path dataPath = Utility.getCurrentDataDirectory();
+        Path tmpPath = dataPath.resolve("tmp");
+        
+        Utility.unzip(zipPath, tmpPath);
+        
+        File wFile = tmpPath.resolve("KeyWhite.png").toFile();
+        File bFile = tmpPath.resolve("KeyBlack.png").toFile();
+        File wpFile = tmpPath.resolve("KeyWhitePressed.png").toFile();
+        File bpFile = tmpPath.resolve("KeyBlackPressed.png").toFile();
+        try {
+            whiteKeyImage = ImageIO.read(wFile);
+            blackKeyImage = ImageIO.read(bFile);
+            whiteKeyPressedImageOrg = ImageIO.read(wpFile);
+            blackKeyPressedImageOrg = ImageIO.read(bpFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            whiteKeyImage = null;
+            blackKeyImage = null;
+            whiteKeyPressedImage = null;
+            blackKeyPressedImage = null;
+        }
+        
+        if (doLoadLayout) {
+            File layoutFile = tmpPath.resolve(".layout").toFile();
+            if (layoutFile.exists() == true) {
+                layout.definication(); // 差分以外をデフォルトにする
+                layout.read(layoutFile);
+            }
+        }
+        
+        layout.setData(LayoutConfig.LC_SKIN_NAME, zipPath.toFile().getName());
+        if (whiteKeyImage != null && blackKeyImage != null) {
+            layout.setData(LayoutConfig.LC_KEYBOARD_DESIGN, "skin");
+        }
+        
+        if (tmpPath.toFile().exists()) {
+            Utility.deleteDirectory(tmpPath);
+        }
+        
+    }
 
     public void read(File f) throws IOException {
-        if (f.exists() == true) {
-            layout.definication(); // 差分以外をデフォルトにする
-            layout.read(f);
+        Path zipPath = Path.of(f.getAbsolutePath());
+        boolean isZip = zipPath.getFileName().toString().toLowerCase().endsWith(".zip");
+        
+        File layoutFile = f;
+        
+        if (isZip) {
+            loadSkinFile(zipPath.toFile(), true);
+        }
+        else {
+            whiteKeyImage = null;
+            blackKeyImage = null;
+            whiteKeyPressedImage = null;
+            blackKeyPressedImage = null;
+            
+            if (layoutFile.exists() == true) {
+                layout.definication(); // 差分以外をデフォルトにする
+                layout.read(layoutFile);
+            }
         }
     }
 
@@ -399,5 +545,44 @@ public class LayoutManager {
 
     public ColorInfo getFontColor() {
         return fontColor;
+    }
+    
+    public BufferedImage getKeyboadSkinImageW() {
+        return whiteKeyImage;
+    }
+    
+    public BufferedImage getKeyboadSkinImageB() {
+        return blackKeyImage;
+    }
+    
+    public BufferedImage getKeyboadSkinImageWP(int rgb) {
+        return whiteKeyPressedImage.get(rgb);
+    }
+    
+    public BufferedImage getKeyboadSkinImageBP(int rgb) {
+        return blackKeyPressedImage.get(rgb);
+    }
+    
+    public void makeKeyboadSkin() {
+        if (whiteKeyPressedImageOrg != null) {
+            whiteKeyPressedImage = new HashMap<Integer, BufferedImage>();
+            for (int i = 0; i < LayoutManager.getInstance().getNotesColorSize(); i++) {
+                Color col = LayoutManager.getInstance().getNotesColor(i).getBgColor();
+                int rgb = col.getRGB();
+                whiteKeyPressedImage.put(rgb, Utility.tint(whiteKeyPressedImageOrg, col));
+            }
+        }
+        if (blackKeyPressedImageOrg != null) {
+            blackKeyPressedImage = new HashMap<Integer, BufferedImage>();
+            for (int i = 0; i < LayoutManager.getInstance().getNotesColorSize(); i++) {
+                Color col = LayoutManager.getInstance().getNotesColor(i).getBgColor();
+                int rgb = col.getRGB();
+                blackKeyPressedImage.put(rgb, Utility.tint(blackKeyPressedImageOrg, col));
+            }
+        }
+    }
+    
+    public String getSkinFileName() {
+        return (String)layout.getData(LayoutConfig.LC_SKIN_NAME);
     }
 }

@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1247,10 +1246,14 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             }
 
             String keyName = node.getKey();
+            String param = node.getDataString();
             if (LayoutConfig.SwapKeyName.containsKey(keyName)) {
                 keyName = LayoutConfig.SwapKeyName.get(keyName);
             }
-            Object[] row = { keyName, node.getDataString() };
+            if (node.getKey().equalsIgnoreCase("skin.name") == true) {
+                param = LayoutManager.getInstance().getSkinFileName();
+            }
+            Object[] row = { keyName, param };
             designModel.addRow(row);
             designItemKeys.add(node.getKey());
 
@@ -1476,9 +1479,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             commitLayout(); // 先に変更を決定する
 
             try {
-                Path folder = Utility.getAppConfigDirectory();
-                Path fullPath = folder.resolve(AbstractRenderPlugin.BACKUP_FILE_NAME);
-                LayoutManager.getInstance().write(fullPath.toFile());
+                LayoutManager.getInstance().writeBackupLayout();
             }
             catch (IOException e1) {
                 e1.printStackTrace();

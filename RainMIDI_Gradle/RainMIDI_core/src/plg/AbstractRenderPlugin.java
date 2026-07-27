@@ -27,6 +27,7 @@ import jlib.plugin.JMidiPlugin;
 import kdmapij.KDMAPIW;
 import layout.LayoutManager;
 import plg.SystemProperties.SyspViewMode;
+import tool.WindowRecorder;
 
 public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener, ISupportExtensionConstraints {
 
@@ -39,7 +40,6 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     public static AbstractRenderPlugin PluginInstance = null;
 
     public static final String PROP_FILE_NAME = "renderer.properties";
-    public static final String BACKUP_FILE_NAME = "backup.layout";
 
     private boolean exitFlag = false;
     public List<RendererWindow> winArray = null;
@@ -48,7 +48,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     private JWindow splash = null;
 
     // 画面録画ツール(未実装)
-    // private WindowRecorder recorder = null;
+    private WindowRecorder recorder = null;
 
     public void exitStdPlg() {
         SystemProperties.getInstance().exit();
@@ -135,11 +135,7 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     }
 
     public void writeBackupLayout() throws FileNotFoundException, IOException {
-        Path folder = Utility.getAppConfigDirectory();
-        Path fullPath = folder.resolve(BACKUP_FILE_NAME);
-        File backupLayoutFile = fullPath.toFile();
-
-        LayoutManager.getInstance().write(backupLayoutFile);
+        LayoutManager.getInstance().writeBackupLayout();
     }
 
     public void startRendererWindow() {
@@ -231,14 +227,9 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
             e1.printStackTrace();
         }
 
-        folder = Utility.getAppConfigDirectory();
-        fullPath = folder.resolve(BACKUP_FILE_NAME);
         LayoutManager.getInstance().initializeConfig();
         try {
-            File backupLayoutFile = fullPath.toFile();
-            if (backupLayoutFile.exists()) {
-                LayoutManager.getInstance().read(backupLayoutFile);
-            }
+            LayoutManager.getInstance().readBackupLayout();
         }
         catch (IOException e1) {
             e1.printStackTrace();
@@ -345,17 +336,13 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
 
     @Override
     public void startSequencer() {
-        /*
-         * if (recorder == null) { recorder = new WindowRecorder(); }
-         * recorder.startRecording();
-         */
+        //if (recorder == null) { recorder = new WindowRecorder(); }
+        //recorder.startRecording();
     }
 
     @Override
     public void stopSequencer() {
-        /*
-         * if (recorder != null) { recorder.stopRecording(); recorder = null; }
-         */
+        //if (recorder != null) { recorder.stopRecording(); recorder = null; }
     }
 
     @Override

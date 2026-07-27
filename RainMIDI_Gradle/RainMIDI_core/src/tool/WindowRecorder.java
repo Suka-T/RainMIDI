@@ -12,21 +12,35 @@ public class WindowRecorder {
     }
 
     public void startRecording() {
+        if (process != null) return;
+        
         try {
             String output = "record_" + System.currentTimeMillis() + ".mkv";
 
-            ProcessBuilder pb = new ProcessBuilder("ffmpeg.exe", "-y",
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffmpeg.exe", "-y",
+                    
+                    "-f", "gdigrab", "-framerate", "60",
+                    
+                    //"-i", "desktop",
+                    "-i", "title=" + WINDOW_TITLE,
+                    
+                    //"-f", "dshow", "-i", "audio=ステレオ ミキサー (Realtek(R) Audio)",
+                    
+                    // 映像と音声のズレを防ぐ設定
+                    //"-fflags", "+genpts", "-async", "1",
+                    
+                    "-c:v", "libx264", "-preset", "ultrafast",
+                    //"-c:a", "aac",
+                    
+                    "-f", "matroska", output
+                    );
 
-                    "-f", "gdigrab", "-framerate", "60", "-i", "title=" + WINDOW_TITLE,
-
-                    "-f", "wasapi", "-i", "default",
-
-                    "-c:v", "libx264", "-preset", "ultrafast", "-c:a", "aac",
-
-                    "-f", "matroska", output);
-
+            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+            
             // pb.inheritIO();
-            pb.redirectErrorStream(true);
+            //pb.redirectErrorStream(true);
             process = pb.start();
 
             System.out.println("録画開始");
@@ -52,6 +66,7 @@ public class WindowRecorder {
                     process.destroy();
                     process.waitFor();
                 }
+                process = null;
             }
             catch (InterruptedException e) {
                 e.printStackTrace();
