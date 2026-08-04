@@ -269,6 +269,9 @@ public class DesignViewer extends JDialog {
                 buttonPane.add(cancelButton);
             }
         }
+        
+        // TODO layoutファイル保存機能は非対応
+        buttonSave.setVisible(false);
 
         initialized.set(true);
     }
