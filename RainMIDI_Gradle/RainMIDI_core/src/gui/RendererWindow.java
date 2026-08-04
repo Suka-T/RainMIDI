@@ -1079,7 +1079,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
 
             if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
                 grapX = 120;
-                grapY = 216;
+                grapY = 188;
             }
 
             // CPU
