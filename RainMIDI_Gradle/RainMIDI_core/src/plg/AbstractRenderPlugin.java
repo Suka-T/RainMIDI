@@ -32,7 +32,7 @@ import tool.WindowRecorder;
 public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener, ISupportExtensionConstraints {
 
     public static final String APP_NAME = "Rain MIDI";
-    public static final String APP_VERSION = "1.19";
+    public static final String APP_VERSION = "1.20";
     public static final String APP_YEAR = "2025";
     public static final String APP_COMPANY = "Suka";
 
