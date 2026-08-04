@@ -584,7 +584,9 @@ public class SystemProperties {
             // ↓ キーボードの枠線がおかしくなるため軽量非推奨
             // imageInterpol = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
             // //軽量補完に差し替え
-            LayoutManager.getInstance().setBmpFormat(BufferedImage.TYPE_USHORT_565_RGB);
+            if (customBgImage == null) {
+                LayoutManager.getInstance().setBmpFormat(BufferedImage.TYPE_USHORT_565_RGB);
+            }
 
             isVisibleRsrcMonitor = false;
 
