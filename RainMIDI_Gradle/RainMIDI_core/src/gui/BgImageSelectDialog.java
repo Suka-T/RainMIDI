@@ -220,6 +220,8 @@ public class BgImageSelectDialog extends JDialog {
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             this.path = selectedFile.getAbsolutePath();
+            
+            chckbxImageValidCheckBox.setSelected(true);
         }
     }
     
@@ -303,6 +305,7 @@ public class BgImageSelectDialog extends JDialog {
         // 一番先頭のファイルを取得
         if ((files != null) && (files.size() > 0)) {
             this.path = files.get(0).getAbsolutePath();
+            chckbxImageValidCheckBox.setSelected(true);
             updateImage();
         }
     }
