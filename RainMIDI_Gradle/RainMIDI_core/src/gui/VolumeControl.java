@@ -14,10 +14,10 @@ import layout.LayoutManager;
 public class VolumeControl extends RainControl {
     private Paint volGrad = null;
     private boolean isVisible = false;
-    private int pressX = -1;
-    private int pressY = -1;
-    private int mouseX = -1;
-    private int mouseY = -1;
+    protected int pressX = -1;
+    protected int pressY = -1;
+    protected int mouseX = -1;
+    protected int mouseY = -1;
 
     private int x = 0;
     private int y = 0;

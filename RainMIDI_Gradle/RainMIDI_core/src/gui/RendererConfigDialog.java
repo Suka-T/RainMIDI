@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -110,11 +111,25 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private static final String NOTES_SPEED_FAST = "2.0";
     private static final String NOTES_SPEED_VFAST = "4.0";
 
-    private static final Map<String, String> SWAP_VIEWMODE_ITEM = new HashMap<String, String>() {
+    private static final Map<String, String> SWAP_VIEWMODE_ITEM = new LinkedHashMap<String, String>() {
         {
             put("Rain Fall", "rain_fall");
             put("Side Flow", "side_flow");
             put("Counter Only", "monitor_only");
+        }
+    };
+    
+    private static final Map<String, Integer> SWAP_FPS_ITEM = new LinkedHashMap<String, Integer>() {
+        {
+            put("20 fps", 20);
+            put("30 fps", 30);
+            put("60 fps", 60);
+            put("100 fps", 100);
+            put("200 fps", 200);
+            put("300 fps", 300);
+            put("400 fps", 400);
+            put("500 fps", 500);
+            put("1000 fps", 1000);
         }
     };
 
@@ -218,6 +233,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
     private JLabel lblMidiDevice;
     private JComboBox<String> comboBoxViewMode;
     private JButton btnBgImageButton;
+    private JComboBox<String> comboBoxFixedFPS;
+    private JCheckBox chckbxShowFPS;
+    private JLabel lblFps;
 
     // 行によってエディタを切り替えるクラス
     class RowSpecificComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
@@ -319,7 +337,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher v" + AbstractRenderPlugin.APP_VERSION);
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 689);
+        setBounds(100, 100, 643, 725);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -514,7 +532,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.setLayout(null);
                 systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
                         "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-                systemSummaryPanel.setBounds(12, 286, 584, 249);
+                systemSummaryPanel.setBounds(12, 286, 584, 289);
                 panel.add(systemSummaryPanel);
 
                 lblWindowSizeLabel = new JLabel("Window Size");
@@ -531,7 +549,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.add(comboBoxWindowSize);
 
                 lblPerfRadioLabel = new JLabel("Use RAM");
-                lblPerfRadioLabel.setBounds(12, 77, 72, 13);
+                lblPerfRadioLabel.setBounds(12, 114, 72, 13);
                 systemSummaryPanel.add(lblPerfRadioLabel);
 
                 rdbtnPerfLowButton = new JRadioButton("Low");
@@ -546,7 +564,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfLowButton);
-                rdbtnPerfLowButton.setBounds(96, 73, 113, 21);
+                rdbtnPerfLowButton.setBounds(96, 110, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfLowButton);
 
                 rdbtnPerfMidButton = new JRadioButton("Middle");
@@ -562,7 +580,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfMidButton);
-                rdbtnPerfMidButton.setBounds(213, 73, 113, 21);
+                rdbtnPerfMidButton.setBounds(213, 110, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfMidButton);
 
                 rdbtnPerfHighButton = new JRadioButton("High");
@@ -577,7 +595,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfHighButton);
-                rdbtnPerfHighButton.setBounds(330, 73, 113, 21);
+                rdbtnPerfHighButton.setBounds(330, 110, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfHighButton);
 
                 rdbtnPerfMaxButton = new JRadioButton("Max !!");
@@ -592,15 +610,15 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup.add(rdbtnPerfMaxButton);
-                rdbtnPerfMaxButton.setBounds(447, 73, 113, 21);
+                rdbtnPerfMaxButton.setBounds(447, 110, 113, 21);
                 systemSummaryPanel.add(rdbtnPerfMaxButton);
 
                 lblNotesSpeedLabel = new JLabel("Notes Speed");
-                lblNotesSpeedLabel.setBounds(12, 100, 72, 13);
+                lblNotesSpeedLabel.setBounds(12, 137, 72, 13);
                 systemSummaryPanel.add(lblNotesSpeedLabel);
 
                 lblNotesOrderLabel = new JLabel("Notes Layer");
-                lblNotesOrderLabel.setBounds(12, 123, 72, 13);
+                lblNotesOrderLabel.setBounds(12, 160, 72, 13);
                 systemSummaryPanel.add(lblNotesOrderLabel);
 
                 rdbtnRenderOrderAsc = new JRadioButton("Track1 is Back");
@@ -610,7 +628,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_1.add(rdbtnRenderOrderAsc);
-                rdbtnRenderOrderAsc.setBounds(96, 119, 113, 21);
+                rdbtnRenderOrderAsc.setBounds(96, 156, 113, 21);
                 systemSummaryPanel.add(rdbtnRenderOrderAsc);
 
                 rdbtnRenderOrderDesc = new JRadioButton("Track1 is Top");
@@ -620,7 +638,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_1.add(rdbtnRenderOrderDesc);
-                rdbtnRenderOrderDesc.setBounds(213, 119, 113, 21);
+                rdbtnRenderOrderDesc.setBounds(213, 156, 113, 21);
                 systemSummaryPanel.add(rdbtnRenderOrderDesc);
 
                 lblViewModeLabel = new JLabel("View Mode");
@@ -628,7 +646,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.add(lblViewModeLabel);
 
                 lblMonitorTypeLabel = new JLabel("Monitor Type");
-                lblMonitorTypeLabel.setBounds(12, 146, 72, 13);
+                lblMonitorTypeLabel.setBounds(12, 183, 72, 13);
                 systemSummaryPanel.add(lblMonitorTypeLabel);
 
                 rdbtnMonitorNone = new JRadioButton("None");
@@ -638,7 +656,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "none");
                     }
                 });
-                rdbtnMonitorNone.setBounds(96, 142, 113, 21);
+                rdbtnMonitorNone.setBounds(96, 179, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorNone);
 
                 rdbtnMonitorType1 = new JRadioButton("Notes Analyzer");
@@ -648,7 +666,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type1");
                     }
                 });
-                rdbtnMonitorType1.setBounds(213, 142, 113, 21);
+                rdbtnMonitorType1.setBounds(213, 179, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType1);
 
                 rdbtnMonitorType2 = new JRadioButton("Counter");
@@ -658,7 +676,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type2");
                     }
                 });
-                rdbtnMonitorType2.setBounds(330, 142, 113, 21);
+                rdbtnMonitorType2.setBounds(330, 179, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType2);
 
                 rdbtnMonitorType3 = new JRadioButton("Classical");
@@ -668,11 +686,11 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MONITOR_TYPE, "type3");
                     }
                 });
-                rdbtnMonitorType3.setBounds(447, 142, 113, 21);
+                rdbtnMonitorType3.setBounds(447, 179, 113, 21);
                 systemSummaryPanel.add(rdbtnMonitorType3);
 
                 lblIgnoreNotesLabel = new JLabel("Ignore Notes");
-                lblIgnoreNotesLabel.setBounds(12, 192, 72, 13);
+                lblIgnoreNotesLabel.setBounds(12, 229, 72, 13);
                 systemSummaryPanel.add(lblIgnoreNotesLabel);
 
                 chckbxIgnoreNotesValid = new JCheckBox("Invisible Ghost Notes");
@@ -681,7 +699,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_IGNORENOTES_RENDER_VALID, "" + chckbxIgnoreNotesValid.isSelected());
                     }
                 });
-                chckbxIgnoreNotesValid.setBounds(96, 188, 149, 21);
+                chckbxIgnoreNotesValid.setBounds(96, 225, 149, 21);
                 systemSummaryPanel.add(chckbxIgnoreNotesValid);
 
                 rdbtnNotesSpeedSlow = new JRadioButton("Slow");
@@ -691,7 +709,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedSlow);
-                rdbtnNotesSpeedSlow.setBounds(96, 96, 113, 21);
+                rdbtnNotesSpeedSlow.setBounds(96, 133, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedSlow);
 
                 rdbtnNotesSpeedNormal = new JRadioButton("Normal");
@@ -701,7 +719,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedNormal);
-                rdbtnNotesSpeedNormal.setBounds(213, 96, 113, 21);
+                rdbtnNotesSpeedNormal.setBounds(213, 133, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedNormal);
 
                 rdbtnNotesSpeedFast = new JRadioButton("Fast");
@@ -711,7 +729,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedFast);
-                rdbtnNotesSpeedFast.setBounds(330, 96, 113, 21);
+                rdbtnNotesSpeedFast.setBounds(330, 133, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedFast);
 
                 rdbtnNotesSpeedVeryFast = new JRadioButton("Very Fast");
@@ -721,7 +739,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_4.add(rdbtnNotesSpeedVeryFast);
-                rdbtnNotesSpeedVeryFast.setBounds(447, 96, 113, 21);
+                rdbtnNotesSpeedVeryFast.setBounds(447, 133, 113, 21);
                 systemSummaryPanel.add(rdbtnNotesSpeedVeryFast);
 
                 chckbxViewReverse = new JCheckBox("View Reverse");
@@ -739,7 +757,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_RSRCMONITOR_VISIBLE, "" + chckbxRsrcMonitorVisible.isSelected());
                     }
                 });
-                chckbxRsrcMonitorVisible.setBounds(96, 165, 241, 21);
+                chckbxRsrcMonitorVisible.setBounds(96, 202, 241, 21);
                 systemSummaryPanel.add(chckbxRsrcMonitorVisible);
 
                 lblLanguage = new JLabel("Language");
@@ -775,7 +793,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 systemSummaryPanel.add(comboBoxLanguage);
 
                 lblNumOfKeysLabel = new JLabel("Key Range");
-                lblNumOfKeysLabel.setBounds(12, 215, 72, 13);
+                lblNumOfKeysLabel.setBounds(12, 252, 72, 13);
                 systemSummaryPanel.add(lblNumOfKeysLabel);
 
                 rdbtnNumOfKeysAuto = new JRadioButton("Auto");
@@ -785,7 +803,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeysAuto);
-                rdbtnNumOfKeysAuto.setBounds(96, 211, 113, 21);
+                rdbtnNumOfKeysAuto.setBounds(96, 248, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeysAuto);
 
                 rdbtnNumOfKeys128Keys = new JRadioButton("128 Keys");
@@ -795,7 +813,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeys128Keys);
-                rdbtnNumOfKeys128Keys.setBounds(213, 211, 113, 21);
+                rdbtnNumOfKeys128Keys.setBounds(213, 248, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeys128Keys);
 
                 rdbtnNumOfKeys88Keys = new JRadioButton("88 Keys");
@@ -805,7 +823,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeys88Keys);
-                rdbtnNumOfKeys88Keys.setBounds(330, 211, 113, 21);
+                rdbtnNumOfKeys88Keys.setBounds(330, 248, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeys88Keys);
 
                 rdbtnNumOfKeys76Keys = new JRadioButton("76 Keys");
@@ -815,18 +833,47 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 });
                 buttonGroup_5.add(rdbtnNumOfKeys76Keys);
-                rdbtnNumOfKeys76Keys.setBounds(447, 211, 113, 21);
+                rdbtnNumOfKeys76Keys.setBounds(447, 248, 113, 21);
                 systemSummaryPanel.add(rdbtnNumOfKeys76Keys);
 
                 comboBoxViewMode = new JComboBox<String>();
                 comboBoxViewMode.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        if (!initialized.get())
+                            return; // 初期化中は無視
+                        
                         String v = SWAP_VIEWMODE_ITEM.get((String) comboBoxViewMode.getSelectedItem());
                         setSystemTableParam(SystemProperties.SYSP_RENDERER_MODE, v);
                     }
                 });
                 comboBoxViewMode.setBounds(96, 46, 113, 21);
                 systemSummaryPanel.add(comboBoxViewMode);
+                
+                lblFps = new JLabel("FPS");
+                lblFps.setBounds(12, 81, 72, 13);
+                systemSummaryPanel.add(lblFps);
+                
+                comboBoxFixedFPS = new JComboBox<String>();
+                comboBoxFixedFPS.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!initialized.get())
+                            return; // 初期化中は無視
+                        
+                        int v = SWAP_FPS_ITEM.get((String) comboBoxFixedFPS.getSelectedItem());
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_FPS, String.valueOf(v));
+                    }
+                });
+                comboBoxFixedFPS.setBounds(96, 77, 113, 21);
+                systemSummaryPanel.add(comboBoxFixedFPS);
+                
+                chckbxShowFPS = new JCheckBox("Show FPS");
+                chckbxShowFPS.setBounds(223, 77, 103, 21);
+                chckbxShowFPS.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        setSystemTableParam(SystemProperties.SYSP_RENDERER_SHOW_FPS, "" + chckbxShowFPS.isSelected());
+                    }
+                });
+                systemSummaryPanel.add(chckbxShowFPS);
 
                 btnShowExpertSettings = new JButton("Show Expert Settings");
                 btnShowExpertSettings.addActionListener(new ActionListener() {
@@ -846,7 +893,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnShowExpertSettings.setBounds(441, 545, 157, 21);
+                btnShowExpertSettings.setBounds(439, 585, 157, 21);
                 panel.add(btnShowExpertSettings);
 
                 btnInitializeSettings = new JButton("Initialize Settings");
@@ -869,7 +916,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                         }
                     }
                 });
-                btnInitializeSettings.setBounds(12, 545, 140, 21);
+                btnInitializeSettings.setBounds(12, 585, 140, 21);
                 panel.add(btnInitializeSettings);
             }
             {
@@ -1046,6 +1093,11 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         for (String k : SWAP_VIEWMODE_ITEM.keySet()) {
             comboBoxViewMode.addItem(k);
         }
+        
+        comboBoxFixedFPS.removeAllItems();
+        for (String k : SWAP_FPS_ITEM.keySet()) {
+            comboBoxFixedFPS.addItem(k);
+        }
 
         int i = 0;
         for (PropertiesNode node : SystemProperties.getInstance().getNodes()) {
@@ -1070,6 +1122,18 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                     }
                 }
                 comboBoxViewMode.setSelectedItem(swapName);
+            }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_FPS)) {
+                String swapName = "";
+                for (String k : SWAP_FPS_ITEM.keySet()) {
+                    int v = SWAP_FPS_ITEM.get(k);
+                    int nv = (int)node.getData();
+                    if (v == nv) {
+                        swapName = k;
+                        break;
+                    }
+                }
+                comboBoxFixedFPS.setSelectedItem(swapName);
             }
             else if (keyName.equals(SystemProperties.SYSP_AUDIO_FUNCTION)) {
                 String audioFunc = SystemProperties.getInstance().getPropNode(SystemProperties.SYSP_AUDIO_FUNCTION).getDataString();
@@ -1181,6 +1245,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_MODE_REVERSE)) {
                 chckbxViewReverse.setSelected((boolean) node.getData());
+            }
+            else if (keyName.equals(SystemProperties.SYSP_RENDERER_SHOW_FPS)) {
+                chckbxShowFPS.setSelected((boolean) node.getData());
             }
             else if (keyName.equals(SystemProperties.SYSP_RENDERER_RSRCMONITOR_VISIBLE)) {
                 chckbxRsrcMonitorVisible.setSelected((boolean) node.getData());
@@ -1375,6 +1442,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         chckbxNoUseVRAM.setText(I18n.t("chckbx.noUseVRAM"));
         chckbxInvalidateEffect.setText(I18n.t("chckbx.invalidateEffect"));
         chckbxIgnoreNotesValid.setText(I18n.t("chckbx.invisibleGhostNotes"));
+        chckbxShowFPS.setText(I18n.t("chckbx.showFPS"));
 
         rdbtnPerfLowButton.setText(I18n.t("rdbtn.low"));
         rdbtnPerfMidButton.setText(I18n.t("rdbtn.middle"));

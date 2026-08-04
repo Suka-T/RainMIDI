@@ -58,6 +58,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_USE_GPU = "renderer.useGpu";
     public static final String SYSP_RENDERER_USE_VRAM_IMAGE = "renderer.useVramImage";
     public static final String SYSP_RENDERER_FPS = "renderer.fps";
+    public static final String SYSP_RENDERER_SHOW_FPS = "renderer.showFps";
     public static final String SYSP_RENDERER_KEY_FOCUS_FUNC = "renderer.keyFocusFunc";
     public static final String SYSP_RENDERER_LAYERORDER = "renderer.layerOrder";
     public static final String SYSP_RENDERER_NOTESSPEED = "renderer.notesSpeed";
@@ -105,6 +106,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_USE_GPU, "use GPU");
             put(SYSP_RENDERER_USE_VRAM_IMAGE, "use VRAM Notes Image");
             put(SYSP_RENDERER_FPS, "Fixed frame rate");
+            put(SYSP_RENDERER_SHOW_FPS, "Show frame rate");
             put(SYSP_RENDERER_KEY_FOCUS_FUNC, "Key Focus Function");
             put(SYSP_RENDERER_LAYERORDER, "Track rendering order");
             put(SYSP_RENDERER_NOTESSPEED, "Notes Speed [0.1 - 5.0]");
@@ -304,6 +306,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_USE_GPU, PropertiesNodeType.BOOLEAN, "true"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_USE_VRAM_IMAGE, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_FPS, PropertiesNodeType.INT, "60", "20", ""));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_SHOW_FPS, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_LAYERORDER, PropertiesNodeType.ITEM, SyspLayerOrder.ASC, layerOrderItemS, layerOrderItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEY_FOCUS_FUNC, PropertiesNodeType.ITEM, SyspKeyFocusFunc.MIDI_EVENT, keyFocusFuncItemS, keyFocusFuncItemO));
         nodes.add(new PropertiesNode(SYSP_RENDERER_NOTESSPEED, PropertiesNodeType.DOUBLE, "1.0", "0.1", "5.0"));
@@ -759,6 +762,10 @@ public class SystemProperties {
 
     public int getFixedFps() {
         return (int) getPropNode(SYSP_RENDERER_FPS).getData();
+    }
+    
+    public boolean isShowFPS() {
+        return (boolean) getPropNode(SYSP_RENDERER_SHOW_FPS).getData();
     }
 
     public SyspViewMode getViewMode() {

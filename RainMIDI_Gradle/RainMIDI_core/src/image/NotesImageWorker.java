@@ -286,8 +286,8 @@ public class NotesImageWorker extends ImageWorker {
             }
         }
     }
-    
-    private void paintNt(NotesPainter.Context ctx, int track, int leftMeas, long endTick, int channel, int note, int velocity) {
+/*
+    private void _paintNt(NotesPainter.Context ctx, int track, int leftMeas, long endTick, int channel, int note, int velocity) {
 
         IMidiUnit midi = JMPCoreAccessor.getSoundManager().getMidiUnit();
         
@@ -329,8 +329,8 @@ public class NotesImageWorker extends ImageWorker {
         ctx.createParam();
         notesPainter.paintNotes(ctx);
     }
-
-    private void _paintNt(NotesPainter.Context nContext, int trk, int leftMeas, long endTick, int channel, int data1, int data2) {
+*/
+    private void paintNt(NotesPainter.Context nContext, int trk, int leftMeas, long endTick, int channel, int data1, int data2) {
         // Note OFF
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         long endEvent = endTick;

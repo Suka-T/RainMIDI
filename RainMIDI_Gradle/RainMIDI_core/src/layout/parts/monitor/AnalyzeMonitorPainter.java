@@ -3,7 +3,6 @@ package layout.parts.monitor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.text.DecimalFormat;
 
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
@@ -13,7 +12,7 @@ import layout.parts.MonitorPainter;
 import plg.Utility;
 
 public class AnalyzeMonitorPainter extends MonitorPainter {
-    private static final DecimalFormat DF = new DecimalFormat("0.0");
+    //private static final DecimalFormat DF = new DecimalFormat("0.0");
 
     private Font info1Font = null;
     private StringBuilder sb = new StringBuilder();
@@ -136,14 +135,14 @@ public class AnalyzeMonitorPainter extends MonitorPainter {
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
 
-        sb.setLength(0);
-        val1 = info.fps;
-        sb.append("FPS: ").append(val1);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
-        sy += sh;
+//        sb.setLength(0);
+//        val1 = info.fps;
+//        sb.append("FPS: ").append(val1);
+//        g.setColor(backStrColor);
+//        g.drawString(sb.toString(), sx + 1, sy + 1);
+//        g.setColor(topStrColor);
+//        g.drawString(sb.toString(), sx, sy);
+//        sy += sh;
     }
 
 }

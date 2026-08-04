@@ -71,6 +71,7 @@ public class AboutHtmlReader {
 
     boolean isOnline() {
         try {
+            @SuppressWarnings("deprecation")
             HttpURLConnection con = (HttpURLConnection) new URL("https://suka-t.github.io/RainMIDI/").openConnection();
             con.setConnectTimeout(2000);
             con.connect();

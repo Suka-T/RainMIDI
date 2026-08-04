@@ -139,6 +139,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private Font msgFontSS = null;
     private Font graphFont = null;
     private Font graphTitleFont = null;
+    private Font fpsFont = null;
 
     protected FrameLimiter frameLimiter = null;
 
@@ -264,6 +265,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
         graphFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
         graphTitleFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
+        fpsFont = new Font(Font.MONOSPACED, Font.BOLD, 28);
 
         isAvailableGpu = SystemProperties.getInstance().isAvailavleGpu();
         useVramNotesImage = SystemProperties.getInstance().isUseVramImage();
@@ -990,6 +992,23 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         }
         else {
             volumeControl.setVisible(false);
+        }
+        
+        if (SystemProperties.getInstance().isShowFPS() == true) {
+            sb.setLength(0);
+            int fps = getFPS();
+            sb.append(fps);
+            g.setFont(fpsFont);
+            String text = sb.toString();
+            FontMetrics fm = g.getFontMetrics();
+            int strWidth = fm.stringWidth(text);
+
+            int sy = 30;
+            int sx = getWidth() - strWidth - 30;
+            g.setColor(Color.BLACK);
+            g.drawString(sb.toString(), sx + 1, sy + 1);
+            g.setColor(Color.GREEN);
+            g.drawString(sb.toString(), sx, sy);
         }
 
         if (SystemProperties.getInstance().isDebugMode() == true) {

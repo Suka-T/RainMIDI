@@ -47,7 +47,7 @@ public class UmbrellaUI extends RainControl {
     private final int radius = 100;
     private final int inradius = 20;
 
-    private RendererWindow parent = null;
+    protected RendererWindow parent = null;
 
     public UmbrellaUI(RendererWindow win) {
         this.parent = win;

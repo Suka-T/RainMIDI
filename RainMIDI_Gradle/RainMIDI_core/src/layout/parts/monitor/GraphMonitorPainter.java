@@ -160,14 +160,14 @@ public class GraphMonitorPainter extends MonitorPainter {
         g.drawString(sb.toString(), sx, sy);
         sy += sh;
 
-        sb.setLength(0);
-        val1 = info.fps;
-        sb.append("FPS: ").append(val1);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
-        sy += sh;
+//        sb.setLength(0);
+//        val1 = info.fps;
+//        sb.append("FPS: ").append(val1);
+//        g.setColor(backStrColor);
+//        g.drawString(sb.toString(), sx + 1, sy + 1);
+//        g.setColor(topStrColor);
+//        g.drawString(sb.toString(), sx, sy);
+//        sy += sh;
 
         // データの点と点を線で結ぶ
         grapX = sx;
