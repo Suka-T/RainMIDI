@@ -109,10 +109,23 @@ public class DesignViewer extends JDialog {
                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                LayoutManager lm = LayoutManager.getInstance();
-
                 int width = getWidth();
                 int height = getHeight();
+                
+                LayoutManager lm = LayoutManager.getInstance();
+                
+                KeyboardPainter keyboardPainter = lm.getKeyboardPainter(SystemProperties.SyspViewMode.RAIN_FALL);
+                keyboardPainter.setKeyboardWidth(FIXED_TICK_POS);
+                keyboardPainter.preload();
+                CollisionEffectPainter colEffePainterIn = lm.getCollisionEffectPainterIn();
+                colEffePainterIn.preload();
+                CollisionEffectPainter colEffePainterOut = lm.getCollisionEffectPainterOut();
+                colEffePainterOut.preload();
+                
+                TickbarPainter tickbarPainter = LayoutManager.getInstance().getTickbarPainter();
+                tickbarPainter.clearCache();
+                Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
+                tickbarPainter.preload(height, csrColor);
 
                 g.setColor(lm.getPlayerColor().getBgColor());
                 g.fillRect(0, 0, width, height);
@@ -145,7 +158,6 @@ public class DesignViewer extends JDialog {
                     ntPainter.paintNotes(nContext);
                 }
 
-                KeyboardPainter keyboardPainter = lm.getKeyboardPainter(SystemProperties.SyspViewMode.RAIN_FALL);
                 int tickBarPositionOffs = 0;
                 if (LayoutManager.getInstance().getCursorType() == LayoutConfig.ECursorType.Keyboard) {
                     tickBarPositionOffs = 3;
@@ -174,9 +186,6 @@ public class DesignViewer extends JDialog {
                 }
 
                 /* 衝突エフェクト描画 */
-                CollisionEffectPainter colEffePainterIn = LayoutManager.getInstance().getCollisionEffectPainterIn();
-                CollisionEffectPainter colEffePainterOut = LayoutManager.getInstance().getCollisionEffectPainterOut();
-
                 int tickBarPosition = FIXED_TICK_POS;
                 Color hitEffectColor = LayoutManager.getInstance().getCursorColor().getEffeColor();
                 g.setColor(LayoutManager.getInstance().getPlayerColor().getBgColor());
@@ -189,9 +198,6 @@ public class DesignViewer extends JDialog {
                 g2d.setComposite(AlphaComposite.SrcOver);
 
                 /* Tickbar描画 */
-                TickbarPainter tickbarPainter = LayoutManager.getInstance().getTickbarPainter();
-                tickbarPainter.clearCache();
-                Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
                 tickbarPainter.paintLine(g2d, tickBarPosition + tickBarPositionOffs, 0, tickBarPosition + tickBarPositionOffs, panelViewer.getHeight(),
                         csrColor);
             }
@@ -338,6 +344,7 @@ public class DesignViewer extends JDialog {
         }
         LayoutManager.getInstance().initialize(null);
         LayoutManager.getInstance().setNotesBounds(80, getMeasHeight());
+        
         panelViewer.repaint();
     }
 
@@ -362,7 +369,7 @@ public class DesignViewer extends JDialog {
         int hkCnt = 0;
         int hkWidth = FIXED_TICK_POS;
         int kkWidth = (int) (hkWidth * 0.7);
-        int hakkenHeight = panelViewer.getHeight() / 7;
+        int hakkenHeight = (128 * keyHeight) / 75 - 1;
         for (int i = 0; i < FIXED_KEY_COUNT; i++) {
             int midiNo = 127 - i;
             int key = midiNo % 12;

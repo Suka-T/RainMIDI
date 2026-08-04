@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,20 @@ public class GlowTickbarPainter extends TickbarPainter {
     private List<Color> mergeColors = null;
     private BasicStroke coreStroke = null;
     private Color coreColor = null;
+    
+    private static final int LINE_IMAGE_SIZE = 60;
+    private BufferedImage lineImage = null;
+    
+    @Override
+    public void preload(int tickbarLengthCoord, Color baseColor) {
+        // キャッシュ化 
+        lineImage = new BufferedImage(LINE_IMAGE_SIZE, tickbarLengthCoord, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = (Graphics2D) lineImage.createGraphics();
+            
+        drawNoEffeLine(g2d, LINE_IMAGE_SIZE / 2, 0, LINE_IMAGE_SIZE / 2, tickbarLengthCoord - 1, baseColor);
+        paintGrawLine(g2d, LINE_IMAGE_SIZE / 2, 0, LINE_IMAGE_SIZE / 2, tickbarLengthCoord - 1, baseColor);
+        g2d.dispose();
+    }
 
     @Override
     public void clearCache() {
@@ -104,8 +119,11 @@ public class GlowTickbarPainter extends TickbarPainter {
 
     @Override
     public void paintLine(Graphics g, int x1, int y1, int x2, int y2, Color lineColor) {
-        drawNoEffeLine((Graphics2D) g, x1, y1, x2, y2, lineColor);
-        paintGrawLine(g, x1, y1, x2, y2, lineColor);
+        int x = x1 - LINE_IMAGE_SIZE / 2;
+        int y = y1;
+        int w = LINE_IMAGE_SIZE;
+        int h = y2 - y1 + 1;
+        g.drawImage(lineImage, x, y, w, h, null);
     }
 
 }

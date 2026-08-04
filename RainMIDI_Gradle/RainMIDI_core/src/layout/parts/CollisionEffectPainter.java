@@ -7,6 +7,8 @@ public abstract class CollisionEffectPainter {
 
     public CollisionEffectPainter() {
     }
+    
+    public void preload() {}
 
     public abstract void paintIn(Graphics g, int x, int y, int keySize, Color focusColor, Color defColor);
 

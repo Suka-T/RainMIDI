@@ -13,6 +13,12 @@ public class SmartKeyboardPainter2 extends KeyboardPainter {
 
     public SmartKeyboardPainter2() {
     }
+    
+    @Override
+    public void preload() {
+        // TODO 自動生成されたメソッド・スタブ
+        super.preload();
+    }
 
     private int getTrimedX(int x, int width) {
         return x + (width - getTrimedWidth(width));

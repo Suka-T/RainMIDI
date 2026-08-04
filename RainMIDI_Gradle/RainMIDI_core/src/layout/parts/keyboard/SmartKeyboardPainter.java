@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
+import java.awt.image.BufferedImage;
 
 import layout.parts.KeyParts;
 import layout.parts.KeyboardPainter;
@@ -14,68 +15,83 @@ import layout.parts.KeyboardPainter;
 public class SmartKeyboardPainter extends KeyboardPainter {
     private Paint whiteKeyGrad = null;
     private AlphaComposite blackKeyAlpha = null;
+    
+    private BufferedImage wkImage = null;
+    private BufferedImage bkImage = null;
+    
+    private static final int WK_WIDTH = 120;
+    private static final int WK_HEIGHT = 20;
+    
+    private static final int BK_WIDTH = 100;
+    private static final int BK_HEIGHT = 10;
 
     public SmartKeyboardPainter() {
     }
+    
+    @Override
+        public void preload() {
+            super.preload();
+            
+            int steps = getKeyboardWidth();
+            whiteKeyGrad = new LinearGradientPaint(steps, 0, 0, 0, new float[] { 0f, 1f },
+                    new Color[] { new Color(1f, 1f, 1f, 1.0f), new Color(1f, 1f, 1f, 0f) });
+            blackKeyAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
+            
+            {
+                int x = 0;
+                int y = 0;
+                int width = WK_WIDTH;
+                int height = WK_HEIGHT;
+                whiteKeyGrad = new LinearGradientPaint(width, 0, 0, 0, new float[] { 0f, 1f },
+                        new Color[] { new Color(1f, 1f, 1f, 1.0f), new Color(1f, 1f, 1f, 0f) });
+                wkImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+                Graphics2D g2d = (Graphics2D) wkImage.createGraphics();
+                g2d.setPaint(whiteKeyGrad);
+                g2d.fillRect(x, y, width, height);
+                g2d.setComposite(AlphaComposite.SrcOver);
+                g2d.dispose();
+            }
+            
+            {
+                int x = 0;
+                int y = 0;
+                int width = BK_WIDTH;
+                int height = BK_HEIGHT;
+                blackKeyAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
+                bkImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                
+                Graphics2D g2d = (Graphics2D) bkImage.createGraphics();
+                g2d.setColor(Color.BLACK);
+                g2d.setComposite(blackKeyAlpha);
+                g2d.fillRect(x, y, width, height);
+                g2d.setComposite(AlphaComposite.SrcOver);
+                g2d.dispose();
+            }
+        }
 
     @Override
     public void setKeyboardWidth(int width) {
         if (width != getKeyboardWidth()) {
-            int steps = getTrimedWidth(width);
-            whiteKeyGrad = new LinearGradientPaint(steps, 0, 0, 0, new float[] { 0f, 1f },
-                    new Color[] { new Color(1f, 1f, 1f, 1.0f), new Color(1f, 1f, 1f, 0f) });
-            blackKeyAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f);
+
         }
         super.setKeyboardWidth(width);
     }
 
-    private int getTrimedX(int x, int width) {
-        return x + (width - getTrimedWidth(width));
-    }
-
-    private int getTrimedWidth(int width) {
-        return (int) ((double) width/* * 0.8 */);
-    }
-
     private void drawWhiteKeyImpl(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        Graphics2D g2d = (Graphics2D) g;
-        int trimedX = getTrimedX(parts.orgX, parts.orgWidth);
-        int trimedWidth = getTrimedWidth(parts.orgWidth);
-        int keyWidth = getTrimedWidth(getKeyboardWidth());
-        int effeX = trimedX + trimedWidth - 1;
-        int effeW = keyWidth;
-        int effeY1 = parts.orgY;
-        int effeH = parts.orgHeight;
-        g2d.setPaint(whiteKeyGrad);
-        g2d.fillRect(effeX - effeW, effeY1, effeW, effeH);
-        g2d.setComposite(AlphaComposite.SrcOver);
-        /*
-         * if (isPush) { effeX = trimedX + trimedWidth - 1; effeW = (int) ((double)
-         * keyWidth * 0.2); g.setColor(bgColor); g2d.fillRect(effeX - effeW - 2, effeY1
-         * + 2, effeW, effeH - 4); }
-         */
+        int x = parts.x;
+        int y = parts.y;
+        int w = parts.width;
+        int h = parts.height - 1;
+        g.drawImage(wkImage, x, y, w, h, null);
     }
 
     private void drawBlackKeyImpl(Graphics g, KeyParts parts, Color bgColor, Color bdColor, boolean isPush) {
-        Graphics2D g2d = (Graphics2D) g;
-        int trimedX = getTrimedX(parts.orgX, parts.orgWidth);
-        int trimedWidth = getTrimedWidth(parts.orgWidth);
-        int keyWidth = getTrimedWidth(getKeyboardWidth());
-        int effeX = trimedX + trimedWidth - 1;
-        int effeW = keyWidth;
-        int effeY1 = parts.orgY;
-        int effeH = parts.orgHeight;
-        g2d.setPaint(whiteKeyGrad);
-        g2d.fillRect(effeX - effeW, effeY1, effeW, effeH);
-        g.setColor(Color.BLACK);
-        g2d.setComposite(blackKeyAlpha);
-        g2d.fillRect(effeX - (int) ((float) effeW * 0.7f), effeY1, (int) ((float) effeW * 0.7f), effeH);
-        g2d.setComposite(AlphaComposite.SrcOver);
-        /*
-         * if (isPush) { effeX = trimedX + trimedWidth - 1; effeW = (int) ((double)
-         * keyWidth * 0.2); g.setColor(bgColor); g2d.fillRect(effeX - effeW - 2, effeY1
-         * + 2, effeW, effeH - 4); }
-         */
+        int x = parts.x;
+        int y = parts.y;
+        int w = parts.width;
+        int h = parts.height;
+        g.drawImage(bkImage, x, y, w, h, null);
     }
 
     @Override

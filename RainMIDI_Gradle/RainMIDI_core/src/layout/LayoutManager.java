@@ -340,6 +340,13 @@ public class LayoutManager {
         }
     }
     
+    public void setKeyboardSkinImage(BufferedImage wkImage, BufferedImage bkImage, BufferedImage wkpImage, BufferedImage bkpImage) {
+        whiteKeyImage = wkImage;
+        blackKeyImage = bkImage;
+        whiteKeyPressedImageOrg = wkpImage;
+        blackKeyPressedImageOrg = bkpImage;
+    }
+    
     public void loadSkinFile(File zipFile, boolean doLoadLayout) throws IOException {
         Path zipPath = Path.of(zipFile.getAbsolutePath());
         
@@ -353,10 +360,12 @@ public class LayoutManager {
         File wpFile = tmpPath.resolve("KeyWhitePressed.png").toFile();
         File bpFile = tmpPath.resolve("KeyBlackPressed.png").toFile();
         try {
-            whiteKeyImage = ImageIO.read(wFile);
-            blackKeyImage = ImageIO.read(bFile);
-            whiteKeyPressedImageOrg = ImageIO.read(wpFile);
-            blackKeyPressedImageOrg = ImageIO.read(bpFile);
+            setKeyboardSkinImage(
+                    ImageIO.read(wFile),
+                    ImageIO.read(bFile),
+                    ImageIO.read(wpFile),
+                    ImageIO.read(bpFile)
+                    );
         } catch (IOException e) {
             e.printStackTrace();
             whiteKeyImage = null;

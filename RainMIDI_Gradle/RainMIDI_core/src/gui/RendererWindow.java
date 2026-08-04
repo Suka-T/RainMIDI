@@ -278,7 +278,16 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         frameLimiter = new FrameLimiter();
         frameLimiter.setFps(SystemProperties.getInstance().getFixedFps());
         
+        keyboardPainter.setKeyboardWidth(getKeyboardWidth());
         keyboardPainter.preload();
+        
+        Color csrColor = LayoutManager.getInstance().getCursorColor().getBdColor();
+        tickbarPainter.preload(getOrgHeight(), csrColor);
+        
+        CollisionEffectPainter colEffePainterIn = LayoutManager.getInstance().getCollisionEffectPainterIn();
+        colEffePainterIn.preload();
+        CollisionEffectPainter colEffePainterOut = LayoutManager.getInstance().getCollisionEffectPainterOut();
+        colEffePainterOut.preload();
     }
 
     public int getKeyboardWidth() {

@@ -286,8 +286,51 @@ public class NotesImageWorker extends ImageWorker {
             }
         }
     }
+    
+    private void paintNt(NotesPainter.Context ctx, int track, int leftMeas, long endTick, int channel, int note, int velocity) {
 
-    private void paintNt(NotesPainter.Context nContext, int trk, int leftMeas, long endTick, int channel, int data1, int data2) {
+        IMidiUnit midi = JMPCoreAccessor.getSoundManager().getMidiUnit();
+        
+        long startTick = noteOnEvents[channel][note].tick;
+        
+        // 描画不要
+        if (startTick < 0 || endTick < startTick || mpStartTick > endTick || !window.isVisible()) {
+            return;
+        }
+        
+        double resolution = midi.getResolution();
+        double cellW = window.getMeasCellWidth();
+        double cellH = window.getMeasCellHeight();
+        
+        // 座標
+        ctx.x = cellW * (leftMeas + startTick / resolution) + offsetCoordX;
+        ctx.y = (127 - note) * cellH + topOffset;
+        ctx.w = cellW * (endTick - startTick) / resolution;
+        ctx.h = cellH;
+        
+        // 色
+        int colorIndex = LayoutManager.getInstance().getColorRule() == LayoutConfig.EColorRule.Channel ? channel : track;
+        
+        ctx.bgColor = LayoutManager.getInstance().getNotesColor(colorIndex).getBgColor();
+        ctx.bdColor = LayoutManager.getInstance().getNotesColor(colorIndex).getBdColor();
+        ctx.colorIndex = colorIndex;
+        
+        // 画面外
+        double x1 = Math.max(0.0, ctx.x);
+        double x2 = Math.min(imgWidth - 1.0, ctx.x + ctx.w - 1.0);
+        
+        if (x2 < x1) {
+            return;
+        }
+        
+        ctx.x = x1;
+        ctx.w = x2 - x1 + 1.0;
+        
+        ctx.createParam();
+        notesPainter.paintNotes(ctx);
+    }
+
+    private void _paintNt(NotesPainter.Context nContext, int trk, int leftMeas, long endTick, int channel, int data1, int data2) {
         // Note OFF
         IMidiUnit midiUnit = JMPCoreAccessor.getSoundManager().getMidiUnit();
         long endEvent = endTick;

@@ -7,6 +7,8 @@ import java.awt.Stroke;
 
 public abstract class TickbarPainter {
     protected static final Stroke DEFAULT_STROKE = new BasicStroke();
+    
+    public void preload(int tickbarLengthCoord, Color baseColor) {}
 
     public abstract void paintLine(Graphics g, int x1, int y1, int x2, int y2, Color lineColor);
 
