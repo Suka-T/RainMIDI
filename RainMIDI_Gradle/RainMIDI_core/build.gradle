@@ -36,6 +36,7 @@ repositories {
 
 dependencies {
     implementation project(':RainMIDI_libs')
+    implementation 'com.formdev:flatlaf:3.6.1'
 }
 
 testing {

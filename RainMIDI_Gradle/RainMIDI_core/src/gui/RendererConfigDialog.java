@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
@@ -52,7 +51,6 @@ import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -337,7 +335,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         setTitle("Rain MIDI Launcher v" + AbstractRenderPlugin.APP_VERSION);
         this.targetPlg = plg;
-        setBounds(100, 100, 643, 713);
+        setBounds(100, 100, 643, 721);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -479,8 +477,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
                 layoutSummaryPanel = new JPanel();
                 layoutSummaryPanel.setLayout(null);
-                layoutSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-                        "Design", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+                layoutSummaryPanel.setBorder(new TitledBorder(null, "Design", TitledBorder.LEADING, TitledBorder.TOP, null, null));
                 layoutSummaryPanel.setBounds(12, 177, 584, 101);
                 panel.add(layoutSummaryPanel);
 
@@ -530,8 +527,7 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
 
                 systemSummaryPanel = new JPanel();
                 systemSummaryPanel.setLayout(null);
-                systemSummaryPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-                        "System", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+                systemSummaryPanel.setBorder(new TitledBorder(null, "System", TitledBorder.LEADING, TitledBorder.TOP, null, null));
                 systemSummaryPanel.setBounds(12, 286, 584, 278);
                 panel.add(systemSummaryPanel);
 

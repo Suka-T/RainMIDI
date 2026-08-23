@@ -6,20 +6,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+
+import com.formdev.flatlaf.FlatDarkLaf;
 
 import gui.ChromaKeyWindow;
 import gui.RainFallRendererWindow;
 import gui.RendererConfigDialog;
 import gui.RendererWindow;
 import gui.SideFlowRendererWindow;
+import jlib.core.ISystemManager;
 import jlib.core.JMPCoreAccessor;
 import jlib.player.IPlayerListener;
 import jlib.plugin.ISupportExtensionConstraints;
@@ -184,16 +189,35 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     @Override
     public void initialize() {
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+            FlatDarkLaf.setup();
+            
             splash = new JWindow();
-            splash.setSize(300, 200);
-
-            JLabel label = new JLabel("Loading...", SwingConstants.CENTER);
-            // 背景色設定
-            label.setOpaque(true);
-            label.setBackground(new Color(49, 74, 134));
-            label.setForeground(new Color(112, 185, 255));
-            splash.add(label);
-            label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 40));
+            
+            Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
+            String fileNameStr = "splash.png";
+            Path fullPath = folderPath.resolve(fileNameStr);
+            File fullFile = fullPath.toFile();
+            
+            if (fullFile.exists()) {
+                splash.setSize(640, 420);
+                ImageIcon icon = new ImageIcon(fullFile.getAbsolutePath());
+                JLabel label = new JLabel(icon);
+                label.setOpaque(false);
+                splash.setBackground(new Color(0, 0, 0, 0));
+                // 画像をスプラッシュ全体に表示
+                splash.add(label);
+            }
+            else {
+                splash.setSize(300, 200);
+                
+                JLabel label = new JLabel("Loading...", SwingConstants.CENTER);
+                // 背景色設定
+                label.setOpaque(true);
+                label.setBackground(new Color(49, 74, 134));
+                label.setForeground(new Color(112, 185, 255));
+                splash.add(label);
+                label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 40));
+            }
 
             splash.setLocationRelativeTo(null);
             splash.setVisible(true);
