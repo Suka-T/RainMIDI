@@ -1511,6 +1511,9 @@ public class RendererConfigDialog extends JFrame implements ActionListener {
                 }
             }
         }
+        
+        // LaF更新 
+        SystemProperties.getInstance().reloadLookAndFeel();
     }
 
     private void commitLayout() {

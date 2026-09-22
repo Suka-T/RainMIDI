@@ -45,6 +45,7 @@ public class SystemProperties {
     public static final String KDMAPI_NAME = "KDMAPI_for_RainMIDI";
 
     public static final String SYSP_MISC_LANGUAGE = "misc.language";
+    public static final String SYSP_MISC_LAF = "misc.laf";
     public static final String SYSP_FILE_DEFAULT_PATH = "file.defaultPath";
     public static final String SYSP_AUDIO_FUNCTION = "audio.function";
     public static final String SYSP_AUDIO_SYNTH = "audio.synth";
@@ -93,6 +94,7 @@ public class SystemProperties {
     public static final Map<String, String> SwapKeyName = new HashMap<String, String>() {
         {
             put(SYSP_MISC_LANGUAGE, "Language");
+            put(SYSP_MISC_LAF, "Look and Feel");
             put(SYSP_FILE_DEFAULT_PATH, "Default folder");
             put(SYSP_AUDIO_FUNCTION, "MIDI Audio function");
             put(SYSP_AUDIO_SYNTH, "MIDI Systhesizer device name");
@@ -202,6 +204,10 @@ public class SystemProperties {
     public static enum SyspNumOfKey {
         AUTO, FULL, LARGE, KEYS_88, KEYS_76;
     }
+    
+    public static enum SyspLaF {
+        DARK, LIGHT, LEGACY;
+    }
 
     private static Object[] langItemO = { SyspLanguage.AUTO, SyspLanguage.ENGLISH, SyspLanguage.JAPANESE, SyspLanguage.CHINESE };
     private static String[] langItemS = { "Auto", "English", "Japanese", "Chinese" };
@@ -252,6 +258,9 @@ public class SystemProperties {
 
     private static Object[] ViewportItemO = { SyspNumOfKey.AUTO, SyspNumOfKey.FULL, SyspNumOfKey.LARGE, SyspNumOfKey.KEYS_88, SyspNumOfKey.KEYS_76 };
     private static String[] ViewportItemS = { "auto", "full", "large", "88", "76" };
+    
+    private static Object[] lafItemO = { SyspLaF.DARK, SyspLaF.LIGHT, SyspLaF.LEGACY };
+    private static String[] lafItemS = { "dark", "light", "legacy" };
 
     private List<PropertiesNode> nodes;
     private int keyWidth = 50;
@@ -293,6 +302,7 @@ public class SystemProperties {
         nodes = new ArrayList<>();
 
         nodes.add(new PropertiesNode(SYSP_MISC_LANGUAGE, PropertiesNodeType.ITEM, SyspLanguage.AUTO, langItemS, langItemO));
+        nodes.add(new PropertiesNode(SYSP_MISC_LAF, PropertiesNodeType.ITEM, SyspLaF.DARK, lafItemS, lafItemO));
         nodes.add(new PropertiesNode(SYSP_FILE_DEFAULT_PATH, PropertiesNodeType.STRING, ""));
         nodes.add(new PropertiesNode(SYSP_AUDIO_FUNCTION, PropertiesNodeType.ITEM, SyspAudioFunc.MIDISYSTEM, audioFuncItemS, audioFuncItemO));
         nodes.add(new PropertiesNode(SYSP_AUDIO_SYNTH, PropertiesNodeType.STRING, ISoundManager.AUTO_RECEIVER_NAME));
@@ -752,6 +762,10 @@ public class SystemProperties {
                 }
             }
         }
+    }
+    
+    public void reloadLookAndFeel() {
+        RainMidiLaFTool.setLookAndFeel((SyspLaF)getData(SystemProperties.SYSP_MISC_LAF));
     }
 
     public int getWorkerNum() {

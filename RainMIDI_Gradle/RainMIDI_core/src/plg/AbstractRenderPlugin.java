@@ -17,8 +17,6 @@ import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-
 import gui.ChromaKeyWindow;
 import gui.RainFallRendererWindow;
 import gui.RendererConfigDialog;
@@ -102,6 +100,8 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     public void launch() {
         try {
             if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
+                SystemProperties.getInstance().reloadLookAndFeel();
+                
                 if (SwingUtilities.isEventDispatchThread()) {
                     launchWindow = new RendererConfigDialog(this);
                     launchWindow.setVisible(true);
@@ -189,8 +189,6 @@ public class AbstractRenderPlugin extends JMidiPlugin implements IPlayerListener
     @Override
     public void initialize() {
         if (JMPCoreAccessor.getSystemManager().isEnableStandAlonePlugin() == true) {
-            FlatDarkLaf.setup();
-            
             splash = new JWindow();
             
             Path folderPath = Paths.get(JMPCoreAccessor.getSystemManager().getSystemPath(ISystemManager.PATH_RES_DIR, AbstractRenderPlugin.PluginInstance));
