@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>JMPPlayer.jar</jar>
+  <outfile>JMPPlayer.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>true</restartOnCrash>
+  <manifest></manifest>
+  <icon>icon.ico</icon>
+  <jre>
+    <path>jre</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion>21</minVersion>
+    <maxVersion></maxVersion>
+    <opt>-XX:+UseZGC</opt>
+    <opt>-Xmx16G</opt>
+    <opt>-XX:+UnlockExperimentalVMOptions</opt>
+    <opt>-XX:SoftMaxHeapSize=2G</opt>
+  </jre>
+</launch4jConfig>
