@@ -62,6 +62,7 @@ import layout.parts.TickbarPainter;
 import layout.parts.key.BlackKeyParts;
 import layout.parts.key.WhiteKeyParts;
 import layout.parts.monitor.MonitorData;
+import layout.parts.monitor.RsrcChartDrawer;
 import plg.AbstractRenderPlugin;
 import plg.OsInfoWrapper;
 import plg.SystemProperties;
@@ -83,10 +84,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     public static final int NEXT_FLIP_COUNT = 0;
 
     public static final int HIT_EFFECT_STEPS = 16;
-
-    private static final BasicStroke GRAPH_BORDER_STROKE = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private static final BasicStroke GRAPH_FRAMEBORDER_STROKE = new BasicStroke(2.0f);
-    private static Color GRAPH_BG_COLOR = new Color(0, 0, 0, 100);
 
     protected Canvas canvas;
     protected BufferStrategy strategy;
@@ -137,8 +134,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private Font msgFont = null;
     private Font msgFontS = null;
     private Font msgFontSS = null;
-    private Font graphFont = null;
-    private Font graphTitleFont = null;
     private Font fpsFont = null;
 
     protected FrameLimiter frameLimiter = null;
@@ -151,6 +146,9 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private float[] noiseBuf = new float[dummySpectSamples];
 
     protected ViewportManager viewportManager;
+    
+    protected RsrcChartDrawer cpuChart = new RsrcChartDrawer("CPU", Color.GREEN);
+    protected RsrcChartDrawer ramChart = new RsrcChartDrawer("RAM", Color.GREEN);
 
     public int getOrgWidth() {
         return SystemProperties.getInstance().getDimWidth();
@@ -263,8 +261,6 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         msgFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 28);
         msgFontS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 18);
         msgFontSS = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
-        graphFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
-        graphTitleFont = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
         fpsFont = new Font(Font.MONOSPACED, Font.BOLD, 28);
 
         isAvailableGpu = SystemProperties.getInstance().isAvailavleGpu();
@@ -1073,85 +1069,27 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             int grapW = 100;
             int grapH = 60;
             int grapX = this.getWidth() - grapW - 30;
-            int grapY = 10;
-            int gwRes = 0;
+            int grapY = 40;
             float[] data;
 
             if (SystemProperties.getInstance().getMonitorType() == SyspMonitorType.TYPE1) {
                 grapX = 120;
                 grapY = 188;
             }
+            
+            sb.setLength(0);
 
             // CPU
-            sb.setLength(0);
-            sb.append("CPU");
-            gGrap.setColor(GRAPH_BG_COLOR);
-            gGrap.fillRect(grapX, grapY, grapW, grapH);
-            gGrap.setFont(graphTitleFont);
-            gGrap.setColor(backStrColor);
-            gGrap.drawString(sb.toString(), grapX + 3, grapY + 22);
-            gGrap.setColor(topStrColor);
-            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
             data = osInfo.getUsageCpuBuffer();
-            gwRes = data.length - 1;
-            gwRes = data.length - 1;
-            gGrap.setColor(Color.GREEN);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
-            for (int i = 0; i < data.length - 1; i++) {
-                float dt1 = data[i];
-                float dt2 = data[i + 1];
-                int x1 = grapX + (i * grapW / gwRes);
-                int y1 = grapY + (grapH - (int) (dt1 * grapH / 1.0f));
-                int x2 = grapX + ((i + 1) * grapW / gwRes);
-                int y2 = grapY + (grapH - (int) (dt2 * grapH / 1.0f));
-                gGrap.drawLine(x1, y1, x2, y2);
-            }
-            sb.setLength(0);
-            sb.append(DF.format(osInfo.getUsageCpu() * 100.0)).append("%");
-            gGrap.setFont(graphFont);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
-            gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
-
+            cpuChart.setDataFloat(data, osInfo.getUsageCpu(), 1.0f);
+            cpuChart.drawGraph(gGrap, grapX, grapY, grapW, grapH);
             grapY += grapH + 28;
 
             // RAM
-            sb.setLength(0);
-            sb.append("RAM");
-            gGrap.setColor(GRAPH_BG_COLOR);
-            gGrap.fillRect(grapX, grapY, grapW, grapH);
-            gGrap.setFont(graphTitleFont);
-            gGrap.setColor(backStrColor);
-            gGrap.drawString(sb.toString(), grapX + 3, grapY + 22);
-            gGrap.setColor(topStrColor);
-            gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
             data = osInfo.getUsageRamBuffer();
-            gwRes = data.length - 1;
-            gwRes = data.length - 1;
-            gGrap.setColor(Color.GREEN);
-            gGrap.setStroke(GRAPH_BORDER_STROKE);
-            for (int i = 0; i < data.length - 1; i++) {
-                float dt1 = data[i];
-                float dt2 = data[i + 1];
-                int x1 = grapX + (i * grapW / gwRes);
-                int y1 = grapY + (grapH - (int) (dt1 * grapH / 1.0f));
-                int x2 = grapX + ((i + 1) * grapW / gwRes);
-                int y2 = grapY + (grapH - (int) (dt2 * grapH / 1.0f));
-                gGrap.drawLine(x1, y1, x2, y2);
-            }
-            sb.setLength(0);
-            sb.append(DF.format(osInfo.getUsageRam() * 100.0)).append("%");
-            gGrap.setFont(graphFont);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
-            gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-            gGrap.setColor(Color.WHITE);
-            gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
-
+            ramChart.setDataFloat(data, osInfo.getUsageRam(), 1.0f);
+            ramChart.drawGraph(gGrap, grapX, grapY, grapW, grapH);
+            grapY += grapH + 28;
         }
 
         monitorInfo.fps = getFPS();
