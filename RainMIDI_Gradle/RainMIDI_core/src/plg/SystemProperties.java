@@ -35,6 +35,7 @@ import layout.parts.monitor.GraphMonitorPainter;
 import layout.parts.monitor.NoneMonitorPainter;
 import layout.parts.monitor.NotesCountMonitorPainter;
 import layout.parts.spectrum.CurtainSpectrumPainter;
+import layout.parts.spectrum.DigitalSpectrumPainter;
 import layout.parts.spectrum.LightningSpectrumPainter;
 import layout.parts.spectrum.NoneSpectrumPainter;
 import plg.PropertiesNode.PropertiesNodeType;
@@ -190,7 +191,7 @@ public class SystemProperties {
     }
 
     public static enum SyspSpectrumType {
-        NONE, LIGHTNING, CURTAIN;
+        NONE, LIGHTNING, CURTAIN, DIGITAL;
     }
 
     public static enum SyspSpectrumPosition {
@@ -246,8 +247,8 @@ public class SystemProperties {
     private static Object[] colorBitsItemO = { SyspColorBitsDepth.RGB_888, SyspColorBitsDepth.RGB_565, SyspColorBitsDepth.GRAY };
     private static String[] colorBitsItemS = { "rgb888", "rgb565", "gray" };
 
-    private static Object[] spectrumTypeItemO = { SyspSpectrumType.NONE, SyspSpectrumType.LIGHTNING, SyspSpectrumType.CURTAIN };
-    private static String[] spectrumTypeItemS = { "none", "lightning", "curtain" };
+    private static Object[] spectrumTypeItemO = { SyspSpectrumType.NONE, SyspSpectrumType.LIGHTNING, SyspSpectrumType.CURTAIN, SyspSpectrumType.DIGITAL };
+    private static String[] spectrumTypeItemS = { "none", "lightning", "curtain", "digital" };
 
     private static Object[] spectrumPosItemO = { SyspSpectrumPosition.TOP, SyspSpectrumPosition.CENTER, SyspSpectrumPosition.BOTTOM };
     private static String[] spectrumPosItemS = { "top", "center", "bottom" };
@@ -399,6 +400,7 @@ public class SystemProperties {
             put(SyspSpectrumType.NONE, new NoneSpectrumPainter());
             put(SyspSpectrumType.LIGHTNING, new LightningSpectrumPainter());
             put(SyspSpectrumType.CURTAIN, new CurtainSpectrumPainter());
+            put(SyspSpectrumType.DIGITAL, new DigitalSpectrumPainter());
         }
     };
 
