@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
-import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import plg.GraphMonitorScheduler;
 import plg.SystemProperties;
@@ -19,9 +18,18 @@ public class NotesCountMonitorPainter extends MonitorPainter {
 
     private Font info2Font = null;
     private StringBuilder sb = new StringBuilder();
-    
-    private ChartDrawer npsChart = new ChartDrawer("NPS", Color.CYAN);
-    private ChartDrawer polyChart = new ChartDrawer("POLY", Color.PINK);
+
+    private ChartDrawer npsChart = new ChartDrawer("NPS", new Color(255, 255, 0, 220));
+    private ChartDrawer polyChart = new ChartDrawer("POLY", new Color(255, 100, 220, 220));
+
+    private static final Color[] GLOW_COLORS = {
+            new Color(100, 200, 255, 20),
+            new Color(140, 190, 255, 35),
+            new Color(190, 165, 255, 55),
+            new Color(230, 150, 245, 80)
+        };
+
+    private static final Color TEXT_COLOR = new Color(255, 235, 255, 255);
 
     public NotesCountMonitorPainter() {
         if (Utility.isWindows()) {
@@ -40,8 +48,6 @@ public class NotesCountMonitorPainter extends MonitorPainter {
 
         int sx = 0;
         int sy = 65;
-        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
-        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
 
         g.setFont(info2Font);
 
@@ -57,13 +63,29 @@ public class NotesCountMonitorPainter extends MonitorPainter {
         int width = fm.stringWidth(text);
 
         sx = (info.width - width) / 2;
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
-        
+
+        String cntText = sb.toString();
+        for (int i = 8, index = 0; i >= 2; i -= 2, index++) {
+            g.setColor(GLOW_COLORS[index]);
+
+            g.drawString(cntText, sx - i, sy);
+            g.drawString(cntText, sx + i, sy);
+            g.drawString(cntText, sx, sy - i);
+            g.drawString(cntText, sx, sy + i);
+        }
+
+        g.setColor(TEXT_COLOR);
+        g.drawString(cntText, sx, sy);
+
+//        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+//        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+//        g.setColor(backStrColor);
+//        g.drawString(cntText, sx + 1, sy + 1);
+//        g.setColor(topStrColor);
+//        g.drawString(cntText, sx, sy);
+
         sy = 5;
-        
+
         int graphCntr = (info.width / 2);
         int grapMergin = 210;
         int grapW = 256;
@@ -74,7 +96,7 @@ public class NotesCountMonitorPainter extends MonitorPainter {
         long[] data = graphMonSche.getNpsSnapshot();
         npsChart.setData(data, (long) notesMonitor.getNps(), dataMax);
         npsChart.setVisibleCurrent(false);
-        npsChart.drawGraph((Graphics2D)g, grapX, grapY, grapW, grapH);
+        npsChart.drawGraph((Graphics2D) g, grapX, grapY, grapW, grapH);
 
         if (midiUnit.isRenderingOnlyMode() == false) {
             grapX = graphCntr + grapMergin;
@@ -83,7 +105,7 @@ public class NotesCountMonitorPainter extends MonitorPainter {
             data = graphMonSche.getPolySnapshot();
             polyChart.setData(data, (long) notesMonitor.getPolyphony(), dataMax);
             polyChart.setVisibleCurrent(false);
-            polyChart.drawGraph((Graphics2D)g, grapX, grapY, grapW, grapH);
+            polyChart.drawGraph((Graphics2D) g, grapX, grapY, grapW, grapH);
             sy += grapH;
         }
     }

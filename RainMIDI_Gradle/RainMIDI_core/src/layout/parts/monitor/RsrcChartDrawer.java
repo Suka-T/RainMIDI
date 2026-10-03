@@ -59,7 +59,6 @@ public class RsrcChartDrawer extends ChartDrawer {
         gGrap.setColor(Color.WHITE);
         gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
         gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-        gGrap.setColor(Color.WHITE);
-        gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
+        drawGrowRect(gGrap, grapX - 1, grapY, grapW + 2, grapH + 1);
     }
 }

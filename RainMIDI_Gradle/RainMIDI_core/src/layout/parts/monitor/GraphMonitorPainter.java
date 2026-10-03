@@ -20,8 +20,8 @@ public class GraphMonitorPainter extends MonitorPainter {
     private StringBuilder sb = new StringBuilder();
     private static final int FONT_SIZE = 28;
     
-    private ChartDrawer npsChart = new ChartDrawer("NPS", Color.CYAN);
-    private ChartDrawer polyChart = new ChartDrawer("POLY", Color.PINK);
+    private ChartDrawer npsChart = new ChartDrawer("NPS", new Color(255, 255, 0, 220));
+    private ChartDrawer polyChart = new ChartDrawer("POLY", new Color(255, 100, 220, 220));
 
     public GraphMonitorPainter() {
         if (Utility.isWindows()) {

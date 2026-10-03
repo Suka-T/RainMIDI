@@ -1,10 +1,14 @@
 package layout.parts.monitor;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 
 import layout.LayoutManager;
 import plg.SystemProperties;
@@ -23,6 +27,15 @@ public class ChartDrawer {
     protected final Font GRAPH_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 14);
     protected final Font GRAPH_GUIDE_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 10);
     protected final Font GRAPH_TITLE_FONT = new Font(SystemProperties.getInstance().getGeneralFontName(), Font.PLAIN, 21);
+    
+    private final AlphaComposite alphaComp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+    private final Color outGrowColor = new Color(40, 120, 255, 30);
+    private final Color midGrowColor = new Color(80, 200, 255, 100);
+    private final Color coreColor = new Color(235, 250, 255, 230);
+    private final BasicStroke outGrowStroke = new BasicStroke(8.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private final BasicStroke midGrowStroke = new BasicStroke(4.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private final BasicStroke coreStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private BufferedImage lineImage = null;
     
     protected String title = "";
     protected Color graphColor;
@@ -146,10 +159,6 @@ public class ChartDrawer {
             y2 = areaY + (areaH - (int) (dt2 * areaH / dataMax));
             gGrap.drawLine(x1, y1, x2, y2);
         }
-
-        gGrap.setStroke(GRAPH_FRAMEBORDER_STROKE);
-        gGrap.setColor(Color.WHITE);
-        gGrap.drawRect(grapX - 1, grapY, grapW + 2, grapH + 1);
         
         if (this.isVisibleCurrent == true) {
             Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
@@ -162,6 +171,43 @@ public class ChartDrawer {
             gGrap.setColor(topStrColor);
             gGrap.drawString(sb.toString(), grapX, grapY + grapH + 17);
         }
+        drawGrowRect(gGrap, grapX - 1, grapY, grapW + 2, grapH + 1);
+    }
+    
+    public void drawGrowRect(Graphics2D g, int dx, int dy, int dw, int dh) {
+        if (lineImage == null || lineImage.getWidth() != dw || lineImage.getHeight() != dh) {
+            int x = 5;
+            int y = 5;
+            int w = dw;
+            int h = dh;
+                    
+            lineImage = new BufferedImage(w + 10, h + 10, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = (Graphics2D) lineImage.createGraphics();
+            
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+            // 加算合成っぽくする
+            Composite oldComp = g2.getComposite();
+            g2.setComposite(alphaComp);
+    
+            /* 外側グロー（ぼかし） */
+            g2.setStroke(outGrowStroke);
+            g2.setColor(outGrowColor); // 薄い水色
+            g2.drawRect(x, y, w, h);
+    
+            /* 中間グロー */
+            g2.setStroke(midGrowStroke);
+            g2.setColor(midGrowColor);
+            g2.drawRect(x, y, w, h);
+    
+            /* コア（芯） */
+            g2.setStroke(coreStroke);
+            g2.setColor(coreColor);
+            g2.drawRect(x, y, w, h);
+    
+            g2.setComposite(oldComp);
+        }
+        g.drawImage(lineImage, dx - 5, dy - 5, dw + 10, dh + 10, null);
     }
 
     public void setVisibleCurrent(boolean isVisibleCurrent) {
