@@ -708,7 +708,7 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
     private float spinG = 0f;
     private float spinB = 0f;
 
-    private void drawSpinner(Graphics2D g2d) {
+    private void drawSpinner(Graphics2D g) {
         int w = getContentPane().getWidth();
         int h = getContentPane().getHeight();
         int spinnerRadius = 120; // スピナーのサイズ半径
@@ -716,6 +716,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         if (frameLimiter.isEventted60()) {
             angle += 0.1;
         }
+        
+        Graphics2D g2d = (Graphics2D)g.create();
 
         if (armColor == null) {
             armColor = LayoutManager.getInstance().getCursorColor().getBgColor();
@@ -723,8 +725,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
             spinG = (float) armColor.getGreen() / 255.0f;
             spinB = (float) armColor.getBlue() / 255.0f;
 
-            for (int i = 0; i < 12; i++) {
-                float alpha = (i + 1) / 12f;
+            for (int i = 0; i < 6; i++) {
+                float alpha = (i + 1) / 6f;
                 armColors[i] = new Color(spinR, spinG, spinB, alpha);
             }
         }
@@ -732,8 +734,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         g2d.translate(w / 2, h / 2);
         g2d.rotate(angle);
 
-        // 回転アームを描画（12本）
-        for (int i = 0; i < 12; i++) {
+        // 回転アームを描画
+        for (int i = 0; i < 6; i++) {
             g2d.setColor(armColors[i]);
             int armWidth = 32;
             int armHeight = 10;
@@ -744,6 +746,8 @@ public class RendererWindow extends JFrame implements MouseListener, MouseMotion
         // 描画座標を元に戻す
         g2d.rotate(-angle);
         g2d.translate(-w / 2, -h / 2);
+        
+        g2d.dispose();
     }
 
     public void paintVolume(Graphics g) {
