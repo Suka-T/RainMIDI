@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
+import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import plg.GraphMonitorScheduler;
 import plg.SystemProperties;
@@ -64,25 +65,7 @@ public class NotesCountMonitorPainter extends MonitorPainter {
 
         sx = (info.width - width) / 2;
 
-        String cntText = sb.toString();
-        for (int i = 8, index = 0; i >= 2; i -= 2, index++) {
-            g.setColor(GLOW_COLORS[index]);
-
-            g.drawString(cntText, sx - i, sy);
-            g.drawString(cntText, sx + i, sy);
-            g.drawString(cntText, sx, sy - i);
-            g.drawString(cntText, sx, sy + i);
-        }
-
-        g.setColor(TEXT_COLOR);
-        g.drawString(cntText, sx, sy);
-
-//        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
-//        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
-//        g.setColor(backStrColor);
-//        g.drawString(cntText, sx + 1, sy + 1);
-//        g.setColor(topStrColor);
-//        g.drawString(cntText, sx, sy);
+        drawGlowString(g, sx, sy, sb.toString());
 
         sy = 5;
 
@@ -107,6 +90,30 @@ public class NotesCountMonitorPainter extends MonitorPainter {
             polyChart.setVisibleCurrent(false);
             polyChart.drawGraph((Graphics2D) g, grapX, grapY, grapW, grapH);
             sy += grapH;
+        }
+    }
+    
+    public void drawGlowString(Graphics g, int x, int y, String str) {
+        if (SystemProperties.getInstance().isValidGlowFont()) {
+            for (int i = 8, index = 0; i >= 2; i -= 2, index++) {
+                g.setColor(GLOW_COLORS[index]);
+
+                g.drawString(str, x - i, y);
+                g.drawString(str, x + i, y);
+                g.drawString(str, x, y - i);
+                g.drawString(str, x, y + i);
+            }
+
+            g.setColor(TEXT_COLOR);
+            g.drawString(str, x, y);
+        }
+        else {
+            Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+            Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+            g.setColor(backStrColor);
+            g.drawString(str, x + 1, y + 1);
+            g.setColor(topStrColor);
+            g.drawString(str, x, y);
         }
     }
 

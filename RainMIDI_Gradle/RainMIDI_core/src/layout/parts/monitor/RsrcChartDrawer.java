@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.text.DecimalFormat;
 
-import layout.LayoutManager;
-
 public class RsrcChartDrawer extends ChartDrawer {
     private static final DecimalFormat DF = new DecimalFormat("0.0");
     
@@ -24,19 +22,12 @@ public class RsrcChartDrawer extends ChartDrawer {
     }
     
     public void drawGraph(Graphics2D gGrap, int grapX, int grapY, int grapW, int grapH) {
-
-        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
-        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
-        
         sb.setLength(0);
         sb.append(title);
         gGrap.setColor(GRAPH_BG_COLOR);
         gGrap.fillRect(grapX, grapY, grapW, grapH);
         gGrap.setFont(GRAPH_TITLE_FONT);
-        gGrap.setColor(backStrColor);
-        gGrap.drawString(sb.toString(), grapX + 3, grapY + 22);
-        gGrap.setColor(topStrColor);
-        gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
+        drawGlowString(gGrap, grapX + 2, grapY + 21, sb.toString());
         gGrap.setStroke(GRAPH_BORDER_STROKE);
         int gwRes = dataF.length - 1;
         gGrap.setColor(Color.GREEN);

@@ -7,7 +7,9 @@ import java.awt.Graphics;
 
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
+import layout.LayoutManager;
 import layout.parts.MonitorPainter;
+import plg.SystemProperties;
 import plg.Utility;
 
 public class ClassicalMonitorPainter extends MonitorPainter {
@@ -74,17 +76,27 @@ public class ClassicalMonitorPainter extends MonitorPainter {
     }
     
     public void drawGlowString(Graphics g, int x, int y, String str) {
-        for (int i = 4, index = 0; i >= 1; i -= 1, index++) {
-            g.setColor(GLOW_COLORS[index]);
-
-            g.drawString(str, x - i, y);
-            g.drawString(str, x + i, y);
-            g.drawString(str, x, y - i);
-            g.drawString(str, x, y + i);
+        if (SystemProperties.getInstance().isValidGlowFont()) {
+            for (int i = 4, index = 0; i >= 1; i -= 1, index++) {
+                g.setColor(GLOW_COLORS[index]);
+    
+                g.drawString(str, x - i, y);
+                g.drawString(str, x + i, y);
+                g.drawString(str, x, y - i);
+                g.drawString(str, x, y + i);
+            }
+    
+            g.setColor(TEXT_COLOR);
+            g.drawString(str, x, y);
         }
-
-        g.setColor(TEXT_COLOR);
-        g.drawString(str, x, y);
+        else {
+            Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+            Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+            g.setColor(backStrColor);
+            g.drawString(str, x + 1, y + 1);
+            g.setColor(topStrColor);
+            g.drawString(str, x, y);
+        }
     }
 
 }

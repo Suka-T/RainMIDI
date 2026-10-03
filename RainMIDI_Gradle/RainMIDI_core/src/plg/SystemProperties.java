@@ -89,6 +89,7 @@ public class SystemProperties {
     public static final String SYSP_RENDERER_KEYRANGE_RES_BPM = "renderer.keyRange.resolutionBaseBPM";
     public static final String SYSP_RENDERER_CUSTOM_BGIMAGE_VALID = "renderer.custom.bgImage.valid";
     public static final String SYSP_RENDERER_CUSTOM_BGIMAGE_PATH = "renderer.custom.bgImage.path";
+    public static final String SYSP_RENDERER_FONT_GLOW = "renderer.font.glow";
 
     public static final String SYSP_DEBUGMODE = "debugMode";
 
@@ -138,6 +139,7 @@ public class SystemProperties {
             put(SYSP_RENDERER_KEYRANGE_RES_SEC, "Key Range Resolution Time(sec)");
             put(SYSP_RENDERER_CUSTOM_BGIMAGE_VALID, "Custom Background Image Valid");
             put(SYSP_RENDERER_CUSTOM_BGIMAGE_PATH, "Custom Background Image Path");
+            put(SYSP_RENDERER_FONT_GLOW, "Valid Glow Font");
             
             put(SYSP_DEBUGMODE, "Debug mode enable");
         }
@@ -298,6 +300,7 @@ public class SystemProperties {
     private int viewportIndex = 0;
     
     private BufferedImage customBgImage = null;
+    private boolean isValidGlowFont = true;
 
     private SystemProperties() {
         nodes = new ArrayList<>();
@@ -347,6 +350,7 @@ public class SystemProperties {
         nodes.add(new PropertiesNode(SYSP_RENDERER_KEYRANGE_RES_SEC, PropertiesNodeType.DOUBLE, "5.0", "3.0", "15.0"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_CUSTOM_BGIMAGE_VALID, PropertiesNodeType.BOOLEAN, "false"));
         nodes.add(new PropertiesNode(SYSP_RENDERER_CUSTOM_BGIMAGE_PATH, PropertiesNodeType.STRING, "res/Rainchan.jpg"));
+        nodes.add(new PropertiesNode(SYSP_RENDERER_FONT_GLOW, PropertiesNodeType.BOOLEAN, "true"));
 
         nodes.add(new PropertiesNode(SYSP_DEBUGMODE, PropertiesNodeType.BOOLEAN, "false"));
 
@@ -588,6 +592,8 @@ public class SystemProperties {
 
         SyspMonitorType monType = (SyspMonitorType) getPropNode(SYSP_RENDERER_MONITOR_TYPE).getData();
         monitorPainter = monitorPainters.get(monType);
+        
+        isValidGlowFont = (boolean)SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_FONT_GLOW);
 
         boolean isInvalidateEffe = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_INVALIDATE_EFFECT);
         if (isInvalidateEffe == true) {
@@ -605,6 +611,8 @@ public class SystemProperties {
             if (monType == SyspMonitorType.TYPE1) {
                 monitorPainter = lightAnalyMonitor;
             }
+            
+            isValidGlowFont = false;
         }
 
         isGPUAvailable = (boolean) SystemProperties.getInstance().getData(SystemProperties.SYSP_RENDERER_USE_GPU);
@@ -920,5 +928,9 @@ public class SystemProperties {
 
     public BufferedImage getCustomBgImage() {
         return customBgImage;
+    }
+
+    public boolean isValidGlowFont() {
+        return isValidGlowFont;
     }
 }

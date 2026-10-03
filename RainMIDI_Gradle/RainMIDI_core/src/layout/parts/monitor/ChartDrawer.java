@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -37,6 +38,15 @@ public class ChartDrawer {
     private final BasicStroke coreStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private BufferedImage lineImage = null;
     
+    private static final Color[] GLOW_COLORS = {
+            new Color(100, 200, 255, 20),
+            new Color(140, 190, 255, 35),
+            new Color(190, 165, 255, 55),
+            new Color(230, 150, 245, 80)
+        };
+
+    private static final Color TEXT_COLOR = new Color(255, 235, 255, 255);
+    
     protected String title = "";
     protected Color graphColor;
     protected StringBuilder sb;
@@ -64,8 +74,7 @@ public class ChartDrawer {
         gGrap.setFont(GRAPH_TITLE_FONT);
         gGrap.setColor(GRAPH_BG_COLOR);
         gGrap.fillRect(grapX, grapY, grapW, grapH);
-        gGrap.setColor(GRAPH_TITLE_COLOR);
-        gGrap.drawString(sb.toString(), grapX + 2, grapY + 21);
+        drawGlowString(gGrap, grapX + 2, grapY + 21, sb.toString());
         int gwRes = data.length - 1;
 
         gGrap.setFont(GRAPH_GUIDE_FONT);
@@ -212,5 +221,29 @@ public class ChartDrawer {
 
     public void setVisibleCurrent(boolean isVisibleCurrent) {
         this.isVisibleCurrent = isVisibleCurrent;
+    }
+    
+    public void drawGlowString(Graphics g, int x, int y, String str) {
+        if (SystemProperties.getInstance().isValidGlowFont()) {
+            for (int i = 4, index = 0; i >= 1; i -= 1, index++) {
+                g.setColor(GLOW_COLORS[index]);
+
+                g.drawString(str, x - i, y);
+                g.drawString(str, x + i, y);
+                g.drawString(str, x, y - i);
+                g.drawString(str, x, y + i);
+            }
+
+            g.setColor(TEXT_COLOR);
+            g.drawString(str, x, y);
+        }
+        else {
+            Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+            Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+            g.setColor(backStrColor);
+            g.drawString(str, x + 1, y + 1);
+            g.setColor(topStrColor);
+            g.drawString(str, x, y);
+        }
     }
 }

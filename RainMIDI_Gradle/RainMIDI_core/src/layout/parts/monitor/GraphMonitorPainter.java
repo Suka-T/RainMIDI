@@ -9,6 +9,7 @@ import java.awt.RenderingHints;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
+import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import plg.GraphMonitorScheduler;
 import plg.SystemProperties;
@@ -151,23 +152,26 @@ public class GraphMonitorPainter extends MonitorPainter {
     }
     
     public void drawGlowString(Graphics g, int x, int y, String str) {
-//          Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
-//          Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
-//        g.setColor(backStrColor);
-//        g.drawString(str, x + 1, y + 1);
-//        g.setColor(topStrColor);
-//        g.drawString(str, x, y);
-        
-        for (int i = 4, index = 0; i >= 1; i -= 1, index++) {
-            g.setColor(GLOW_COLORS[index]);
+        if (SystemProperties.getInstance().isValidGlowFont()) {
+            for (int i = 4, index = 0; i >= 1; i -= 1, index++) {
+                g.setColor(GLOW_COLORS[index]);
 
-            g.drawString(str, x - i, y);
-            g.drawString(str, x + i, y);
-            g.drawString(str, x, y - i);
-            g.drawString(str, x, y + i);
+                g.drawString(str, x - i, y);
+                g.drawString(str, x + i, y);
+                g.drawString(str, x, y - i);
+                g.drawString(str, x, y + i);
+            }
+
+            g.setColor(TEXT_COLOR);
+            g.drawString(str, x, y);
         }
-
-        g.setColor(TEXT_COLOR);
-        g.drawString(str, x, y);
+        else {
+            Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+            Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+            g.setColor(backStrColor);
+            g.drawString(str, x + 1, y + 1);
+            g.setColor(topStrColor);
+            g.drawString(str, x, y);
+        }
     }
 }
