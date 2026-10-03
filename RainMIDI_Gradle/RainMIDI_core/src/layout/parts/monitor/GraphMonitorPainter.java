@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 import jlib.core.JMPCoreAccessor;
 import jlib.midi.IMidiUnit;
 import jlib.midi.INotesMonitor;
-import layout.LayoutManager;
 import layout.parts.MonitorPainter;
 import plg.GraphMonitorScheduler;
 import plg.SystemProperties;
@@ -19,6 +18,15 @@ public class GraphMonitorPainter extends MonitorPainter {
     private Font info1Font = null;
     private StringBuilder sb = new StringBuilder();
     private static final int FONT_SIZE = 28;
+    
+    private static final Color[] GLOW_COLORS = {
+            new Color(100, 200, 255, 20),
+            new Color(140, 190, 255, 35),
+            new Color(190, 165, 255, 55),
+            new Color(230, 150, 245, 80)
+        };
+
+    private static final Color TEXT_COLOR = new Color(255, 235, 255, 255);
     
     private ChartDrawer npsChart = new ChartDrawer("NPS", new Color(255, 255, 0, 220));
     private ChartDrawer polyChart = new ChartDrawer("POLY", new Color(255, 100, 220, 220));
@@ -56,8 +64,6 @@ public class GraphMonitorPainter extends MonitorPainter {
         Graphics2D gGrap = (Graphics2D) g;
         gGrap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
-        Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
         g.setFont(info1Font);
 
         sb.setLength(0);
@@ -81,50 +87,28 @@ public class GraphMonitorPainter extends MonitorPainter {
         if (val2 < 10)
             sb.append('0');
         sb.append(val2);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
+        drawGlowString(g, sx, sy, sb.toString());
         sy += sh;
-
-//        sb.setLength(0);
-//        sb.append("TICK: ");
-//        val1 = JMPCoreAccessor.getSoundManager().getMidiUnit().getTickPosition();
-//        formatWithCommas(val1, sb);
-//        g.setColor(backStrColor);
-//        g.drawString(sb.toString(), sx + 1, sy + 1);
-//        g.setColor(topStrColor);
-//        g.drawString(sb.toString(), sx, sy);
-//        sy += sh;
 
         sb.setLength(0);
         sb.append("NOTES: ");
         val1 = notesMonitor.getNotesCount();
         formatWithCommas(val1, sb);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
+        drawGlowString(g, sx, sy, sb.toString());
         sy += sh;
 
         sb.setLength(0);
         sb.append("MAX NT: ");
         val2 = notesMonitor.getNumOfNotes();
         formatWithCommas(val2, sb);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
+        drawGlowString(g, sx, sy, sb.toString());
         sy += sh;
 
         sb.setLength(0);
         sb.append("MAX NPS: ");
         val2 = (long) notesMonitor.getMaxNps();
         formatWithCommas(val2, sb);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
+        drawGlowString(g, sx, sy, sb.toString());
         sy += sh;
 
         if (midiUnit.isRenderingOnlyMode() == false) {
@@ -132,10 +116,7 @@ public class GraphMonitorPainter extends MonitorPainter {
             sb.append("MAX POLY: ");
             val2 = (long) notesMonitor.getMaxPolyphony();
             formatWithCommas(val2, sb);
-            g.setColor(backStrColor);
-            g.drawString(sb.toString(), sx + 1, sy + 1);
-            g.setColor(topStrColor);
-            g.drawString(sb.toString(), sx, sy);
+            drawGlowString(g, sx, sy, sb.toString());
             sy += sh;
         }
 
@@ -143,10 +124,7 @@ public class GraphMonitorPainter extends MonitorPainter {
         val1 = (int) midiUnit.getTempoInBPM();
         val2 = (int) ((midiUnit.getTempoInBPM() - val1) * 100);
         sb.append("BPM: ").append(val1).append(".").append(val2);
-        g.setColor(backStrColor);
-        g.drawString(sb.toString(), sx + 1, sy + 1);
-        g.setColor(topStrColor);
-        g.drawString(sb.toString(), sx, sy);
+        drawGlowString(g, sx, sy, sb.toString());
         sy += sh;
 
         // データの点と点を線で結ぶ
@@ -170,5 +148,26 @@ public class GraphMonitorPainter extends MonitorPainter {
             polyChart.drawGraph(gGrap, grapX, grapY, grapW, grapH);
             sy += grapH;
         }
+    }
+    
+    public void drawGlowString(Graphics g, int x, int y, String str) {
+//          Color backStrColor = LayoutManager.getInstance().getFontColor().getBdColor();
+//          Color topStrColor = LayoutManager.getInstance().getFontColor().getBgColor();
+//        g.setColor(backStrColor);
+//        g.drawString(str, x + 1, y + 1);
+//        g.setColor(topStrColor);
+//        g.drawString(str, x, y);
+        
+        for (int i = 4, index = 0; i >= 1; i -= 1, index++) {
+            g.setColor(GLOW_COLORS[index]);
+
+            g.drawString(str, x - i, y);
+            g.drawString(str, x + i, y);
+            g.drawString(str, x, y - i);
+            g.drawString(str, x, y + i);
+        }
+
+        g.setColor(TEXT_COLOR);
+        g.drawString(str, x, y);
     }
 }
